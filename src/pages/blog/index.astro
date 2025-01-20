@@ -1,0 +1,34 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+const blog = await getCollection("blog");
+const sorted = Object.groupBy(blog, ({ data }) => data.pubDate!.getMonth());
+
+const getMonth = (id: number) => {
+  let date = new Date();
+  date.setDate(1);
+  date.setMonth(id);
+  return date.toLocaleString(undefined, { month: "long" });
+}
+---
+<Layout>
+  <h1>blog</h1>
+  <ul>
+    {Object.entries(sorted).map(entry => (
+      <li>
+        <h2>{getMonth(Number(entry[0]))}</h2>
+        <ul>
+          {entry[1]?.sort((a, b) => a.data.pubDate!.valueOf() - b.data.pubDate!.valueOf()).map(post => (
+            <li>
+              <time datetime={post.data.pubDate?.toISOString()}>
+                {post.data.pubDate?.toLocaleDateString(undefined, { dateStyle: "long" })}
+              </time>
+              <a href={`/blog/${post.id}`}>{post.data.title}</a>
+            </li>
+          ))}
+        </ul>
+      </li>
+    ))}
+  </ul>
+</Layout>

@@ -1,0 +1,42 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+
+export const getStaticPaths = (async () => {
+  const fics = await getCollection("fics");
+  return fics.map(fic => ({
+    params: { ficId: fic.id },
+    props: { fic },
+  }));
+}) satisfies GetStaticPaths;
+
+const { fic } = Astro.props;
+const chapters = await getCollection("chapters", ({ id }) => {
+  return id.startsWith(fic.id);
+});
+chapters.length = Math.min(chapters.length, 5);
+chapters.sort((a, b) => a.data.sortOrder - b.data.sortOrder);
+---
+<Layout>
+  <section>
+    <h1>{fic.data.title}</h1>
+    <header class="info">
+      <p>fandom: {fic.data.series.join(", ")}</p>
+      <time datetime={fic.data.publishedAt.toISOString()}>
+        {fic.data.publishedAt}
+      </time>
+      <blockquote>
+        <Fragment set:html={fic.data.summary.split("\n").join("<br />")} />
+      </blockquote>
+      <a href={`/fics/${chapters[0].id}`}>start reading</a>
+      <a href={`/fics/${Astro.params.ficId}/rss.xml`}>rss feed</a>
+    </header>
+    <h2>chapters</h2>
+    <ul>
+      {chapters.map(chapter => (
+        <li><a href={chapter.id}>{chapter.data.title}</a></li>
+      ))}
+    </ul>
+  </section>
+</Layout>

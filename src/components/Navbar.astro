@@ -1,0 +1,32 @@
+---
+const links = [
+  "about",
+  "blog",
+  "fics",
+  "gallery",
+  "guestbook",
+];
+---
+<nav>
+  <ul>
+    <li><a href="/">index</a></li>
+    {links.map(link => (
+      <li><a href={`/${link}`}>{link}</a></li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  nav {
+    font-family: var(--title-font);
+    font-size: 2rem;
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 1rem;
+    }
+  }
+</style>

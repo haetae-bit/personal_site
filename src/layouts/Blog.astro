@@ -1,0 +1,153 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "./Layout.astro";
+import Navbar from "@/components/Navbar.astro";
+
+interface Props {
+  title: string;
+  date: Date;
+}
+
+const blog = await getCollection("blog");
+blog.length = Math.min(blog.length, 5);
+blog.sort((a, b) => a.data.pubDate!.valueOf() - b.data.pubDate!.valueOf());
+const { title, date } = Astro.props;
+---
+<Layout>
+  <Navbar />
+
+  <section>
+    <nav id="blog-links">
+      <h1>recent posts</h1>
+      <ul>
+        {blog.map(entry => (
+          <li>
+            <time datetime={entry.data.pubDate!.toISOString()}>
+              {entry.data.pubDate?.toLocaleDateString(undefined, { dateStyle: "short" })}
+            </time>
+            <a href={`/blog/${entry.id}`}>{entry.data.title}</a>
+          </li>
+        ))}
+      </ul>
+      <h1>other links</h1>
+      <ul>
+        <li><a href="/blog">archive</a></li>
+        <li><a href="/blog/rss.xml">rss feed</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <article>
+        <header>
+          <h1>{title}</h1>
+          <time datetime={date.toISOString()}>
+            Posted on 
+            {date.toLocaleDateString(undefined, { dateStyle: "long" })}
+          </time>
+        </header>
+
+        <div class="content">
+          <slot />
+        </div>
+      </article>
+
+      <slot name="pagination" />
+    </main>
+  </section>
+</Layout>
+
+<style>
+  section {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    justify-content: center;
+    gap: 1rem;
+    height: calc(100% - 2.5rem);
+  }
+  
+  #blog-links {
+    min-width: 28ch;
+    border: 2px solid black;
+    border-bottom: none;
+    margin-top: 2rem;
+    padding: 0.5rem;
+
+    h1 {
+      font-size: 2rem;
+      margin: 1rem 1rem 0.25rem;
+    }
+
+    ul {
+      display: flex;
+      flex-flow: column wrap;
+      gap: 0.5rem;
+      list-style: none;
+      padding: 0;
+
+      li {
+        display: flex;
+        padding: 0 0.5rem;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+    @media screen and (max-width: 1251px) {
+      border-bottom: 2px solid black;
+    }
+  }
+
+  main {
+    width: 75ch;
+
+    @media screen and (max-width: 950px) {
+      width: 100%;
+      margin: 0 1rem;
+    }
+  }
+  
+  article {
+    header {
+      padding: 1rem;
+      padding-left: 2rem;
+
+      time { padding-left: 3rem; }
+
+      @media screen and (max-width: 950px) {
+        padding: 0.25rem;
+        padding-left: 2rem;
+      }
+    }
+
+    .content {
+      position: relative;
+      background-image: linear-gradient(#d1d5db 2px, transparent 0px);
+      background-size: 100% 1em;
+      background-position-y: 1.75rem;
+      padding: 2rem;
+      font-size: 2rem;
+      line-height: 1em;
+      border: 2px solid black;
+
+      p { margin-block-end: 1em; }
+      &::before, &::after {
+        position: absolute;
+        bottom: 100%;
+        left: 30px;
+        content: "";
+        border: 20px solid transparent;
+      }
+
+      &::before { border-bottom: 20px solid black; }
+      &::after {
+        border-bottom: 20px solid white;
+        margin-bottom: -3px;
+      }
+
+      @media screen and (max-width: 950px) {
+        background-position-y: 0.8rem;
+        padding: 1rem;
+      }
+    }
+  }
+</style>

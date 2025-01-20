@@ -1,0 +1,54 @@
+---
+import Blog from '@/layouts/Blog.astro';
+import type { GetStaticPaths } from 'astro';
+import { getCollection, render } from 'astro:content';
+
+export const getStaticPaths = (async () => {
+  const blog = await getCollection("blog");
+  return blog.map(entry => ({
+    params: { id: entry.id },
+    props: { entry },
+  }));
+}) satisfies GetStaticPaths;
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const blog = await getCollection("blog");
+blog.sort((a, b) => b.data.pubDate!.valueOf() - a.data.pubDate!.valueOf());
+const current = blog.findIndex(entry => entry.id === Astro.params.id);
+const previous = current + 1 === blog.length ? undefined : blog[current + 1];
+const next = current === 0 ? undefined : blog[current - 1];
+---
+<Blog title={entry.data.title!} date={entry.data.pubDate!}>
+  <Content />
+
+  {(previous || next) && (
+    <div id="blog-pagination" slot="pagination">
+      {previous && (
+        <a id="previous" aria-label="previous post" href={`/blog/${previous.id}`}>{previous.data.title}</a>
+      )}
+
+      {next && (
+        <a id="next" aria-label="next post" href={`/blog/${next.id}`}>{next.data.title}</a>
+      )}
+    </div>
+  )}
+</Blog>
+
+<style>
+  #blog-pagination {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    #previous {
+      grid-column: 1 / 2;
+      justify-self: left;
+    }
+    
+    #next {
+      grid-column: 2 / -1;
+      justify-self: right;
+    }
+  }
+</style>

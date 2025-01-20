@@ -1,0 +1,59 @@
+---
+import { actions, isInputError } from "astro:actions";
+import { db, Guestbook as table } from "astro:db";
+import Layout from "@/layouts/Layout.astro";
+
+export const prerender = false;
+
+const result = Astro.getActionResult(actions.guestbook);
+const errors = isInputError(result?.error) ? result.error.fields : {};
+const entries = await db.select().from(table);
+entries.sort((a, b) => b.date.valueOf() - a.date.valueOf());
+---
+
+<Layout>
+  <main>
+    <h1>Guestbook</h1>
+
+    <form action={actions.guestbook} method="post">
+      <label for="username">Username</label>
+      <input type="text" name="username" id="username" required aria-describedby="username-error" />
+      {errors.username && <p id="username-error">{errors.username.join(",")}</p>}
+
+      <label for="website">Website (optional)</label>
+      <input type="url" name="website" id="website" aria-describedby="website-error" />
+      {errors.website && <p id="website-error">{errors.website.join(",")}</p>}
+
+      <label for="body">Message</label>
+      <textarea name="body" id="body" rows="5" required aria-describedby="body-error"></textarea>
+      {errors.body && <p id="body-error">{errors.body.join(",")}</p>}
+
+      <input type="hidden" name="honeypot" tabindex="-1" autocomplete="off" style="display:none" />
+      <button type="submit">Post</button>
+
+      {errors.honeypot && <p>{errors.honeypot.join(",")}</p>}
+    </form>
+
+    {entries.map(({ username, website, body, date }) => (
+      <article class="entry">
+        <h1>{username}</h1>
+        {website && <p><a href={website} target="_blank" referrerpolicy="no-referrer">website</a></p>}
+        <time datetime={date.toISOString()}>{date}</time>
+        <div>
+          {body}
+        </div>
+      </article>
+    ))}
+  </main>
+</Layout>
+
+<style>
+  form {
+    display: flex;
+    flex-flow: column wrap;
+    
+    input, textarea {
+      margin-bottom: 1rem;
+    }
+  }
+</style>

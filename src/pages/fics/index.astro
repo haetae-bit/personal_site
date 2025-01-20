@@ -1,0 +1,32 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+const fics = await getCollection("fics");
+const chapters = await getCollection("chapters");
+chapters.length = Math.min(chapters.length, 5);
+chapters.sort((a, b) => a.data.publishedAt.valueOf() - b.data.publishedAt.valueOf());
+---
+<Layout>
+  <h1>fanfics</h1>
+  
+  <h2>recent updates</h2>
+  <ul>
+    {chapters.map(post => (
+      <li>
+        <time datetime={post.data.publishedAt.toISOString()}>
+          {post.data.publishedAt.toLocaleDateString(undefined, { dateStyle: "medium" })}
+        </time>
+        <a href={`/fics/${post.id}`}>{post.data.title}</a> in 
+        <a href={`/fics/${post.id.split("/")[0]}`}>{fics.find(({ id }) => post.id.startsWith(id))?.data.title}</a>
+      </li>
+    ))}
+  </ul>
+
+  <h2>works</h2>
+  <ul>
+    {fics.map(fic => (
+      <li><a href={`/fics/${fic.id}`}>{fic.data.title}</a></li>
+    ))}
+  </ul>
+</Layout>

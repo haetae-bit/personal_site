@@ -1,0 +1,121 @@
+---
+import Chapter from "@/layouts/Chapter.astro";
+import type { GetStaticPaths } from "astro";
+import { getCollection, render } from "astro:content";
+import { Breadcrumbs } from "astro-breadcrumbs";
+
+export const getStaticPaths = (async () => {
+  const chapters = await getCollection("chapters");
+  return chapters.map(chapter => ({
+    params: { 
+      ficId: chapter.id.split("/")[0],
+      chapterId: chapter.id.split("/")[1],
+    },
+    props: { chapter },
+  }));
+}) satisfies GetStaticPaths;
+
+const { ficId, chapterId } = Astro.params;
+const { chapter } = Astro.props;
+const { Content } = await render(chapter);
+
+const chapters = await getCollection("chapters", ({ id }) => {
+  return id.split("/")[0] === ficId;
+});
+const fic = await getCollection("fics", ({ id }) => {
+  return id === ficId;
+});
+chapters.sort((a, b) => a.data.sortOrder - b.data.sortOrder);
+const current = chapters.findIndex(chapter => chapter.id === `${ficId}/${chapterId}`);
+const next = current + 1 === chapters.length ? undefined : chapters[current + 1];
+const previous = current === 0 ? undefined : chapters[current - 1];
+// lastmodified
+
+const links = [
+  { index: "last", text: chapter.data.title },
+  { index: 2, text: fic[0].data.title },
+];
+---
+<Chapter title={chapter.data.title} date={chapter.data.publishedAt} notes={chapter.data.notes}>
+  <Fragment slot="breadcrumbs">
+    <Breadcrumbs id="breadcrumbs" customizeLinks={links} linkTextFormat="capitalized">
+      <Fragment slot="separator" set:text="/" />
+    </Breadcrumbs>
+  </Fragment>
+
+  <Content />
+
+  <nav id="chapter-pagination" slot="pagination">
+    <div id="chapter-index">
+      <label for="chapter-select">Chapters:</label>
+      <select name="chapter-select" id="chapter-select">
+        {chapters.map(chapter => (
+          <option 
+            value={`/fics/${chapter.id}`} 
+            selected={chapter.id.split("/")[1] === chapterId ? "selected" : undefined}
+          >
+            {chapter.data.title}
+          </option>
+        ))}
+      </select>
+    </div>
+    {previous && (
+      <a id="previous" href={`/fics/${previous.id}`}>{previous.data.title}</a>
+    )}
+    {next && (
+      <a id="next" href={`/fics/${next.id}`}>{next.data.title}</a>
+    )}
+  </nav>
+</Chapter>
+
+<style>
+  :global(#breadcrumbs) {
+    ol {
+      display: flex;
+      gap: 0.5rem;
+      list-style: none;
+      padding: 0;
+
+      li {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .c-breadcrumbs__separator { opacity: 0.5; }
+      a[aria-current="location"] {
+        color: aqua;
+      }
+    }
+  }
+
+  #chapter-pagination {
+    display: grid;
+    grid: 1fr auto / repeat(2, 1fr);
+    gap: 0.5rem;
+
+    #chapter-index {
+      grid-area: 1 / 1 / 1 / -1;
+      width: min-content;
+      justify-self: center;
+    }
+
+    #previous {
+      grid-area: 2 / 1 / 2 / 1;
+      justify-self: left;
+    }
+
+    #next {
+      grid-area: 2 / 2 / 2 / 2;
+      justify-self: right;
+    }
+  }
+</style>
+
+<script>
+  const select: HTMLSelectElement | null = document.querySelector("#chapter-select");
+  select?.addEventListener("change", (e) => {
+    if (e.target instanceof HTMLSelectElement) {
+      window.location.href = e.target.value;
+    }
+  });
+</script>

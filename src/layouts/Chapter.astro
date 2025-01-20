@@ -1,0 +1,67 @@
+---
+import Layout from "./Layout.astro";
+
+interface Props {
+  title: string;
+  date: Date;
+  notes?: string;
+  lastModified?: string;
+}
+
+const { title, date, notes, lastModified }: Props = Astro.props;
+---
+<Layout>
+  <slot name="breadcrumbs" />
+
+  <main>
+    <header>
+      <h1>{title}</h1>
+      <time datetime={date.toISOString()}>
+        {date.toLocaleDateString(undefined, {
+          weekday: "long", year: "numeric", month: "long", day: "numeric",
+        })}
+      </time>
+      {lastModified && (
+        <time datetime={lastModified}>{lastModified}</time>
+      )}
+      {notes && (
+        <blockquote><Fragment set:html={notes.split("\n").join("<br />")} /></blockquote>
+      )}
+    </header>
+    
+    <article>
+      <slot />
+    </article>
+
+    <slot name="pagination" />
+  </main>
+</Layout>
+
+<style>
+  main {
+    max-width: 80ch;
+    margin: 1rem auto 2rem;
+  }
+  
+  article, blockquote { font-family: var(--serif-font); }
+
+  blockquote {
+    margin: 1rem;
+    font-size: 1.125rem;
+
+    &::before {
+      display: block;
+      content: "Author’s Notes:";
+      font-weight: bold;
+      line-height: 1;
+    }
+  }
+
+  article {
+    margin: 1rem 0;
+    font-size: 1.25rem;
+    line-height: 1.5;
+
+    p { margin-block-end: 1rem; }
+  }
+</style>
