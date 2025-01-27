@@ -6,6 +6,8 @@
   --title-font: "Kiwi Soda", Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
   --mono-font: "Departure Mono", ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
   --serif-font: "Redaction 35", 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
+  --sans-font: "MLSS", 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  --arial-font: "Arial Pixel", Arial, Helvetica, sans-serif;
 }
 
 body {

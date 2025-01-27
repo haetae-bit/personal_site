@@ -1,11 +1,63 @@
 ---
+import type { MarkdownLayoutProps } from "astro";
 import Navbar from "@/components/Navbar.astro";
+import Figure from "@/components/Figure.astro";
 import Layout from "./Layout.astro";
+import border from "@/assets/images/border.png";
+import frame from "@/assets/images/frame.png";
+
+type Props = MarkdownLayoutProps<{
+  avatar?: string;
+  avatarText?: string;
+}>;
+
+const { frontmatter } = Astro.props;
 ---
 <Layout>
   <Navbar />
-  
+
   <main>
-    <slot />
+    {frontmatter.avatar && frontmatter.avatarText && (
+      <Figure className="avatar" imagePath={frontmatter.avatar} alt={frontmatter.avatarText} />
+    )}
+    <article>
+      <slot />
+    </article>
   </main>
 </Layout>
+
+<style define:vars={{ borderImage: `url(${border.src})`, frameImage: `url(${frame.src})` }}>
+  main {
+    margin: 3rem auto;
+    max-width: clamp(50ch, 80ch, 100%);
+  }
+
+  article {
+    padding: 1rem 1.5rem;
+    color: #f8f8f8;
+    text-shadow: 2px 2px #000;
+    background: #202020;
+    border-image: var(--frameImage) 6 9 / 12px 18px / 10px repeat;
+    image-rendering: pixelated;
+
+    h1, h2, h3 {
+      font-family: var(--body-font);
+      border-bottom: 2px solid #f8f8f8;
+    }
+  }
+
+  :global(.avatar) {
+    width: fit-content;
+    margin: 0 auto 2rem;
+    border-image: var(--borderImage) 5 4 / 10px 8px / 8px repeat;
+    image-rendering: pixelated;
+
+    img {
+      display: grid;
+      place-content: center;
+      width: 80px;
+      height: auto;
+      image-rendering: pixelated;
+    }
+  }
+</style>

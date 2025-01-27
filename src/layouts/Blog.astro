@@ -2,21 +2,32 @@
 import { getCollection } from "astro:content";
 import Layout from "./Layout.astro";
 import Navbar from "@/components/Navbar.astro";
+import moods from "@/utils/moods";
+import outerBBS from "@/assets/images/guild-bbs.png";
+import innerBBS from "@/assets/images/guild-bbs-content.png";
+import { Image } from "astro:assets";
 
 interface Props {
   title: string;
   date: Date;
+  currently?: {
+    mood?: string;
+    reading?: string;
+    listening?: string;
+    watching?: string;
+    playing?: string;
+  }
 }
 
 const blog = await getCollection("blog");
 blog.length = Math.min(blog.length, 5);
 blog.sort((a, b) => a.data.pubDate!.valueOf() - b.data.pubDate!.valueOf());
-const { title, date } = Astro.props;
+const { title, date, currently } = Astro.props;
 ---
 <Layout>
   <Navbar />
 
-  <section>
+  <main>
     <nav id="blog-links">
       <h1>recent posts</h1>
       <ul>
@@ -36,33 +47,80 @@ const { title, date } = Astro.props;
       </ul>
     </nav>
 
-    <main>
+    <section>
       <article>
-        <header>
-          <h1>{title}</h1>
-          <time datetime={date.toISOString()}>
-            Posted on 
-            {date.toLocaleDateString(undefined, { dateStyle: "long" })}
-          </time>
-        </header>
+        <div class="inner">
+          <header>
+            <h1>{title}</h1>
+            <hr />
+            <div class="info">
+              <time datetime={date.toISOString()}>
+                <span class="title">Date</span>
+                <span class="desc">{date.toLocaleDateString(undefined, { dateStyle: "long" })}</span>
+              </time>
+            </div>
+          </header>
 
-        <div class="content">
-          <slot />
+          <div class="content">
+            <slot />
+          </div>
+
+          {currently && (
+            <aside>
+              {currently?.mood && (
+                <dl>
+                  <dt>Current mood</dt>
+                  <dd>
+                    <Image src={`/src/assets/moods/${moods.find(mood => mood === currently?.mood)}.png`} width="32" height="32" alt={currently.mood} />
+                  </dd>
+                </dl>
+              )}
+              {currently.playing && (
+                <dl>
+                  <dt>Currently playing</dt>
+                  <dd>{currently.playing}</dd>
+                </dl>
+              )}
+              {currently.watching && (
+                <dl>
+                  <dt>Currently watching</dt>
+                  <dd>{currently.watching}</dd>
+                </dl>
+              )}
+              {currently.reading && (
+                <dl>
+                  <dt>Currently reading</dt>
+                  <dd>{currently.reading}</dd>
+                </dl>
+              )}
+              {currently.listening && (
+                <dl>
+                  <dt>Currently listening</dt>
+                  <dd>{currently.listening}</dd>
+                </dl>
+              )}
+            </aside>
+          )}
         </div>
       </article>
 
       <slot name="pagination" />
-    </main>
-  </section>
+    </section>
+  </main>
 </Layout>
 
-<style>
-  section {
+<style define:vars={{ outerBorder: `url(${outerBBS.src})`, innerBorder: `url(${innerBBS.src})` }}>
+  main {
     display: grid;
     grid-template-columns: repeat(2, auto);
     justify-content: center;
     gap: 1rem;
     height: calc(100% - 2.5rem);
+
+    @media screen and (max-width: 1270px) {
+      grid-template-columns: 1fr;
+      margin: 0 1rem;
+    }
   }
   
   #blog-links {
@@ -92,61 +150,127 @@ const { title, date } = Astro.props;
       }
     }
 
-    @media screen and (max-width: 1251px) {
+    @media screen and (max-width: 1270px) {
       border-bottom: 2px solid black;
     }
   }
 
-  main {
+  section {
     width: 75ch;
 
-    @media screen and (max-width: 950px) {
+    @media screen and (max-width: 1270px) {
       width: 100%;
-      margin: 0 1rem;
     }
   }
   
   article {
+    font: 1rem var(--arial-font);
+    letter-spacing: 1px;
+    border-image: var(--outerBorder) 26 11 12 13 fill / 52px 22px 24px 26px;
+    border-style: solid;
+    image-rendering: pixelated;
+    padding: calc(2rem + 2px) calc(1rem - 2px) calc(1rem - 4px) calc(1rem + 2px);
+
+    .inner {
+      border-image: var(--innerBorder) 4 3 3 fill / 8px 6px 6px;
+      border-style: solid;
+      image-rendering: pixelated;
+      margin: 14px 4px 8px;
+      padding: 2px 1px 1px;
+    }
+
     header {
-      padding: 1rem;
-      padding-left: 2rem;
+      border-bottom: 2px solid #ccccdd;
 
-      time { padding-left: 3rem; }
+      h1 {
+        font: bold 1rem var(--arial-font);
+        text-align: center;
+        margin: 6px 2px;
+        padding: 2px 0;
+        background-color: #bbccdd;
+      }
 
-      @media screen and (max-width: 950px) {
-        padding: 0.25rem;
-        padding-left: 2rem;
+      .info {
+        display: flex;
+        gap: 2px;
+        border-style: solid;
+        border-width: 2px;
+        border-top-color: #eeeeff;
+        border-right-color: #eeeeff;
+        border-left-color: #eeffff;
+        border-bottom-color: #eeffff;
+        padding: 2px 4px;
+
+        time, .section {
+          display: flex;
+          width: 100%;
+        }
+
+        .title {
+          background-color: #eeeeff;
+          padding: 4px 6px;
+        }
+
+        .desc {
+          background-color: #ddddee;
+          padding: 4px 6px;
+          flex: 1;
+        }
+      }
+
+      hr {
+        background-color: #99bbcc;
+        border: none;
+        height: 2px;
       }
     }
 
     .content {
       position: relative;
-      background-image: linear-gradient(#d1d5db 2px, transparent 0px);
-      background-size: 100% 1em;
+      background-image: linear-gradient(to right, #fff 5px, transparent 2px),  linear-gradient(#d1d5db 2px, transparent 2px); 
+      background-size: 10px 2em;
       background-position-y: 1.75rem;
+      margin: 0 2rem 2rem;
       padding: 2rem;
-      font-size: 2rem;
-      line-height: 1em;
-      border: 2px solid black;
+      line-height: 2em;
+      margin-trim: block;
 
-      p { margin-block-end: 1em; }
-      &::before, &::after {
-        position: absolute;
-        bottom: 100%;
-        left: 30px;
-        content: "";
-        border: 20px solid transparent;
-      }
-
-      &::before { border-bottom: 20px solid black; }
-      &::after {
-        border-bottom: 20px solid white;
-        margin-bottom: -3px;
+      p { margin-block: 1lh; }
+      
+      @supports not (margin-trim: block) {
+        :first-child { margin-block-start: 0; }
+        :last-child { margin-block-end: 0; }
       }
 
       @media screen and (max-width: 950px) {
         background-position-y: 0.8rem;
         padding: 1rem;
+        margin: 0.25rem 0;
+      }
+    }
+
+    aside {
+      border-top: 2px solid #88aabb;
+
+      dl {
+        display: flex;
+        align-items: center;
+        padding: 2px 6px;
+        border-bottom: 2px solid #88aabb;
+
+        dt { 
+          background-color: #eeeeff;
+          padding: 4px 6px;
+        }
+
+        dd {
+          background-color: #ddddee;
+          padding: 4px 6px;
+          flex: 1;
+        }
+
+        &:first-child > dt ~ dd { padding: 0; }
+        &:last-child { border: none; }
       }
     }
   }

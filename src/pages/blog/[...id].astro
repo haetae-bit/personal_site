@@ -20,7 +20,7 @@ const current = blog.findIndex(entry => entry.id === Astro.params.id);
 const previous = current + 1 === blog.length ? undefined : blog[current + 1];
 const next = current === 0 ? undefined : blog[current - 1];
 ---
-<Blog title={entry.data.title!} date={entry.data.pubDate!}>
+<Blog title={entry.data.title!} date={entry.data.pubDate!} currently={entry.data.currently}>
   <Content />
 
   {(previous || next) && (

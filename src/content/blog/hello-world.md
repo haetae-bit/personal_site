@@ -1,6 +1,11 @@
 ---
 title: hey girl hey
 pubDate: 2024-02-03
+currently:
+  mood: happy
+  reading: hella
+  watching: stuff
+  playing: balatro
 ---
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pretium augue elit, eget interdum massa lobortis ut. Praesent facilisis ornare aliquam. Donec sit amet volutpat ipsum, id ultricies urna. Donec vestibulum sagittis felis, tempor fermentum urna posuere at. Vestibulum cursus mauris eget bibendum blandit. Aenean at augue porttitor, bibendum massa ut, laoreet lacus. Phasellus fermentum tincidunt lectus vel volutpat. Proin sagittis vel sem sit amet consequat. Vestibulum ac laoreet quam. Mauris eu purus sit amet odio maximus dictum. Mauris quam tellus, tempus eu faucibus in, mollis quis velit. Phasellus nisl mauris, congue vel magna a, rutrum aliquet ante. Proin in ante pharetra, vestibulum nisi vel, fringilla tortor. Etiam mattis, mauris et mattis sagittis, orci eros ornare risus, vitae consequat ligula nulla eget quam.

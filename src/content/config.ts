@@ -1,10 +1,19 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
 import { rssSchema } from "@astrojs/rss";
+import moods from "@/utils/moods";
 
 const blog = defineCollection({
   loader: glob({ pattern: "*.md", base: "./src/content/blog" }),
-  schema: rssSchema,
+  schema: rssSchema.extend({ 
+    currently: z.object({
+      mood: z.enum(moods).optional(),
+      reading: z.ostring(),
+      watching: z.ostring(),
+      playing: z.ostring(),
+      listening: z.ostring(),
+    }).optional(),
+  }),
 });
 
 function generateFicSlug({ entry, data }: { entry: string, data: any }): string {

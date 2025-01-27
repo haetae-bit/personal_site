@@ -19,6 +19,7 @@ chapters.length = Math.min(chapters.length, 5);
 chapters.sort((a, b) => a.data.sortOrder - b.data.sortOrder);
 ---
 <Layout>
+  <Fragment slot="header" set:html={`<link rel="alternate" type="application/rss+xml" title="${fic.data.title}" href=${new URL(`/fics/${Astro.params.ficId}/rss.xml`, Astro.site)} />`} />
   <section>
     <h1>{fic.data.title}</h1>
     <header class="info">

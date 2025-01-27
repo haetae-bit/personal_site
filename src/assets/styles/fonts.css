@@ -1,4 +1,16 @@
 @font-face {
+  font-family: "Arial Pixel";
+  src: url("/fonts/PIXEAR.woff2") format("woff2");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "Arial Pixel";
+  src: url("/fonts/PIXEAB.woff2") format("woff2");
+  font-weight: bold;
+}
+
+@font-face {
   font-family: "Departure Mono";
   src: url("/fonts/DepartureMono-Regular.woff2") format("woff2");
   font-weight: normal;
@@ -7,6 +19,12 @@
 @font-face {
   font-family: "Kiwi Soda";
   src: url("/fonts/KiwiSoda.woff2") format("woff2");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "MLSS";
+  src: url("/fonts/mario-luigi-rpg-speech-text.woff2") format("woff2");
   font-weight: normal;
 }
 

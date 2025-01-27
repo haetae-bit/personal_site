@@ -18,7 +18,9 @@ chapters.sort((a, b) => a.data.publishedAt.valueOf() - b.data.publishedAt.valueO
           {post.data.publishedAt.toLocaleDateString(undefined, { dateStyle: "medium" })}
         </time>
         <a href={`/fics/${post.id}`}>{post.data.title}</a> in 
-        <a href={`/fics/${post.id.split("/")[0]}`}>{fics.find(({ id }) => post.id.startsWith(id))?.data.title}</a>
+        <a href={`/fics/${post.id.split("/")[0]}`}>
+          {fics.find(({ id }) => post.id.startsWith(id))?.data.title}
+        </a>
       </li>
     ))}
   </ul>

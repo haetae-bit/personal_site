@@ -3,6 +3,10 @@ import Chapter from "@/layouts/Chapter.astro";
 import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
 import { Breadcrumbs } from "astro-breadcrumbs";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
 
 export const getStaticPaths = (async () => {
   const chapters = await getCollection("chapters");
@@ -17,7 +21,7 @@ export const getStaticPaths = (async () => {
 
 const { ficId, chapterId } = Astro.params;
 const { chapter } = Astro.props;
-const { Content } = await render(chapter);
+const { Content, remarkPluginFrontmatter } = await render(chapter);
 
 const chapters = await getCollection("chapters", ({ id }) => {
   return id.split("/")[0] === ficId;
@@ -29,14 +33,14 @@ chapters.sort((a, b) => a.data.sortOrder - b.data.sortOrder);
 const current = chapters.findIndex(chapter => chapter.id === `${ficId}/${chapterId}`);
 const next = current + 1 === chapters.length ? undefined : chapters[current + 1];
 const previous = current === 0 ? undefined : chapters[current - 1];
-// lastmodified
+const lastModified = new Date(remarkPluginFrontmatter.lastModified);
 
 const links = [
   { index: "last", text: chapter.data.title },
   { index: 2, text: fic[0].data.title },
 ];
 ---
-<Chapter title={chapter.data.title} date={chapter.data.publishedAt} notes={chapter.data.notes}>
+<Chapter title={chapter.data.title} date={chapter.data.publishedAt} {lastModified} notes={chapter.data.notes}>
   <Fragment slot="breadcrumbs">
     <Breadcrumbs id="breadcrumbs" customizeLinks={links} linkTextFormat="capitalized">
       <Fragment slot="separator" set:text="/" />
@@ -97,6 +101,13 @@ const links = [
       grid-area: 1 / 1 / 1 / -1;
       width: min-content;
       justify-self: center;
+    }
+
+    #chapter-select {
+      background-color: black;
+      color: white;
+      border: none;
+      padding: 0.25rem 0.5rem;
     }
 
     #previous {

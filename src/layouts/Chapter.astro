@@ -1,14 +1,17 @@
 ---
 import Layout from "./Layout.astro";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
 interface Props {
   title: string;
   date: Date;
   notes?: string;
-  lastModified?: string;
+  lastModified?: Date;
 }
 
 const { title, date, notes, lastModified }: Props = Astro.props;
+dayjs.extend(utc);
 ---
 <Layout>
   <slot name="breadcrumbs" />
@@ -16,13 +19,13 @@ const { title, date, notes, lastModified }: Props = Astro.props;
   <main>
     <header>
       <h1>{title}</h1>
-      <time datetime={date.toISOString()}>
-        {date.toLocaleDateString(undefined, {
-          weekday: "long", year: "numeric", month: "long", day: "numeric",
-        })}
+      <time datetime={dayjs(date).utc(true).toISOString()}>
+        Published on {dayjs(date).utc(true).format("MMMM DD, YYYY")}
       </time>
       {lastModified && (
-        <time datetime={lastModified}>{lastModified}</time>
+        <time datetime={dayjs(lastModified).utc(true).toISOString()}>
+          Last edited on {dayjs(lastModified).utc(true).format("MMMM DD, YYYY")}
+        </time>
       )}
       {notes && (
         <blockquote><Fragment set:html={notes.split("\n").join("<br />")} /></blockquote>
@@ -45,23 +48,31 @@ const { title, date, notes, lastModified }: Props = Astro.props;
   
   article, blockquote { font-family: var(--serif-font); }
 
-  blockquote {
-    margin: 1rem;
-    font-size: 1.125rem;
+  header {
+    blockquote {
+      margin: 1rem;
+      font-size: 1.125rem;
 
-    &::before {
-      display: block;
-      content: "Author’s Notes:";
-      font-weight: bold;
-      line-height: 1;
-    }
+      &::before {
+        display: block;
+        content: "Author’s Notes:";
+        font-weight: bold;
+        line-height: 1;
+        alt: "Author's Notes:";
+      }
+    } 
   }
 
   article {
     margin: 1rem 0;
     font-size: 1.25rem;
     line-height: 1.5;
+    margin-trim: block;
 
-    p { margin-block-end: 1rem; }
+    p { margin-block: 1lh; }
+    @supports not (margin-trim: block) {
+      :first-child { margin-block-start: 0; }
+      :last-child { margin-block-end: 0; }
+    }
   }
 </style>
