@@ -50,6 +50,18 @@
 }
 
 @font-face {
+  font-family: "sq";
+  src: url("/fonts/sq.woff2") format("woff2");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "sq";
+  src: url("/fonts/sqb.woff2") format("woff2");
+  font-weight: bold;
+}
+
+@font-face {
   font-family: "Wonder Mail";
   src: url("/fonts/wondermail.woff2") format("woff2");
   font-weight: normal;

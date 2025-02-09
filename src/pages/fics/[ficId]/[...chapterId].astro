@@ -87,8 +87,13 @@ const links = [
 
       .c-breadcrumbs__separator { opacity: 0.5; }
       a[aria-current="location"] {
-        color: aqua;
+        color: hsl(from var(--accent-color) h calc(s - 10) calc(l / 1.75));
+        font-weight: bold;
       }
+    }
+
+    @media screen and (max-width: 600px) {
+      font-size: calc(1rem - 1px);
     }
   }
 
@@ -104,10 +109,12 @@ const links = [
     }
 
     #chapter-select {
-      background-color: black;
-      color: white;
-      border: none;
+      background-color: var(--bg-color);
+      color: var(--fg-color);
+      border: 2px solid var(--fg-color);
       padding: 0.25rem 0.5rem;
+      
+      &:hover { background-color: hsl(from var(--bg-color) h s calc(l - 10)); }
     }
 
     #previous {

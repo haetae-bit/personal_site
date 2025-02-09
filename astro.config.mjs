@@ -2,7 +2,7 @@
 import { defineConfig } from 'astro/config';
 import db from '@astrojs/db';
 import node from '@astrojs/node';
-import { modifiedTime } from './last-modified.mjs';
+import { modifiedTime } from './src/utils/last-modified.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -12,6 +12,6 @@ export default defineConfig({
   },
   integrations: [db()],
   adapter: node({
-    mode: 'standalone'
-  })
+    mode: 'standalone',
+  }),
 });

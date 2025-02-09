@@ -1,7 +1,7 @@
 ---
-import Layout from "./Layout.astro";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import Layout from "./Layout.astro";
 
 interface Props {
   title: string;
@@ -28,10 +28,12 @@ dayjs.extend(utc);
         </time>
       )}
       {notes && (
-        <blockquote><Fragment set:html={notes.split("\n").join("<br />")} /></blockquote>
+        <blockquote>
+          <Fragment set:html={notes.split("\n").join("<br />")} />
+        </blockquote>
       )}
     </header>
-    
+
     <article>
       <slot />
     </article>
@@ -42,16 +44,24 @@ dayjs.extend(utc);
 
 <style>
   main {
-    max-width: 80ch;
+    display: grid;
+    place-content: center;
     margin: 1rem auto 2rem;
+
+    @media screen and (max-width: 1000px) {
+      margin: 1rem 1rem 2rem;
+    }
   }
   
-  article, blockquote { font-family: var(--serif-font); }
+  article, blockquote {
+    max-width: 80ch;
+    font-family: var(--serif-font);
+  }
 
   header {
     blockquote {
       margin: 1rem;
-      font-size: 1.125rem;
+      font-size: calc(35px / 2);
 
       &::before {
         display: block;
@@ -60,13 +70,17 @@ dayjs.extend(utc);
         line-height: 1;
         alt: "Author's Notes:";
       }
-    } 
+    }
+
+    @media screen and (max-width: 800px) {
+      time { font-size: calc(1rem - 1px); }
+    }
   }
 
   article {
     margin: 1rem 0;
     font-size: 1.25rem;
-    line-height: 1.5;
+    line-height: 1.75;
     margin-trim: block;
 
     p { margin-block: 1lh; }

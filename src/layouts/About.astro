@@ -28,6 +28,7 @@ const { frontmatter } = Astro.props;
 
 <style define:vars={{ borderImage: `url(${border.src})`, frameImage: `url(${frame.src})` }}>
   main {
+    font: 2rem var(--pmd-font);
     margin: 3rem auto;
     max-width: clamp(50ch, 80ch, 100%);
   }
@@ -41,7 +42,7 @@ const { frontmatter } = Astro.props;
     image-rendering: pixelated;
 
     h1, h2, h3 {
-      font-family: var(--body-font);
+      font-family: var(--pmd-font);
       border-bottom: 2px solid #f8f8f8;
     }
   }

@@ -1,10 +1,14 @@
 ---
 import { actions, isInputError } from "astro:actions";
 import { db, Guestbook as table } from "astro:db";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import Layout from "@/layouts/Layout.astro";
+import ThemeSwitch from "@/components/ThemeSwitch.astro";
 
 export const prerender = false;
 
+dayjs.extend(utc);
 const result = Astro.getActionResult(actions.guestbook);
 const errors = isInputError(result?.error) ? result.error.fields : {};
 const entries = await db.select().from(table);
@@ -12,6 +16,7 @@ entries.sort((a, b) => b.date.valueOf() - a.date.valueOf());
 ---
 
 <Layout>
+  <ThemeSwitch />
   <main>
     <h1>Guestbook</h1>
 
@@ -38,7 +43,7 @@ entries.sort((a, b) => b.date.valueOf() - a.date.valueOf());
       <article class="entry">
         <h1>{username}</h1>
         {website && <p><a href={website} target="_blank" referrerpolicy="no-referrer">website</a></p>}
-        <time datetime={date.toISOString()}>{date}</time>
+        <time datetime={dayjs(date).utc(true).toISOString()}>{dayjs(date).utc(true).format("MMMM DD, YYYY")}</time>
         <div>
           {body}
         </div>
@@ -48,12 +53,33 @@ entries.sort((a, b) => b.date.valueOf() - a.date.valueOf());
 </Layout>
 
 <style>
+  main {
+    max-width: clamp(75ch, 80ch, 100%);
+    margin: 1rem auto;
+
+    article {
+      max-width: calc(80ch + 2rem);
+      padding: 1rem;
+    }
+
+    @media screen and (max-width: 1000px) {
+      max-width: 100%;
+      margin: 1rem;
+
+      article {
+        max-width: 100%;
+        padding: 0.5rem;
+      }
+    }
+  }
+
   form {
     display: flex;
     flex-flow: column wrap;
     
     input, textarea {
       margin-bottom: 1rem;
+      padding: 2px 6px;
     }
   }
 </style>

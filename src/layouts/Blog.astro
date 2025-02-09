@@ -1,11 +1,15 @@
 ---
+import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import Layout from "./Layout.astro";
 import Navbar from "@/components/Navbar.astro";
 import moods from "@/utils/moods";
+
 import outerBBS from "@/assets/images/guild-bbs.png";
 import innerBBS from "@/assets/images/guild-bbs-content.png";
-import { Image } from "astro:assets";
+import sideBBS from "@/assets/images/guild-bbs-list.png";
 
 interface Props {
   title: string;
@@ -19,6 +23,7 @@ interface Props {
   }
 }
 
+dayjs.extend(utc);
 const blog = await getCollection("blog");
 blog.length = Math.min(blog.length, 5);
 blog.sort((a, b) => a.data.pubDate!.valueOf() - b.data.pubDate!.valueOf());
@@ -29,22 +34,30 @@ const { title, date, currently } = Astro.props;
 
   <main>
     <nav id="blog-links">
-      <h1>recent posts</h1>
-      <ul>
-        {blog.map(entry => (
-          <li>
-            <time datetime={entry.data.pubDate!.toISOString()}>
-              {entry.data.pubDate?.toLocaleDateString(undefined, { dateStyle: "short" })}
-            </time>
-            <a href={`/blog/${entry.id}`}>{entry.data.title}</a>
-          </li>
-        ))}
-      </ul>
-      <h1>other links</h1>
-      <ul>
-        <li><a href="/blog">archive</a></li>
-        <li><a href="/blog/rss.xml">rss feed</a></li>
-      </ul>
+      <div class="inner">
+        <hgroup>
+          <h1><span class="title">recent posts</span></h1>
+          <ul>
+            {blog.map(entry => (
+              <li>
+                <span class="item">
+                  <a href={`/blog/${entry.id}`}>{entry.data.title}</a>
+                  <time datetime={dayjs(entry.data.pubDate!).utc(true).toISOString()}>
+                    {dayjs(entry.data.pubDate).utc(true).format("M/D/YY")}
+                  </time>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </hgroup>
+        <hgroup>
+          <h1><span class="title">other links</span></h1>
+          <ul>
+            <li><span class="item"><a href="/blog">archive</a></span></li>
+            <li><span class="item"><a href="/blog/rss.xml">rss feed</a></span></li>
+          </ul>
+        </hgroup>
+      </div>
     </nav>
 
     <section>
@@ -54,9 +67,9 @@ const { title, date, currently } = Astro.props;
             <h1>{title}</h1>
             <hr />
             <div class="info">
-              <time datetime={date.toISOString()}>
+              <time datetime={dayjs(date).utc(true).toISOString()}>
                 <span class="title">Date</span>
-                <span class="desc">{date.toLocaleDateString(undefined, { dateStyle: "long" })}</span>
+                <span class="desc">{dayjs(date).utc(true).format("MMMM DD, YYYY")}</span>
               </time>
             </div>
           </header>
@@ -103,91 +116,155 @@ const { title, date, currently } = Astro.props;
           )}
         </div>
       </article>
-
-      <slot name="pagination" />
     </section>
+    <slot name="pagination" />
   </main>
 </Layout>
 
-<style define:vars={{ outerBorder: `url(${outerBBS.src})`, innerBorder: `url(${innerBBS.src})` }}>
+<style define:vars={{ outerBorder: `url(${outerBBS.src})`, innerBorder: `url(${innerBBS.src})`, sideBorder: `url(${sideBBS.src})` }}>
+  body {
+    image-rendering: pixelated;
+    --bg-0: #fff;
+    --bg-1: #eeffff;
+    --bg-2: #eeeeff;
+    --bg-3: #eee;
+    --bg-4: #ddddee;
+    --bg-5: #ddeeee;
+    --bg-6: #ccccdd;
+    --bg-7: #ccddee;
+    --bg-8: #8888bb;
+    --border-0: #000;
+    --border-1: #6699aa;
+    --border-2: #7799bb;
+    --border-3: #88aabb;
+    --border-4: #99bbcc;
+    --border-5: #bbccdd;
+  }
+  h1 { font: bold 1rem var(--arial-font); }
   main {
+    font: 1rem var(--arial-font);
     display: grid;
-    grid-template-columns: repeat(2, auto);
+    grid-template-columns: auto minmax(auto, 75ch);
     justify-content: center;
-    gap: 1rem;
-    height: calc(100% - 2.5rem);
 
-    @media screen and (max-width: 1270px) {
-      grid-template-columns: 1fr;
+    @media screen and (max-width: 1360px) {
       margin: 0 1rem;
     }
+
+    @media screen and (max-width: 76em) {
+      grid-template-columns: 1fr;
+    }
   }
-  
+
   #blog-links {
     min-width: 28ch;
-    border: 2px solid black;
-    border-bottom: none;
-    margin-top: 2rem;
-    padding: 0.5rem;
+    border: 2px solid var(--border-0);
+    border-image: var(--sideBorder) 22 8 40 7 fill / 44px 16px 80px 14px;
+    background-color: var(--bg-0);
+    padding: 42px 10px 78px;
+    margin-right: -2px;
+
+    .inner {
+      display: flex;
+      height: calc(100% - 34px);
+      flex-flow: column wrap;
+      background-color: var(--bg-3);
+      padding: 2px;
+      margin: 18px 6px;
+      border: 2px solid var(--border-5);
+    }
 
     h1 {
-      font-size: 2rem;
-      margin: 1rem 1rem 0.25rem;
+      padding: 6px 2px;
+      border-block: 2px solid var(--border-2);
+
+      .title {
+        display: inline-block;
+        background-color: var(--bg-8);
+        color: var(--bg-0);
+        padding: 5px 2px;
+        text-align: center;
+        width: 100%;
+      }
     }
 
     ul {
       display: flex;
       flex-flow: column wrap;
-      gap: 0.5rem;
       list-style: none;
       padding: 0;
 
       li {
-        display: flex;
-        padding: 0 0.5rem;
-        justify-content: space-between;
-        align-items: center;
+        padding: 4px 2px;
+        border-bottom: 2px solid var(--bg-4);
+
+        .item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          
+          a {
+            flex: 1;
+            background-color: var(--bg-1);
+            padding: 6px;
+            color: var(--border-0);
+            text-decoration: none;
+          }
+
+          time { 
+            background-color: var(--bg-5);
+            padding: 6px;
+          }
+
+          &:hover {
+            a { background-color: var(--bg-7); }
+            time { background-color: var(--border-5); }
+          }
+        }
+        &:last-child { border: none; }
       }
     }
 
-    @media screen and (max-width: 1270px) {
-      border-bottom: 2px solid black;
+    hgroup {
+      margin: 0 4px;
+      background-color: var(--bg-0);
+
+      &:first-child { margin-top: 4px; }
+      &:last-child { 
+        border-bottom: 2px solid var(--border-1);
+        margin-bottom: 4px;
+      }
     }
-  }
 
-  section {
-    width: 75ch;
-
-    @media screen and (max-width: 1270px) {
-      width: 100%;
+    @media screen and (max-width: 76em) {
+      margin-right: 0;
+      margin-bottom: -2px;
     }
   }
   
   article {
-    font: 1rem var(--arial-font);
     letter-spacing: 1px;
-    border-image: var(--outerBorder) 26 11 12 13 fill / 52px 22px 24px 26px;
-    border-style: solid;
-    image-rendering: pixelated;
-    padding: calc(2rem + 2px) calc(1rem - 2px) calc(1rem - 4px) calc(1rem + 2px);
+    border: 2px solid var(--border-0);
+    border-image: var(--outerBorder) 19 9 38 11 fill / 38px 18px 76px 22px;
+    background-color: var(--bg-3);
+    padding: 36px 16px 74px 20px;
 
     .inner {
-      border-image: var(--innerBorder) 4 3 3 fill / 8px 6px 6px;
-      border-style: solid;
-      image-rendering: pixelated;
+      border: 2px solid var(--border-1);
+      border-image: var(--innerBorder) 3 2 2 fill / 6px 4px 4px;
       margin: 14px 4px 8px;
-      padding: 2px 1px 1px;
+      padding: 4px 2px 2px;
+      background-color: var(--bg-0);
     }
 
     header {
-      border-bottom: 2px solid #ccccdd;
+      border-bottom: 2px solid var(--bg-6);
 
       h1 {
-        font: bold 1rem var(--arial-font);
         text-align: center;
         margin: 6px 2px;
         padding: 2px 0;
-        background-color: #bbccdd;
+        background-color: var(--border-5);
       }
 
       .info {
@@ -195,10 +272,10 @@ const { title, date, currently } = Astro.props;
         gap: 2px;
         border-style: solid;
         border-width: 2px;
-        border-top-color: #eeeeff;
-        border-right-color: #eeeeff;
-        border-left-color: #eeffff;
-        border-bottom-color: #eeffff;
+        border-top-color: var(--bg-2);
+        border-right-color: var(--bg-2);
+        border-left-color: var(--bg-1);
+        border-bottom-color: var(--bg-1);
         padding: 2px 4px;
 
         time, .section {
@@ -207,19 +284,19 @@ const { title, date, currently } = Astro.props;
         }
 
         .title {
-          background-color: #eeeeff;
+          background-color: var(--bg-2);
           padding: 4px 6px;
         }
 
         .desc {
-          background-color: #ddddee;
+          background-color: var(--bg-4);
           padding: 4px 6px;
           flex: 1;
         }
       }
 
       hr {
-        background-color: #99bbcc;
+        background-color: var(--border-4);
         border: none;
         height: 2px;
       }
@@ -227,12 +304,12 @@ const { title, date, currently } = Astro.props;
 
     .content {
       position: relative;
-      background-image: linear-gradient(to right, #fff 5px, transparent 2px),  linear-gradient(#d1d5db 2px, transparent 2px); 
-      background-size: 10px 2em;
-      background-position-y: 1.75rem;
-      margin: 0 2rem 2rem;
-      padding: 2rem;
-      line-height: 2em;
+      background-image: linear-gradient(to right, var(--bg-0) 5px, transparent 2px),  linear-gradient(var(--bg-4) 2px, transparent 2px); 
+      background-size: 10px 1lh;
+      background-position-y: 1.9lh;
+      margin: 0 1rem 2rem;
+      padding: 2rem 1rem 0;
+      line-height: 2;
       margin-trim: block;
 
       p { margin-block: 1lh; }
@@ -250,26 +327,26 @@ const { title, date, currently } = Astro.props;
     }
 
     aside {
-      border-top: 2px solid #88aabb;
+      border-top: 2px solid var(--border-3);
 
       dl {
         display: flex;
         align-items: center;
         padding: 2px 6px;
-        border-bottom: 2px solid #88aabb;
+        border-bottom: 2px solid var(--border-3);
 
         dt { 
-          background-color: #eeeeff;
+          background-color: var(--bg-2);
           padding: 4px 6px;
         }
 
         dd {
-          background-color: #ddddee;
+          background-color: var(--bg-4);
           padding: 4px 6px;
           flex: 1;
         }
 
-        &:first-child > dt ~ dd { padding: 0; }
+        &:first-child > dt ~ dd { padding: 0 6px; }
         &:last-child { border: none; }
       }
     }

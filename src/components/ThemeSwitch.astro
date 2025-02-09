@@ -1,0 +1,15 @@
+<div>
+  <input type="radio" name="theme-switch" id="theme-switch" value="system" />
+  <input type="radio" name="theme-switch" id="theme-switch" value="light" />
+  <input type="radio" name="theme-switch" id="theme-switch" value="dark" />
+</div>
+
+<script is:inline>
+  const radio = document.querySelectorAll("input[type='radio']");
+  console.log(radio);
+  radio.forEach(input => {
+    input.addEventListener("click", () => {
+      document.documentElement.className = input.value;
+    });
+  });
+</script>
