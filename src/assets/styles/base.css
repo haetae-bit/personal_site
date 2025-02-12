@@ -72,7 +72,7 @@ h4, h5, h6 { font-size: 1rem; }
   }
 }
 
-input, button, textarea, select {
+input, button, .button, textarea, select {
   font-family: var(--mono-font);
   font-size: 1.375rem;
 
@@ -90,9 +90,11 @@ input, textarea {
   &:focus { outline: 2px solid var(--secondary-color); }
 }
 
-button {
+button, .button {
   background-color: hsl(from var(--accent-color) h calc(s - 20) calc(l - 20));
   color: var(--bg-color);
+  text-decoration: none;
+  padding: 0.25rem 0.75rem;
   border: 2px solid var(--fg-color);
   box-shadow: 0 4px 0 var(--fg-color);
   transform: translateY(-4px);
@@ -115,7 +117,7 @@ button {
 }
 
 .dark {
-  button {
+  button, .button {
     background-color: var(--accent-color);
     color: var(--bg-color);
 

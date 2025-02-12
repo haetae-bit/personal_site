@@ -5,15 +5,16 @@ import Layout from "./Layout.astro";
 
 interface Props {
   title: string;
+  ficTitle: string;
   date: Date;
   notes?: string;
   lastModified?: Date;
 }
 
-const { title, date, notes, lastModified }: Props = Astro.props;
+const { title, ficTitle, date, notes, lastModified }: Props = Astro.props;
 dayjs.extend(utc);
 ---
-<Layout>
+<Layout title={`${ficTitle}, ${title}`}>
   <slot name="breadcrumbs" />
 
   <main>

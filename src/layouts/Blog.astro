@@ -29,7 +29,7 @@ blog.length = Math.min(blog.length, 5);
 blog.sort((a, b) => a.data.pubDate!.valueOf() - b.data.pubDate!.valueOf());
 const { title, date, currently } = Astro.props;
 ---
-<Layout>
+<Layout {title}>
   <Navbar />
 
   <main>

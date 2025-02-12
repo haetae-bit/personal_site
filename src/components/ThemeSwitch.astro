@@ -6,10 +6,17 @@
 
 <script is:inline>
   const radio = document.querySelectorAll("input[type='radio']");
-  console.log(radio);
   radio.forEach(input => {
+    if (localStorage.getItem("theme")) {
+      if (input.value === localStorage.getItem("theme")) input.checked = true;
+    } else {
+      if (input.value === "system") input.checked = true;
+    }
+    
     input.addEventListener("click", () => {
       document.documentElement.className = input.value;
+      localStorage.setItem("theme", input.value);
+      if (input.value === "system") document.documentElement.removeAttribute("class");
     });
   });
 </script>

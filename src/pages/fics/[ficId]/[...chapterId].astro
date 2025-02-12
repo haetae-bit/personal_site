@@ -40,7 +40,13 @@ const links = [
   { index: 2, text: fic[0].data.title },
 ];
 ---
-<Chapter title={chapter.data.title} date={chapter.data.publishedAt} {lastModified} notes={chapter.data.notes}>
+<Chapter 
+  title={chapter.data.title} 
+  ficTitle={fic[0].data.title}
+  date={chapter.data.publishedAt} 
+  {lastModified} 
+  notes={chapter.data.notes}
+>
   <Fragment slot="breadcrumbs">
     <Breadcrumbs id="breadcrumbs" customizeLinks={links} linkTextFormat="capitalized">
       <Fragment slot="separator" set:text="/" />
