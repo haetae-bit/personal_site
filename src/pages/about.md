@@ -1,7 +1,7 @@
 ---
 title: about me
 layout: ../layouts/About.astro
-avatar: /src/assets/images/portrait-0025.png
+avatar: /src/assets/portrait-0025.png
 avatarText: pikachu from pokemon mystery dungeon
 ---
 # hello!

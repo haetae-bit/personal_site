@@ -14,8 +14,7 @@ const errors = isInputError(result?.error) ? result.error.fields : {};
 const entries = await db.select().from(table);
 entries.sort((a, b) => b.date.valueOf() - a.date.valueOf());
 ---
-
-<Layout>
+<Layout title="haetae, guestbook">
   <ThemeSwitch />
   <main>
     <h1>Guestbook</h1>

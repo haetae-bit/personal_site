@@ -7,9 +7,9 @@ import Layout from "./Layout.astro";
 import Navbar from "@/components/Navbar.astro";
 import moods from "@/utils/moods";
 
-import outerBBS from "@/assets/images/guild-bbs.png";
-import innerBBS from "@/assets/images/guild-bbs-content.png";
-import sideBBS from "@/assets/images/guild-bbs-list.png";
+import outerBBS from "@/assets/guild-bbs.png";
+import innerBBS from "@/assets/guild-bbs-content.png";
+import sideBBS from "@/assets/guild-bbs-list.png";
 
 interface Props {
   title: string;
@@ -23,11 +23,12 @@ interface Props {
   }
 }
 
-dayjs.extend(utc);
+const { title, date, currently } = Astro.props;
+
 const blog = await getCollection("blog");
 blog.length = Math.min(blog.length, 5);
 blog.sort((a, b) => a.data.pubDate!.valueOf() - b.data.pubDate!.valueOf());
-const { title, date, currently } = Astro.props;
+dayjs.extend(utc);
 ---
 <Layout {title}>
   <Navbar />

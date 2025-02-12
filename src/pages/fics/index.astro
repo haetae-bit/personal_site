@@ -1,11 +1,14 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import { getCollection } from "astro:content";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
 const fics = await getCollection("fics");
 const chapters = await getCollection("chapters");
 chapters.length = Math.min(chapters.length, 5);
 chapters.sort((a, b) => a.data.publishedAt.valueOf() - b.data.publishedAt.valueOf());
+dayjs.extend(utc);
 ---
 <Layout>
   <h1>fanfics</h1>
@@ -14,8 +17,8 @@ chapters.sort((a, b) => a.data.publishedAt.valueOf() - b.data.publishedAt.valueO
   <ul>
     {chapters.map(post => (
       <li>
-        <time datetime={post.data.publishedAt.toISOString()}>
-          {post.data.publishedAt.toLocaleDateString(undefined, { dateStyle: "medium" })}
+        <time datetime={dayjs(post.data.publishedAt).utc(true).toISOString()}>
+          {dayjs(post.data.publishedAt).utc(true).format("MMMM DD, YYYY")}
         </time>
         <a href={`/fics/${post.id}`}>{post.data.title}</a> in 
         <a href={`/fics/${post.id.split("/")[0]}`}>

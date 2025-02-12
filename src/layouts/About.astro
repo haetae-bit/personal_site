@@ -1,10 +1,11 @@
 ---
 import type { MarkdownLayoutProps } from "astro";
+import Layout from "./Layout.astro";
 import Navbar from "@/components/Navbar.astro";
 import Figure from "@/components/Figure.astro";
-import Layout from "./Layout.astro";
-import border from "@/assets/images/border.png";
-import frame from "@/assets/images/frame.png";
+
+import border from "@/assets/border.png";
+import frame from "@/assets/frame.png";
 
 type Props = MarkdownLayoutProps<{
   avatar?: string;
