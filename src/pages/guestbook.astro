@@ -18,10 +18,15 @@ entries.sort((a, b) => b.date.valueOf() - a.date.valueOf());
   <ThemeSwitch />
   <main>
     <h1>Guestbook</h1>
+    <details>
+      <summary>click me for a secret!</summary>
+      <noscript>you should put ILIAD, but in all lowercase, in the password field!</noscript>
+      <p id="cool-surprise"></p>
+    </details>
 
     <form action={actions.guestbook} method="post">
       <label for="username">Username</label>
-      <input type="text" name="username" id="username" required aria-describedby="username-error" />
+      <input type="text" name="username" id="username" aria-describedby="username-error" required />
       {errors.username && <p id="username-error">{errors.username.join(",")}</p>}
 
       <label for="website">Website (optional)</label>
@@ -29,23 +34,26 @@ entries.sort((a, b) => b.date.valueOf() - a.date.valueOf());
       {errors.website && <p id="website-error">{errors.website.join(",")}</p>}
 
       <label for="body">Message</label>
-      <textarea name="body" id="body" rows="5" required aria-describedby="body-error"></textarea>
+      <textarea name="body" id="body" rows="5" aria-describedby="body-error" required></textarea>
       {errors.body && <p id="body-error">{errors.body.join(",")}</p>}
 
-      <input type="hidden" name="honeypot" tabindex="-1" autocomplete="off" style="display:none" />
-      <button type="submit">Post</button>
+      <label for="password">Do you know the password?</label>
+      <input type="text" name="password" id="password" value="yes!" aria-describedby="password-error" required />
+      {errors.password && <p id="password-error">{errors.password.join(",")}</p>}
 
-      {errors.honeypot && <p>{errors.honeypot.join(",")}</p>}
+      <button type="submit">Post</button>
     </form>
 
     {entries.map(({ username, website, body, date }) => (
       <article class="entry">
-        <h1>{username}</h1>
-        {website && <p><a href={website} target="_blank" referrerpolicy="no-referrer">website</a></p>}
-        <time datetime={dayjs(date).utc(true).toISOString()}>{dayjs(date).utc(true).format("MMMM DD, YYYY")}</time>
-        <div>
-          {body}
-        </div>
+        <header>
+          <h1>{username}</h1>
+          <time datetime={dayjs(date).utc(true).toISOString()}>
+            Posted on {dayjs(date).utc(true).format("MMMM DD, YYYY")}
+          </time>
+          {website && <a href={website} target="_blank" referrerpolicy="no-referrer">website</a>}
+        </header>
+        {body}
       </article>
     ))}
   </main>
@@ -81,4 +89,34 @@ entries.sort((a, b) => b.date.valueOf() - a.date.valueOf());
       padding: 2px 6px;
     }
   }
+
+  details {
+    & > summary {
+      list-style: none;
+      cursor: pointer;
+      font-weight: bold;
+
+      &::after {
+        content: "[+]";
+      }
+
+      [open] &::after {
+        content: "[_]";
+      }
+    }
+  }
 </style>
+
+<script>
+  const details = document.getElementsByTagName("details").item(0);
+  const pw = document.getElementById("cool-surprise");
+  let initial = "vyvnq";
+  details?.addEventListener("toggle", e => {
+    if ((e.target as HTMLDetailsElement).open) {
+      pw!.innerHTML = `if you read this, put <strong>${initial.replace(/[a-zA-Z]/g, c => {
+        // @ts-expect-error the below code works
+        return String.fromCharCode((c <= "Z" ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26);
+      })}</strong> for the password field!`
+    }
+  });
+</script>

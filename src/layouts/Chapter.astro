@@ -7,7 +7,7 @@ interface Props {
   title: string;
   ficTitle: string;
   date: Date;
-  notes?: string;
+  notes?: any;
   lastModified?: Date;
 }
 
@@ -30,7 +30,7 @@ dayjs.extend(utc);
       )}
       {notes && (
         <blockquote>
-          <Fragment set:html={notes.split("\n").join("<br />")} />
+          <Fragment set:html={notes} />
         </blockquote>
       )}
     </header>

@@ -29,6 +29,30 @@
 }
 
 @font-face {
+  font-family: "PixelMPlus 10";
+  src: url("/fonts/PixelMplus10-Regular.woff2") format("woff");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "PixelMPlus 10";
+  src: url("/fonts/PixelMplus10-Bold.woff2") format("woff");
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "PixelMPlus 12";
+  src: url("/fonts/PixelMplus12-Regular.woff2") format("woff");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "PixelMPlus 12";
+  src: url("/fonts/PixelMplus12-Bold.woff2") format("woff");
+  font-weight: bold;
+}
+
+@font-face {
   font-family: "Redaction 35";
   src: url("/fonts/Redaction_35-Regular.woff2") format("woff2");
   font-weight: normal;

@@ -1,3 +1,15 @@
+function aliasMood(emotion: string) {
+  switch (emotion) {
+    case "aggravated":
+    case "annoyed":
+    case "devious":
+      return "angry";
+    case "apathetic":
+    
+      return "blah";
+  }
+};
+
 export default [
   "accomplished",
   "aggravated",

@@ -81,30 +81,32 @@ dayjs.extend(utc);
 
           {currently && (
             <aside>
+              <h2>Current</h2>
               {currently?.mood && (
                 <dl>
-                  <dt>Current mood</dt>
-                  <dd>
-                    <Image src={`/src/assets/moods/${moods.find(mood => mood === currently?.mood)}.png`} width="32" height="32" alt={currently.mood} />
-                  </dd>
+                  <dt class="title">Mood</dt>
+                  <dd class="desc">
+                    <Image src={`/src/assets/moods/${moods.find(mood => mood === currently?.mood)}.png`} width={36} height={36} alt="" />
+                    {currently.mood}
+                    </dd>
                 </dl>
               )}
               {currently.playing && (
                 <dl>
-                  <dt>Currently playing</dt>
-                  <dd>{currently.playing}</dd>
+                  <dt class="title">Game</dt>
+                  <dd class="desc">{currently.playing}</dd>
                 </dl>
               )}
               {currently.watching && (
                 <dl>
-                  <dt>Currently watching</dt>
-                  <dd>{currently.watching}</dd>
+                  <dt class="title">Show</dt>
+                  <dd class="desc">{currently.watching}</dd>
                 </dl>
               )}
               {currently.reading && (
                 <dl>
-                  <dt>Currently reading</dt>
-                  <dd>{currently.reading}</dd>
+                  <dt class="title">Book</dt>
+                  <dd class="desc">{currently.reading}</dd>
                 </dl>
               )}
               {currently.listening && (
@@ -135,13 +137,18 @@ dayjs.extend(utc);
     --bg-7: #ccddee;
     --bg-8: #8888bb;
     --border-0: #000;
-    --border-1: #6699aa;
-    --border-2: #7799bb;
-    --border-3: #88aabb;
-    --border-4: #99bbcc;
-    --border-5: #bbccdd;
+    --border-1: #334466;
+    --border-2: #6699aa;
+    --border-3: #7799bb;
+    --border-4: #88aabb;
+    --border-5: #99bbcc;
+    --border-6: #bbccdd;
   }
   h1 { font: bold 1rem var(--arial-font); }
+  h2 {
+    font: normal 1.5rem var(--mplus-12-font);
+    text-transform: uppercase;
+  }
   main {
     font: 1rem var(--arial-font);
     display: grid;
@@ -172,17 +179,19 @@ dayjs.extend(utc);
       background-color: var(--bg-3);
       padding: 2px;
       margin: 18px 6px;
-      border: 2px solid var(--border-5);
+      border: 2px solid var(--border-6);
     }
 
     h1 {
       padding: 6px 2px;
-      border-block: 2px solid var(--border-2);
+      border-block: 2px solid var(--border-3);
 
       .title {
         display: inline-block;
         background-color: var(--bg-8);
         color: var(--bg-0);
+        font-weight: normal;
+        text-transform: uppercase;
         padding: 5px 2px;
         text-align: center;
         width: 100%;
@@ -200,6 +209,8 @@ dayjs.extend(utc);
         border-bottom: 2px solid var(--bg-4);
 
         .item {
+          font-family: var(--mplus-10-font);
+          font-size: 1.254rem;
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -219,7 +230,7 @@ dayjs.extend(utc);
 
           &:hover {
             a { background-color: var(--bg-7); }
-            time { background-color: var(--border-5); }
+            time { background-color: var(--border-6); }
           }
         }
         &:last-child { border: none; }
@@ -232,7 +243,7 @@ dayjs.extend(utc);
 
       &:first-child { margin-top: 4px; }
       &:last-child { 
-        border-bottom: 2px solid var(--border-1);
+        border-bottom: 2px solid var(--border-2);
         margin-bottom: 4px;
       }
     }
@@ -251,11 +262,23 @@ dayjs.extend(utc);
     padding: 36px 16px 74px 20px;
 
     .inner {
-      border: 2px solid var(--border-1);
+      border: 2px solid var(--border-2);
       border-image: var(--innerBorder) 3 2 2 fill / 6px 4px 4px;
       margin: 14px 4px 8px;
       padding: 4px 2px 2px;
       background-color: var(--bg-0);
+    }
+
+    .title {
+      font: normal 1.5rem var(--mplus-12-font);
+      background-color: var(--bg-2);
+      padding: 2px 6px;
+    }
+
+    .desc {
+      background-color: var(--bg-4);
+      padding: 4px 6px;
+      flex: 1;
     }
 
     header {
@@ -265,39 +288,26 @@ dayjs.extend(utc);
         text-align: center;
         margin: 6px 2px;
         padding: 2px 0;
-        background-color: var(--border-5);
+        background-color: var(--border-6);
       }
 
       .info {
         display: flex;
+        align-items: baseline;
         gap: 2px;
         border-style: solid;
         border-width: 2px;
-        border-top-color: var(--bg-2);
-        border-right-color: var(--bg-2);
-        border-left-color: var(--bg-1);
-        border-bottom-color: var(--bg-1);
+        border-color: var(--bg-2) var(--bg-2) var(--bg-1) var(--bg-1);
         padding: 2px 4px;
 
         time, .section {
           display: flex;
           width: 100%;
         }
-
-        .title {
-          background-color: var(--bg-2);
-          padding: 4px 6px;
-        }
-
-        .desc {
-          background-color: var(--bg-4);
-          padding: 4px 6px;
-          flex: 1;
-        }
       }
 
       hr {
-        background-color: var(--border-4);
+        background-color: var(--border-5);
         border: none;
         height: 2px;
       }
@@ -328,27 +338,39 @@ dayjs.extend(utc);
     }
 
     aside {
-      border-top: 2px solid var(--border-3);
+      display: grid;
+      grid-template-columns: auto 1fr;
+      grid-template-rows: repeat(4, auto);
+      border-top: 2px solid var(--border-4);
+
+      h2 {
+        display: grid;
+        place-content: center;
+        grid-area: 1 / 1 / -1;
+        padding-top: -2px;
+        padding-left: 2px;
+        height: 100%;
+        border-top: 2px solid var(--border-1);
+        border-right: 2px solid var(--border-4);
+        background-color: var(--bg-7);
+      }
 
       dl {
         display: flex;
         align-items: center;
         padding: 2px 6px;
-        border-bottom: 2px solid var(--border-3);
+        border-bottom: 2px solid var(--border-4);
+        border-top: 2px solid var(--border-1);
+        border-left: 2px solid var(--border-1);
 
-        dt { 
-          background-color: var(--bg-2);
-          padding: 4px 6px;
+        &:first-of-type > dd {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          margin: -2px;
+          padding: 0 6px;
         }
-
-        dd {
-          background-color: var(--bg-4);
-          padding: 4px 6px;
-          flex: 1;
-        }
-
-        &:first-child > dt ~ dd { padding: 0 6px; }
-        &:last-child { border: none; }
+        &:last-child { border-bottom: none; }
       }
     }
   }

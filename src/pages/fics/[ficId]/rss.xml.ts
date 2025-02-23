@@ -14,7 +14,9 @@ export const GET: APIRoute = async (context) => {
   const fic = fics.find(({ id }) => id === context.params.ficId);
   return rss({
     title: `${fic?.data.title}`,
-    description: `${fic?.data.summary}`,
+    description: sanitize(parser.render(fic?.data.summary!), {
+      allowedTags: sanitize.defaults.allowedTags.concat(["br"]),
+    }),
     site: context.site!,
     items: chapters.map(chapter => ({
       link: `/fics/${chapter.id}`,
@@ -23,7 +25,7 @@ export const GET: APIRoute = async (context) => {
       content: sanitize(parser.render(chapter.body!), {
         allowedTags: sanitize.defaults.allowedTags.concat(["img"]),
       }),
-      categories: fic?.data.series,
+      categories: fic?.data.series.concat(fic.data.title),
     })),
     stylesheet: "/pretty-feed-v3.xsl",
   });

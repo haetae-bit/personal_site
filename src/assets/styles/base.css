@@ -10,6 +10,8 @@
   --sans-font: "MLSS", 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   --arial-font: "Arial Pixel", Arial, Helvetica, sans-serif;
   --pmd-font: "Wonder Mail", Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;
+  --mplus-10-font: "PixelMPlus 10", "MS Gothic", system-ui-ja, system-ui-zh-cn, system-ui-zh-tw, system-ui-zh-hk, system-ui-ko, sans-serif;
+  --mplus-12-font: "PixelMPlus 12", "MS Gothic", system-ui-ja, system-ui-zh-cn, system-ui-zh-tw, system-ui-zh-hk, system-ui-ko, sans-serif;
 
   @media screen and (prefers-color-scheme: light) {
     --bg-color: #e6f2ef;
