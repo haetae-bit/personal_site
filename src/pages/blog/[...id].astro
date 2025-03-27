@@ -2,6 +2,12 @@
 import Blog from '@/layouts/Blog.astro';
 import type { GetStaticPaths } from 'astro';
 import { getCollection, render } from 'astro:content';
+import leftNormal from "@/assets/left-normal.png";
+import leftHover from "@/assets/left-hover.png";
+import leftActive from "@/assets/left-active.png";
+import rightNormal from "@/assets/right-normal.png";
+import rightHover from "@/assets/right-hover.png";
+import rightActive from "@/assets/right-active.png";
 
 export const getStaticPaths = (async () => {
   const blog = await getCollection("blog");
@@ -26,39 +32,58 @@ const next = current === 0 ? undefined : blog[current - 1];
   {(previous || next) && (
     <div id="blog-pagination" slot="pagination">
       {previous && (
-        <a id="previous" aria-label="previous post" href={`/blog/${previous.id}`}>{previous.data.title}</a>
+        <a id="previous" aria-label="previous post" href={`/blog/${previous.id}`}>
+          <img class="arrow" src={leftNormal.src} alt="" />
+          {previous.data.title}
+        </a>
       )}
 
       {next && (
-        <a id="next" aria-label="next post" href={`/blog/${next.id}`}>{next.data.title}</a>
+        <a id="next" aria-label="next post" href={`/blog/${next.id}`}>
+          {next.data.title}
+          <img class="arrow" src={rightNormal.src} alt="" />
+        </a>
       )}
     </div>
   )}
 </Blog>
 
-<style>
+<style define:vars={{ leftNormal: `url(${leftNormal.src})`, leftHover: `url(${leftHover.src})`, leftActive: `url(${leftActive.src})`, rightNormal: `url(${rightNormal.src})`, rightHover: `url(${rightHover.src})`, rightActive: `url(${rightActive.src})` }}>
   #blog-pagination {
     display: grid;
     grid-column: 1 / -1;
     grid-template-columns: repeat(2, 1fr);
 
+    .arrow {
+      width: 36px;
+      height: 50px;
+    }
+
     #previous {
       grid-column: 1 / 2;
       justify-self: left;
+      
+      .arrow { content: var(--leftNormal) var(--leftHover) var(--leftActive); }
+      &:hover .arrow { content: var(--leftHover); }
+      &:active .arrow, &:focus .arrow { content: var(--leftActive); }
     }
     
     #next {
       grid-column: 2 / -1;
       justify-self: right;
+
+      .arrow { content: var(--rightNormal) var(--rightHover) var(--rightActive); }
+      &:hover .arrow { content: var(--rightHover); }
+      &:active .arrow, &:focus .arrow { content: var(--rightActive); }
     }
 
     a {
-      /* display: block; */
-      padding: 5px;
+      display: flex;
+      flex-flow: row wrap;
+      align-items: center;
+      gap: 2px;
       color: var(--bg-0);
       text-decoration: none;
-      background: linear-gradient(to top, #4499cc, #113366);
-      border: 2px solid #112244;
     }
   }
 </style>

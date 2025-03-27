@@ -18,6 +18,5 @@ export const GET: APIRoute = async (context) => {
       }),
       ...entry.data,
     })),
-    stylesheet: "/pretty-feed-v3.xsl",
   });
 }

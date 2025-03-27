@@ -27,7 +27,6 @@ export const GET: APIRoute = async (context) => {
       }),
       categories: fic?.data.series.concat(fic.data.title),
     })),
-    stylesheet: "/pretty-feed-v3.xsl",
   });
 };
 
