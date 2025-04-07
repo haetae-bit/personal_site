@@ -1,12 +1,12 @@
 @font-face {
   font-family: "Arial Pixel";
-  src: url("/fonts/PIXEAR.woff2") format("woff2");
+  src: url("/fonts/pixearg.woff2") format("woff2");
   font-weight: normal;
 }
 
 @font-face {
   font-family: "Arial Pixel";
-  src: url("/fonts/PIXEAB.woff2") format("woff2");
+  src: url("/fonts/pixeab.woff2") format("woff2");
   font-weight: bold;
 }
 
@@ -23,33 +23,21 @@
 }
 
 @font-face {
-  font-family: "MLSS";
+  font-family: "Super Star";
   src: url("/fonts/mario-luigi-rpg-speech-text.woff2") format("woff2");
   font-weight: normal;
 }
 
 @font-face {
   font-family: "PixelMPlus 10";
-  src: url("/fonts/PixelMplus10-Regular.woff2") format("woff");
-  font-weight: normal;
-}
-
-@font-face {
-  font-family: "PixelMPlus 10";
-  src: url("/fonts/PixelMplus10-Bold.woff2") format("woff");
-  font-weight: bold;
-}
-
-@font-face {
-  font-family: "PixelMPlus 12";
-  src: url("/fonts/PixelMplus12-Regular.woff2") format("woff");
+  src: url("/fonts/PixelMplus10-Regular.woff2") format("woff2");
   font-weight: normal;
 }
 
 @font-face {
   font-family: "PixelMPlus 12";
-  src: url("/fonts/PixelMplus12-Bold.woff2") format("woff");
-  font-weight: bold;
+  src: url("/fonts/PixelMplus12-Regular.woff2") format("woff2");
+  font-weight: normal;
 }
 
 @font-face {

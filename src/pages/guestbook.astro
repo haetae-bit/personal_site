@@ -1,65 +1,98 @@
 ---
-import { actions, isInputError } from "astro:actions";
-import { db, Guestbook as table } from "astro:db";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Layout from "@/layouts/Layout.astro";
-import ThemeSwitch from "@/components/ThemeSwitch.astro";
+import ThemeSwitch from "~/ThemeSwitch.astro";
+import speech from "$/images/speech.png";
 
-export const prerender = false;
+type GuestBookEntry = {
+  ID: number;
+  CreatedAt: string;
+  UpdatedAt: string;
+  DeletedAt: null | string;
+  Name: string;
+  Text: string;
+  Website: null | string;
+  Approved: true;
+  GuestBookID: number;
+  Guestbook: object;
+}
 
 dayjs.extend(utc);
-const result = Astro.getActionResult(actions.guestbook);
-const errors = isInputError(result?.error) ? result.error.fields : {};
-const entries = await db.select().from(table);
-entries.sort((a, b) => b.date.valueOf() - a.date.valueOf());
+const response = await fetch("https://guestbooks.meadow.cafe/api/v1/get-guestbook-messages/500");
+const entries: Array<GuestBookEntry> = await response.json();
+entries.sort((a, b) => new Date(b.CreatedAt).valueOf() - new Date(a.CreatedAt).valueOf());
 ---
 <Layout title="haetae, guestbook">
   <ThemeSwitch />
+
   <main>
     <h1>Guestbook</h1>
-    <details>
-      <summary>click me for a secret!</summary>
-      <noscript>you should put ILIAD, but in all lowercase, in the password field!</noscript>
-      <p id="cool-surprise"></p>
-    </details>
 
-    <form action={actions.guestbook} method="post">
-      <label for="username">Username</label>
-      <input type="text" name="username" id="username" aria-describedby="username-error" required />
-      {errors.username && <p id="username-error">{errors.username.join(",")}</p>}
+    <section id="form">
+      <form action="https://guestbooks.meadow.cafe/guestbook/500/submit" method="post" aria-describedby="errors">
+        <label for="name">Nickname</label>
+        <input type="text" id="name" name="name" required />
 
-      <label for="website">Website (optional)</label>
-      <input type="url" name="website" id="website" aria-describedby="website-error" />
-      {errors.website && <p id="website-error">{errors.website.join(",")}</p>}
+        <label for="website">Website (optional)</label>
+        <input type="url" id="website" name="website" />
 
-      <label for="body">Message</label>
-      <textarea name="body" id="body" rows="5" aria-describedby="body-error" required></textarea>
-      {errors.body && <p id="body-error">{errors.body.join(",")}</p>}
+        <label for="challengeQuestionAnswer">What's my name?</label>
+        <input placeholder="read my about page!" type="text" id="challengeQuestionAnswer" name="challengeQuestionAnswer" required />
+        
+        <label for="text">Message</label>
+        <textarea placeholder="Message (plain text only)..." id="text" name="text" required></textarea>
+        
+        <button type="submit">Submit</button>
+      </form>
+      <div id="errors" role="alert"></div>
 
-      <label for="password">Do you know the password?</label>
-      <input type="text" name="password" id="password" value="yes!" aria-describedby="password-error" required />
-      {errors.password && <p id="password-error">{errors.password.join(",")}</p>}
+      <aside>
+        Lovingly made with <a href="https://guestbooks.meadow.cafe" target="_blank" referrerpolicy="no-referrer">Guestbooks</a>
+      </aside>
+    </section>
+    
+    <hr />
 
-      <button type="submit">Post</button>
-    </form>
+    <section id="entries">
+      <h2>Messages</h2>
+      {entries.map(({ Name, Website, Text, CreatedAt}) => (
+        <article class="entry">
+          <header>
+            <h1>
+              {Website 
+                ? <a href={Website} target="_blank" referrerpolicy="no-referrer">{Name}</a> 
+                : <span>{Name}</span>
+              }
+            </h1>
+            <time datetime={dayjs(CreatedAt).utc(true).toISOString()}>
+              Posted on {dayjs(CreatedAt).utc(true).format("MMMM DD, YYYY")}
+            </time>
+          </header>
 
-    {entries.map(({ username, website, body, date }) => (
-      <article class="entry">
-        <header>
-          <h1>{username}</h1>
-          <time datetime={dayjs(date).utc(true).toISOString()}>
-            Posted on {dayjs(date).utc(true).format("MMMM DD, YYYY")}
-          </time>
-          {website && <a href={website} target="_blank" referrerpolicy="no-referrer">website</a>}
-        </header>
-        {body}
-      </article>
-    ))}
+          {Text}
+        </article>
+      ))}
+    </section>
+
+    <button onclick="document.getElementById('notification').showModal()">open popup</button>
+    <dialog id="notification">
+      <form method="dialog">
+        Successfully posted! Messages are manually approved. New entries should show up in a day or two! :)
+        <menu>
+          <button type="submit">Close</button>
+        </menu>
+      </form>
+    </dialog>
   </main>
 </Layout>
 
-<style>
+<style define:vars={{ border: `url(${speech.src})` }}>
+  :root {
+    --speech-bg-color: #f8f8f8;
+    --speech-fg-color: #404040;
+  }
+
   main {
     max-width: clamp(75ch, 80ch, 100%);
     margin: 1rem auto;
@@ -80,43 +113,91 @@ entries.sort((a, b) => b.date.valueOf() - a.date.valueOf());
     }
   }
 
-  form {
-    display: flex;
-    flex-flow: column wrap;
-    
-    input, textarea {
-      margin-bottom: 1rem;
-      padding: 2px 6px;
+  #form {
+    form {
+      display: flex;
+      flex-flow: column wrap;
+      
+      input, textarea {
+        margin-bottom: 1rem;
+        padding: 2px 6px;
+      }
+    }
+
+    aside {
+      color: color-mix(in oklab, var(--fg-color) 80%, var(--bg-color));
     }
   }
 
-  details {
-    & > summary {
-      list-style: none;
-      cursor: pointer;
-      font-weight: bold;
+  .entry {
+    image-rendering: pixelated;
+    font-family: var(--sans-font);
+    font-size: calc(1rem * 2);
+    letter-spacing: 1px;
+    color: var(--speech-fg-color);
+    background-color: var(--speech-bg-color);
+    border-image: var(--border) 7 / 7px / 7px repeat;
+    margin: 2rem 0;
+  }
 
-      &::after {
-        content: "[+]";
-      }
-
-      [open] &::after {
-        content: "[_]";
-      }
+  #notification {
+    margin: auto;
+    max-width: 35ch;
+    color: var(--fg-color);
+    background: var(--bg-color);
+    transition:
+      display 1s allow-discrete,
+      overlay 1s allow-discrete;
+    animation: fadeOut 1s forwards;
+    
+    menu {
+      margin: 1em 0 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
     }
+
+    &[open] {
+      animation: fadeIn 1.0s forwards;
+    }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
   }
 </style>
 
 <script>
-  const details = document.getElementsByTagName("details").item(0);
-  const pw = document.getElementById("cool-surprise");
-  let initial = "vyvnq";
-  details?.addEventListener("toggle", e => {
-    if ((e.target as HTMLDetailsElement).open) {
-      pw!.innerHTML = `if you read this, put <strong>${initial.replace(/[a-zA-Z]/g, c => {
-        // @ts-expect-error the below code works
-        return String.fromCharCode((c <= "Z" ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26);
-      })}</strong> for the password field!`
+  const form = document.forms[0];
+  const challenge = form.elements["challengeQuestionAnswer" as any];
+  const errors = document.getElementById("errors")!;
+  const notification = document.getElementById("notification")! as HTMLDialogElement;
+
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    let data = new FormData(form);
+    const response = await fetch(form.action, {
+      method: "POST",
+      body: data,
+    });
+    if (response.ok) {
+      form.reset();
+      notification.showModal();
+      errors.innerHTML = "";
+    } else {
+      const err = await response.text();
+      if (response.status === 401) {
+        challenge.ariaInvalid = "true";
+        errors.innerHTML = "The provided answer to the challenge question was invalid!";
+      } else {
+        errors.innerHTML = err;
+      }
     }
   });
 </script>

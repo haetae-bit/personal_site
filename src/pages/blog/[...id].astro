@@ -2,12 +2,12 @@
 import Blog from '@/layouts/Blog.astro';
 import type { GetStaticPaths } from 'astro';
 import { getCollection, render } from 'astro:content';
-import leftNormal from "@/assets/left-normal.png";
-import leftHover from "@/assets/left-hover.png";
-import leftActive from "@/assets/left-active.png";
-import rightNormal from "@/assets/right-normal.png";
-import rightHover from "@/assets/right-hover.png";
-import rightActive from "@/assets/right-active.png";
+import leftNormal from "$/images/left-normal.png";
+import leftHover from "$/images/left-hover.png";
+import leftActive from "$/images/left-active.png";
+import rightNormal from "$/images/right-normal.png";
+import rightHover from "$/images/right-hover.png";
+import rightActive from "$/images/right-active.png";
 
 export const getStaticPaths = (async () => {
   const blog = await getCollection("blog");

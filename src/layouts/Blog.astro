@@ -4,12 +4,12 @@ import { getCollection } from "astro:content";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Layout from "./Layout.astro";
-import Navbar from "@/components/Navbar.astro";
+import Navbar from "~/Navbar.astro";
 import moods from "@/utils/moods";
 
-import outerBBS from "@/assets/guild-bbs.png";
-import innerBBS from "@/assets/guild-bbs-content.png";
-import sideBBS from "@/assets/guild-bbs-list.png";
+import outerBBS from "$/images/guild-bbs.png";
+import innerBBS from "$/images/guild-bbs-content.png";
+import sideBBS from "$/images/guild-bbs-list.png";
 
 interface Props {
   title: string;
@@ -36,7 +36,7 @@ dayjs.extend(utc);
   <main>
     <nav id="blog-links">
       <div class="inner">
-        <hgroup>
+        <div class="nav-section">
           <h1><span class="title">recent posts</span></h1>
           <ul>
             {blog.map(entry => (
@@ -50,76 +50,74 @@ dayjs.extend(utc);
               </li>
             ))}
           </ul>
-        </hgroup>
-        <hgroup>
+        </div>
+        <div class="nav-section">
           <h1><span class="title">other links</span></h1>
           <ul>
             <li><span class="item"><a href="/blog">archive</a></span></li>
             <li><span class="item"><a href="/blog/rss.xml">rss feed</a></span></li>
           </ul>
-        </hgroup>
+        </div>
       </div>
     </nav>
 
-    <section>
-      <article>
-        <div class="inner">
-          <header>
-            <h1>{title}</h1>
-            <hr />
-            <div class="info">
-              <time datetime={dayjs(date).utc(true).toISOString()}>
-                <span class="title">Date</span>
-                <span class="desc">{dayjs(date).utc(true).format("MMMM DD, YYYY")}</span>
-              </time>
-            </div>
-          </header>
-
-          <div class="content" data-simplebar>
-            <slot />
+    <article>
+      <div class="inner">
+        <header>
+          <h1>{title}</h1>
+          <hr />
+          <div class="info">
+            <time datetime={dayjs(date).utc(true).toISOString()}>
+              <span class="title">Date</span>
+              <span class="desc">{dayjs(date).utc(true).format("MMMM DD, YYYY")}</span>
+            </time>
           </div>
+        </header>
 
-          {currently && (
-            <aside>
-              <h2>Current</h2>
-              {currently?.mood && (
-                <dl>
-                  <dt class="title">Mood</dt>
-                  <dd class="desc">
-                    <Image src={`/src/assets/moods/${moods.find(mood => mood === currently?.mood)}.png`} width={36} height={36} alt="" />
-                    {currently.mood}
-                    </dd>
-                </dl>
-              )}
-              {currently.playing && (
-                <dl>
-                  <dt class="title">Game</dt>
-                  <dd class="desc">{currently.playing}</dd>
-                </dl>
-              )}
-              {currently.watching && (
-                <dl>
-                  <dt class="title">Show</dt>
-                  <dd class="desc">{currently.watching}</dd>
-                </dl>
-              )}
-              {currently.reading && (
-                <dl>
-                  <dt class="title">Book</dt>
-                  <dd class="desc">{currently.reading}</dd>
-                </dl>
-              )}
-              {currently.listening && (
-                <dl>
-                  <dt>Currently listening</dt>
-                  <dd>{currently.listening}</dd>
-                </dl>
-              )}
-            </aside>
-          )}
+        <div class="content">
+          <slot />
         </div>
-      </article>
-    </section>
+
+        {currently && (
+          <aside>
+            <h2>Current</h2>
+            {currently?.mood && (
+              <dl>
+                <dt class="title">Mood</dt>
+                <dd class="desc">
+                  <Image src={`/src/assets/moods/${moods.find(mood => mood === currently?.mood)}.png`} width={36} height={36} alt="" />
+                  {currently.mood}
+                  </dd>
+              </dl>
+            )}
+            {currently.playing && (
+              <dl>
+                <dt class="title">Game</dt>
+                <dd class="desc">{currently.playing}</dd>
+              </dl>
+            )}
+            {currently.watching && (
+              <dl>
+                <dt class="title">Show</dt>
+                <dd class="desc">{currently.watching}</dd>
+              </dl>
+            )}
+            {currently.reading && (
+              <dl>
+                <dt class="title">Book</dt>
+                <dd class="desc">{currently.reading}</dd>
+              </dl>
+            )}
+            {currently.listening && (
+              <dl>
+                <dt>Currently listening</dt>
+                <dd>{currently.listening}</dd>
+              </dl>
+            )}
+          </aside>
+        )}
+      </div>
+    </article>
     <slot name="pagination" />
   </main>
 </Layout>
@@ -238,7 +236,7 @@ dayjs.extend(utc);
       }
     }
 
-    hgroup {
+    .nav-section {
       margin: 0 4px;
       background-color: var(--bg-0);
 
@@ -317,7 +315,7 @@ dayjs.extend(utc);
     .content {
       position: relative;
       background-attachment: local;
-      background-image: linear-gradient(to right, var(--bg-0) 5px, transparent 2px),  linear-gradient(var(--bg-4) 2px, transparent 2px); 
+      background-image: linear-gradient(to right, var(--bg-0) 5px, transparent 2px), linear-gradient(var(--bg-4) 2px, transparent 2px); 
       background-size: 10px 1lh;
       background-position-y: calc(2lh - 2px);
       margin: 2rem 1rem;
