@@ -30,6 +30,7 @@ const { frontmatter } = Astro.props;
 <style define:vars={{ borderImage: `url(${border.src})`, frameImage: `url(${frame.src})` }}>
   main {
     font: 2rem var(--pmd-font);
+    letter-spacing: 1px;
     margin: 3rem auto;
     max-width: clamp(50ch, 80ch, 100%);
   }

@@ -1,17 +1,13 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-import db from '@astrojs/db';
-import node from '@astrojs/node';
 import { modifiedTime } from './src/utils/last-modified.mjs';
+import alpinejs from '@astrojs/alpinejs';
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://haetae.gay",
+  site: "https://haetae.32-b.it",
   markdown: {
     remarkPlugins: [modifiedTime],
   },
-  integrations: [db()],
-  adapter: node({
-    mode: 'standalone',
-  }),
+  integrations: [alpinejs()],
 });

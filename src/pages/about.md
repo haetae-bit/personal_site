@@ -25,4 +25,4 @@ i used a bunch of assets that require attribution but i also wanted to link peop
 - [PixelMplus](https://itouhiro.hatenablog.com/entry/20130602/font) by itouhiro is licensed under [M+ font license](https://web.archive.org/web/20221024231351/http://mplus-fonts.osdn.jp/mplus-bitmap-fonts/#license)
 - [Redaction](https://www.redaction.us/) by [Forest Young](https://www.moma.org/interactives/exhibitions/2011/talktome/objects/140027/) and [Jeremy Mickel](https://mckltype.com/) is dual-licensed under [LGPL 2.1](https://www.tldrlegal.com/license/gnu-lesser-general-public-license-v2-1-lgpl-2-1) and [OFL 1.1](https://www.tldrlegal.com/license/open-font-license-ofl-explained)
 - [sq](https://github.com/leahneukirchen/sq) by [Leah Neukirchen](https://leahneukirchen.org/) is in public domain
-- [Wonder Mail](https://www.dafont.com/wonder-mail.font) by ShinxHijinx is free for personal use
+- [Wonder Mail](https://www.dafont.com/wonder-mail.font) by ShinxHijinx is free for personal use (as far as I know at the time of this writing: April 14, 2025)
