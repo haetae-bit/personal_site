@@ -1,10 +1,12 @@
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
-import rss from "@astrojs/rss";
+import rss, { type RSSFeedItem } from "@astrojs/rss";
 import MarkdownIt from "markdown-it";
+import { parse as htmlParser } from "node-html-parser";
 import sanitize from "sanitize-html";
-const parser = new MarkdownIt();
+import fixRssImages from "@/utils/fixRssImages";
 
+const parser = new MarkdownIt();
 const fics = await getCollection("fics");
 
 export const GET: APIRoute = async (context) => {
@@ -12,21 +14,33 @@ export const GET: APIRoute = async (context) => {
     return id.split("/")[0] === context.params.ficId;
   });
   const fic = fics.find(({ id }) => id === context.params.ficId);
+  const feed: RSSFeedItem[] = [];
+
+  for (const entry of chapters) {
+    const content = parser.render(entry.body!);
+    const html = htmlParser.parse(content);
+    const images = html.querySelectorAll("img");
+
+    await fixRssImages(images, context);
+
+    feed.push({
+      link: `/fics/${entry.id}`,
+      title: entry.data.title,
+      pubDate: entry.data.publishedAt,
+      content: sanitize(html.toString(), {
+        allowedTags: sanitize.defaults.allowedTags.concat(["img"]),
+      }),
+      categories: fic?.data.series.concat(fic.data.title),
+    });
+  }
+
   return rss({
     title: `${fic?.data.title}`,
     description: sanitize(parser.render(fic?.data.summary!), {
       allowedTags: sanitize.defaults.allowedTags.concat(["br"]),
     }),
     site: context.site!,
-    items: chapters.map(chapter => ({
-      link: `/fics/${chapter.id}`,
-      title: chapter.data.title,
-      pubDate: chapter.data.publishedAt,
-      content: sanitize(parser.render(chapter.body!), {
-        allowedTags: sanitize.defaults.allowedTags.concat(["img"]),
-      }),
-      categories: fic?.data.series.concat(fic.data.title),
-    })),
+    items: feed,
   });
 };
 

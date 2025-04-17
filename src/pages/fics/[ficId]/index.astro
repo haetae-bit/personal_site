@@ -2,8 +2,7 @@
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
+import formatDate from "@/utils/formatDate";
 
 export const getStaticPaths = (async () => {
   const fics = await getCollection("fics");
@@ -19,10 +18,11 @@ const chapters = await getCollection("chapters", ({ id }) => {
 });
 chapters.length = Math.min(chapters.length, 5);
 chapters.sort((a, b) => a.data.sortOrder - b.data.sortOrder);
-dayjs.extend(utc);
 ---
 <Layout title={fic.data.title}>
-  <Fragment slot="header" set:html={`<link rel="alternate" type="application/rss+xml" title="${fic.data.title}" href=${new URL(`/fics/${Astro.params.ficId}/rss.xml`, Astro.site)} />`} />
+  <Fragment slot="head">
+    <link rel="alternate" type="application/rss+xml" title={fic.data.title} href={new URL(`/fics/${Astro.params.ficId}/rss.xml`, Astro.site)} />
+  </Fragment>
   <main>
     <section>
       <h1>{fic.data.title}</h1>
@@ -31,9 +31,9 @@ dayjs.extend(utc);
           <span class="title">Fandom</span> 
           <span class="data">{fic.data.series.join(", ")}</span>
         </p>
-        <time datetime={dayjs(fic.data.publishedAt).utc(true).toISOString()}>
+        <time datetime={formatDate(fic.data.publishedAt, true)}>
           <span class="title">Date</span> 
-          <span class="data">{dayjs(fic.data.publishedAt).utc(true).format("MMMM DD, YYYY")}</span>
+          <span class="data">{formatDate(fic.data.publishedAt)}</span>
         </time>
         <div>
           <span class="title">Summary</span>

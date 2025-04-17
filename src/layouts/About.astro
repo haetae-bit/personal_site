@@ -4,8 +4,8 @@ import Layout from "./Layout.astro";
 import Navbar from "~/Navbar.astro";
 import Figure from "~/Figure.astro";
 
-import border from "$/images/border.png";
-import frame from "$/images/frame.png";
+import border from "$/border.png";
+import frame from "$/frame.png";
 
 type Props = MarkdownLayoutProps<{
   avatar?: string;
@@ -19,7 +19,7 @@ const { frontmatter } = Astro.props;
 
   <main>
     {frontmatter.avatar && frontmatter.avatarText && (
-      <Figure className="avatar" imagePath={frontmatter.avatar} alt={frontmatter.avatarText} />
+      <Figure class="avatar" imagePath={frontmatter.avatar} alt={frontmatter.avatarText} />
     )}
     <article>
       <slot />

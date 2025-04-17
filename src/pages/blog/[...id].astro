@@ -2,12 +2,13 @@
 import Blog from '@/layouts/Blog.astro';
 import type { GetStaticPaths } from 'astro';
 import { getCollection, render } from 'astro:content';
-import leftNormal from "$/images/left-normal.png";
-import leftHover from "$/images/left-hover.png";
-import leftActive from "$/images/left-active.png";
-import rightNormal from "$/images/right-normal.png";
-import rightHover from "$/images/right-hover.png";
-import rightActive from "$/images/right-active.png";
+
+import leftNormal from "$/left-normal.png";
+import leftHover from "$/left-hover.png";
+import leftActive from "$/left-active.png";
+import rightNormal from "$/right-normal.png";
+import rightHover from "$/right-hover.png";
+import rightActive from "$/right-active.png";
 
 export const getStaticPaths = (async () => {
   const blog = await getCollection("blog");
@@ -27,6 +28,9 @@ const previous = current + 1 === blog.length ? undefined : blog[current + 1];
 const next = current === 0 ? undefined : blog[current - 1];
 ---
 <Blog title={entry.data.title!} date={entry.data.pubDate!} currently={entry.data.currently}>
+  <Fragment slot="head">
+    <meta name="description" content={entry.body?.substring(0, 150) + "…"}>
+  </Fragment>
   <Content />
 
   {(previous || next) && (

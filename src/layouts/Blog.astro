@@ -1,15 +1,14 @@
 ---
 import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
 import Layout from "./Layout.astro";
 import Navbar from "~/Navbar.astro";
 import moods from "@/utils/moods";
 
-import outerBBS from "$/images/guild-bbs.png";
-import innerBBS from "$/images/guild-bbs-content.png";
-import sideBBS from "$/images/guild-bbs-list.png";
+import outerBBS from "$/guild-bbs.png";
+import innerBBS from "$/guild-bbs-content.png";
+import sideBBS from "$/guild-bbs-list.png";
+import formatDate from "@/utils/formatDate";
 
 interface Props {
   title: string;
@@ -26,11 +25,11 @@ interface Props {
 const { title, date, currently } = Astro.props;
 
 const blog = await getCollection("blog");
-blog.length = Math.min(blog.length, 5);
+blog.length = Math.min(blog.length, 12);
 blog.sort((a, b) => a.data.pubDate!.valueOf() - b.data.pubDate!.valueOf());
-dayjs.extend(utc);
 ---
 <Layout {title}>
+  <slot slot="head" name="head" />
   <Navbar />
 
   <main>
@@ -42,9 +41,12 @@ dayjs.extend(utc);
             {blog.map(entry => (
               <li>
                 <span class="item">
-                  <a href={`/blog/${entry.id}`}>{entry.data.title}</a>
-                  <time datetime={dayjs(entry.data.pubDate!).utc(true).toISOString()}>
-                    {dayjs(entry.data.pubDate).utc(true).format("M/D/YY")}
+                  <a href={`/blog/${entry.id}`} class="entry-title" aria-labelledby={entry.id}>
+                    <span style="display: none">{entry.data.title}</span>
+                  </a>
+                  <span id={entry.id} class="link" aria-hidden="true">{entry.data.title}</span>
+                  <time datetime={formatDate(entry.data.pubDate!, true)}>
+                    {formatDate(entry.data.pubDate!, false, "MM/DD/YY")}
                   </time>
                 </span>
               </li>
@@ -54,8 +56,8 @@ dayjs.extend(utc);
         <div class="nav-section">
           <h1><span class="title">other links</span></h1>
           <ul>
-            <li><span class="item"><a href="/blog">archive</a></span></li>
-            <li><span class="item"><a href="/blog/rss.xml">rss feed</a></span></li>
+            <li><span class="item"><a href="/blog" class="link">archive</a></span></li>
+            <li><span class="item"><a href="/blog/rss.xml" class="link">rss feed</a></span></li>
           </ul>
         </div>
       </div>
@@ -67,9 +69,9 @@ dayjs.extend(utc);
           <h1>{title}</h1>
           <hr />
           <div class="info">
-            <time datetime={dayjs(date).utc(true).toISOString()}>
+            <time datetime={formatDate(date, true)}>
               <span class="title">Date</span>
-              <span class="desc">{dayjs(date).utc(true).format("MMMM DD, YYYY")}</span>
+              <span class="desc">{formatDate(date)}</span>
             </time>
           </div>
         </header>
@@ -208,13 +210,25 @@ dayjs.extend(utc);
         border-bottom: 2px solid var(--bg-4);
 
         .item {
+          position: relative;
           font-family: var(--mplus-10-font);
-          font-size: 1.254rem;
+          font-size: 1.25rem; /* this should be 20px */
           display: flex;
           justify-content: space-between;
           align-items: center;
           
           a {
+            &.entry-title {
+              position: absolute;
+              display: block;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+            }
+          }
+
+          .link {
             flex: 1;
             background-color: var(--bg-1);
             padding: 6px;
@@ -228,7 +242,7 @@ dayjs.extend(utc);
           }
 
           &:hover {
-            a { background-color: var(--bg-7); }
+            .link { background-color: var(--bg-7); }
             time { background-color: var(--border-6); }
           }
         }
@@ -254,6 +268,7 @@ dayjs.extend(utc);
   }
   
   article {
+    display: flex;
     letter-spacing: 1px;
     border: 2px solid var(--border-0);
     border-image: var(--outerBorder) 19 9 38 11 fill / 38px 18px 76px 22px;
@@ -261,6 +276,8 @@ dayjs.extend(utc);
     padding: 36px 16px 74px 20px;
 
     .inner {
+      display: flex;
+      flex-direction: column;
       border: 2px solid var(--border-2);
       border-image: var(--innerBorder) 3 2 2 fill / 6px 4px 4px;
       margin: 14px 4px 8px;
@@ -313,7 +330,8 @@ dayjs.extend(utc);
     }
 
     .content {
-      position: relative;
+      /* position: relative; */
+      flex: 1;
       background-attachment: local;
       background-image: linear-gradient(to right, var(--bg-0) 5px, transparent 2px), linear-gradient(var(--bg-4) 2px, transparent 2px); 
       background-size: 10px 1lh;
@@ -326,6 +344,7 @@ dayjs.extend(utc);
       margin-trim: block;
 
       p { margin-block: 1lh; }
+      a, del, s { text-decoration-thickness: 2px; }
       
       @supports not (margin-trim: block) {
         :first-child { margin-block-start: 0; }

@@ -3,8 +3,6 @@ import Chapter from "@/layouts/Chapter.astro";
 import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
 import { Breadcrumbs } from "astro-breadcrumbs";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
 
 export const getStaticPaths = (async () => {
   const chapters = await getCollection("chapters");
@@ -21,7 +19,6 @@ const { ficId, chapterId } = Astro.params;
 const { chapter } = Astro.props;
 const { Content, remarkPluginFrontmatter } = await render(chapter);
 
-dayjs.extend(utc);
 const chapters = await getCollection("chapters", ({ id }) => {
   return id.split("/")[0] === ficId;
 });

@@ -1,9 +1,8 @@
 ---
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
 import Layout from "@/layouts/Layout.astro";
+import formatDate from "@/utils/formatDate";
 import ThemeSwitch from "~/ThemeSwitch.astro";
-import speech from "$/images/speech.png";
+import speech from "$/speech.png";
 
 type GuestBookEntry = {
   ID: number;
@@ -18,7 +17,6 @@ type GuestBookEntry = {
   Guestbook: object;
 };
 
-dayjs.extend(utc);
 const response = await fetch("https://guestbooks.meadow.cafe/api/v1/get-guestbook-messages/500");
 const data: GuestBookEntry[] = await response.json();
 data.sort((a, b) => new Date(b.CreatedAt).valueOf() - new Date(a.CreatedAt).valueOf());
@@ -69,7 +67,7 @@ data.sort((a, b) => new Date(b.CreatedAt).valueOf() - new Date(a.CreatedAt).valu
             </h1>
             <time 
               :datetime="formatDate(entry.CreatedAt, true)"
-              x-text="formatDate(entry.CreatedAt)"
+              x-text="formatDate(entry.CreatedAt, false, 'MMMM D, YYYY on dddd, hh:mm a')"
             >
             </time>
           </header>
@@ -97,8 +95,8 @@ data.sort((a, b) => new Date(b.CreatedAt).valueOf() - new Date(a.CreatedAt).valu
                   : <span>{entry.Name}</span>
                 }
               </h1>
-              <time datetime={dayjs(entry.CreatedAt).utc(true).toISOString()}>
-                {dayjs(entry.CreatedAt).utc(true).format("MMMM DD, YYYY")}
+              <time datetime={formatDate(entry.CreatedAt, true)}>
+                {formatDate(entry.CreatedAt, false, 'MMMM D, YYYY on dddd, hh:mm a')}
               </time>
             </header>
 
@@ -108,7 +106,6 @@ data.sort((a, b) => new Date(b.CreatedAt).valueOf() - new Date(a.CreatedAt).valu
       </noscript>
     </section>
 
-    <button onclick="document.getElementById('notification').showModal()">open popup</button>
     <dialog id="notification">
       <form method="dialog">
         <menu>
@@ -174,6 +171,8 @@ data.sort((a, b) => new Date(b.CreatedAt).valueOf() - new Date(a.CreatedAt).valu
     border-image: var(--border) 7 / 7px / 7px repeat;
     margin: 2rem 0;
 
+    h1 { font-size: 2rem; }
+    
     &.error {
       max-width: max-content;
       padding: 1rem;
@@ -248,9 +247,7 @@ data.sort((a, b) => new Date(b.CreatedAt).valueOf() - new Date(a.CreatedAt).valu
 </style>
 
 <script>
-  import dayjs from "dayjs";
-  import utc from "dayjs/plugin/utc";
-  dayjs.extend(utc);
+  import formatDate from "@/utils/formatDate";
 
   const form = document.forms[0];
   const challenge = form.elements["challengeQuestionAnswer" as any];
@@ -294,12 +291,6 @@ data.sort((a, b) => new Date(b.CreatedAt).valueOf() - new Date(a.CreatedAt).valu
         this.errors = "Whoops, couldn't load any guestbook entries! :(";
       }
     },
-    formatDate(date: string, iso = false) {
-      if (iso) {
-        return dayjs(date).utc(true).toISOString();
-      } else {
-        return dayjs(date).utc(true).format("MMMM DD, YYYY");
-      }
-    },
+    formatDate: formatDate,
   }));
 </script>
