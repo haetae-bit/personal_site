@@ -26,10 +26,17 @@ const { title, date, currently } = Astro.props;
 
 const blog = await getCollection("blog");
 blog.length = Math.min(blog.length, 12);
-blog.sort((a, b) => a.data.pubDate!.valueOf() - b.data.pubDate!.valueOf());
+blog.sort((a, b) => b.data.pubDate!.valueOf() - a.data.pubDate!.valueOf());
 ---
 <Layout {title}>
-  <slot slot="head" name="head" />
+  <Fragment slot="head">
+    <link rel="preload" href={outerBBS.src} as="image" />
+    <link rel="preload" href={innerBBS.src} as="image" />
+    <link rel="preload" href={sideBBS.src} as="image" />
+    <link rel="preload" href="/fonts/pixearg.woff2" as="font" />
+    <link rel="preload" href="/fonts/pixeab.woff2" as="font" />
+    <slot name="head" />
+  </Fragment>
   <Navbar />
 
   <main>
@@ -143,15 +150,19 @@ blog.sort((a, b) => a.data.pubDate!.valueOf() - b.data.pubDate!.valueOf());
     --border-4: #88aabb;
     --border-5: #99bbcc;
     --border-6: #bbccdd;
+    --normal-color: #335577;
+    --active-color: #aa0033;
+    --active-border: #442266;
     color: #000;
   }
   h1 { font: bold 1rem var(--arial-font); }
   h2 {
-    font: normal 1.5rem var(--mplus-12-font);
+    font: normal 1rem var(--dotum-font);
     text-transform: uppercase;
   }
   main {
     font: 1rem var(--arial-font);
+    letter-spacing: 1px;
     display: grid;
     grid-template-columns: auto minmax(auto, 75ch);
     justify-content: center;
@@ -211,8 +222,7 @@ blog.sort((a, b) => a.data.pubDate!.valueOf() - b.data.pubDate!.valueOf());
 
         .item {
           position: relative;
-          font-family: var(--mplus-10-font);
-          font-size: 1.25rem; /* this should be 20px */
+          font: bold 1em var(--dotum-font);
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -225,6 +235,17 @@ blog.sort((a, b) => a.data.pubDate!.valueOf() - b.data.pubDate!.valueOf());
               left: 0;
               width: 100%;
               height: 100%;
+
+              ~ .link {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                /* max-width: 19ch; */
+
+                @media screen and (max-width: 76em) {
+                  max-width: unset;
+                }
+              }
             }
           }
 
@@ -269,7 +290,6 @@ blog.sort((a, b) => a.data.pubDate!.valueOf() - b.data.pubDate!.valueOf());
   
   article {
     display: flex;
-    letter-spacing: 1px;
     border: 2px solid var(--border-0);
     border-image: var(--outerBorder) 19 9 38 11 fill / 38px 18px 76px 22px;
     background-color: var(--bg-3);
@@ -286,7 +306,9 @@ blog.sort((a, b) => a.data.pubDate!.valueOf() - b.data.pubDate!.valueOf());
     }
 
     .title {
-      font: normal 1.5rem var(--mplus-12-font);
+      display: grid;
+      place-content: center;
+      font: normal 1.25em var(--dotum-font);
       background-color: var(--bg-2);
       padding: 2px 6px;
     }
@@ -316,9 +338,10 @@ blog.sort((a, b) => a.data.pubDate!.valueOf() - b.data.pubDate!.valueOf());
         border-color: var(--bg-2) var(--bg-2) var(--bg-1) var(--bg-1);
         padding: 2px 4px;
 
-        time, .section {
+        time {
           display: flex;
           width: 100%;
+          align-items: stretch;
         }
       }
 
@@ -345,6 +368,19 @@ blog.sort((a, b) => a.data.pubDate!.valueOf() - b.data.pubDate!.valueOf());
 
       p { margin-block: 1lh; }
       a, del, s { text-decoration-thickness: 2px; }
+      a {
+        color: var(--normal-color);
+
+        &:visited {
+          color: var(--active-border);
+        }
+        &:hover {
+          color: var(--active-color);
+        }
+        &:active, &:focus {
+          color: var(--normal-color);
+        }
+      }
       
       @supports not (margin-trim: block) {
         :first-child { margin-block-start: 0; }

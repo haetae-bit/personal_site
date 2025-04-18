@@ -2,13 +2,7 @@
 import Blog from '@/layouts/Blog.astro';
 import type { GetStaticPaths } from 'astro';
 import { getCollection, render } from 'astro:content';
-
-import leftNormal from "$/left-normal.png";
-import leftHover from "$/left-hover.png";
-import leftActive from "$/left-active.png";
-import rightNormal from "$/right-normal.png";
-import rightHover from "$/right-hover.png";
-import rightActive from "$/right-active.png";
+import buttons from "$/buttons.png";
 
 export const getStaticPaths = (async () => {
   const blog = await getCollection("blog");
@@ -30,30 +24,37 @@ const next = current === 0 ? undefined : blog[current - 1];
 <Blog title={entry.data.title!} date={entry.data.pubDate!} currently={entry.data.currently}>
   <Fragment slot="head">
     <meta name="description" content={entry.body?.substring(0, 150) + "…"}>
+    <link rel="preload" href={buttons.src} as="image" />
   </Fragment>
+
   <Content />
 
   {(previous || next) && (
-    <div id="blog-pagination" slot="pagination">
+    <footer id="blog-pagination" slot="pagination">
       {previous && (
-        <a id="previous" aria-label="previous post" href={`/blog/${previous.id}`}>
-          <img class="arrow" src={leftNormal.src} alt="" />
-          {previous.data.title}
+        <a id="previous" aria-label="go to previous post" href={`/blog/${previous.id}`}>
+          <div class="arrow" />
+          <div class="title">
+            <span>{previous.data.title}</span>
+          </div>
         </a>
       )}
 
       {next && (
-        <a id="next" aria-label="next post" href={`/blog/${next.id}`}>
-          {next.data.title}
-          <img class="arrow" src={rightNormal.src} alt="" />
+        <a id="next" aria-label="go to next post" href={`/blog/${next.id}`}>
+          <div class="title">
+            <span>{next.data.title}</span>
+          </div>
+          <div class="arrow" />
         </a>
       )}
-    </div>
+    </footer>
   )}
 </Blog>
 
-<style define:vars={{ leftNormal: `url(${leftNormal.src})`, leftHover: `url(${leftHover.src})`, leftActive: `url(${leftActive.src})`, rightNormal: `url(${rightNormal.src})`, rightHover: `url(${rightHover.src})`, rightActive: `url(${rightActive.src})` }}>
+<style define:vars={{ buttons: `url(${buttons.src})` }}>
   #blog-pagination {
+    margin: 1rem 0;
     display: grid;
     grid-column: 1 / -1;
     grid-template-columns: repeat(2, 1fr);
@@ -61,33 +62,87 @@ const next = current === 0 ? undefined : blog[current - 1];
     .arrow {
       width: 36px;
       height: 50px;
+      background: var(--buttons) no-repeat top left;
     }
 
     #previous {
       grid-column: 1 / 2;
       justify-self: left;
       
-      .arrow { content: var(--leftNormal) var(--leftHover) var(--leftActive); }
-      &:hover .arrow { content: var(--leftHover); }
-      &:active .arrow, &:focus .arrow { content: var(--leftActive); }
+      .arrow { background-position: 0 0; }
+      &:hover .arrow { background-position: -36px 0; }
+      &:active .arrow, &:focus .arrow { background-position: -72px 0; }
+
+      .title {
+        border-left: none;
+        margin-left: -2px;
+        padding-left: calc(0.5em + 2px);
+      }
     }
     
     #next {
       grid-column: 2 / -1;
       justify-self: right;
 
-      .arrow { content: var(--rightNormal) var(--rightHover) var(--rightActive); }
-      &:hover .arrow { content: var(--rightHover); }
-      &:active .arrow, &:focus .arrow { content: var(--rightActive); }
+      .arrow { background-position: -108px 0; }
+      &:hover .arrow { background-position: -144px 0; }
+      &:active .arrow, &:focus .arrow { background-position: -180px 0; }
+
+      .title {
+        position: relative;
+        z-index: 1;
+        border-right: none;
+        margin-right: -2px;
+        padding-right: calc(0.5em + 2px);
+      }
     }
 
     a {
       display: flex;
       flex-flow: row wrap;
-      align-items: center;
-      gap: 2px;
-      color: var(--bg-0);
+      align-items: stretch;
+      font: bold larger var(--dotum-font);
+      color: var(--normal-color);
       text-decoration: none;
+
+      .title {
+        display: grid;
+        place-content: center;
+        padding: 0 0.5em;
+        background-color: var(--bg-7);
+        border: 2px solid var(--border-1);
+        box-shadow: 
+          inset 2px 2px 0 0 var(--bg-0),
+          inset 4px 4px 0 0 var(--bg-5),
+          inset -2px -2px 0 0 var(--border-5),
+          inset -4px -4px 0 0 var(--border-6);
+        
+        @media screen and (468px > width) {
+          > span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: calc(12ch + 1em);
+          }
+        }
+      }
+
+      &:hover {
+        color: var(--active-color);
+        .title { border-color: var(--active-border); }
+      }
+
+      &:active, &:focus {
+        color: var(--normal-color);
+        .title {
+          border-color: var(--border-1);
+          box-shadow: 
+            inset -2px -2px 0 0 var(--bg-0),
+            inset -4px -4px 0 0 var(--bg-5),
+            inset 2px 2px 0 0 var(--border-5),
+            inset 4px 4px 0 0 var(--border-6);
+        }
+      }
     }
   }
 </style>

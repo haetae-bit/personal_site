@@ -1,16 +1,14 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import formatDate from "@/utils/formatDate";
 import { getCollection } from "astro:content";
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
 
 const blog = await getCollection("blog");
 const sorted = Object.groupBy(blog, ({ data }) => data.pubDate!.getMonth());
 
-dayjs.extend(utc);
-const getMonth = (id: number) => {
+function getMonth(id: number): string {
   let date = new Date();
-  date.setDate(1);
   date.setMonth(id);
   return dayjs(date).format("MMMM");
 }
@@ -27,8 +25,8 @@ const getMonth = (id: number) => {
         <ul>
           {entry[1]?.sort((a, b) => a.data.pubDate!.valueOf() - b.data.pubDate!.valueOf()).map(post => (
             <li>
-              <time datetime={dayjs(post.data.pubDate).utc(true).toISOString()}>
-                {dayjs(post.data.pubDate).utc(true).format("MMMM DD, YYYY")}
+              <time datetime={formatDate(post.data.pubDate!, true)}>
+                {formatDate(post.data.pubDate!)}
               </time>
               <a href={`/blog/${post.id}`}>{post.data.title}</a>
             </li>
