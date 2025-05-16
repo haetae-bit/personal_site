@@ -1,5 +1,6 @@
 ---
 import type { MarkdownLayoutProps } from "astro";
+import { Font } from "astro:assets";
 import Layout from "./Layout.astro";
 import Navbar from "~/Navbar.astro";
 import Figure from "~/Figure.astro";
@@ -15,6 +16,11 @@ type Props = MarkdownLayoutProps<{
 const { frontmatter } = Astro.props;
 ---
 <Layout>
+  <Fragment slot="head">
+    <Font cssVariable="--kiwi" preload />
+    <Font cssVariable="--wondermail" preload />
+  </Fragment>
+
   <Navbar />
 
   <main>
@@ -28,6 +34,11 @@ const { frontmatter } = Astro.props;
 </Layout>
 
 <style define:vars={{ borderImage: `url(${border.src})`, frameImage: `url(${frame.src})` }}>
+  :root {
+    --about-text: #f8f8f8;
+    --about-bg: #202020;
+  }
+
   main {
     font: 2rem var(--pmd-font);
     letter-spacing: 1px;
@@ -37,15 +48,25 @@ const { frontmatter } = Astro.props;
 
   article {
     padding: 1rem 1.5rem;
-    color: #f8f8f8;
+    color: var(--about-text);
     text-shadow: 2px 2px #000;
-    background: #202020;
+    background: var(--about-bg);
     border-image: var(--frameImage) 6 9 / 12px 18px / 10px repeat;
     image-rendering: pixelated;
 
     h1, h2, h3 {
       font-family: var(--pmd-font);
-      border-bottom: 2px solid #f8f8f8;
+      border-bottom: 2px solid var(--about-text);
+    }
+
+    a {
+      color: var(--about-text);
+
+      &:hover {
+        background-color: var(--about-text);
+        color: var(--about-bg);
+        text-shadow: none;
+      }
     }
   }
 

@@ -1,5 +1,5 @@
 ---
-import { Image } from "astro:assets";
+import { Font, Image } from "astro:assets";
 import { getCollection } from "astro:content";
 import Layout from "./Layout.astro";
 import Navbar from "~/Navbar.astro";
@@ -33,8 +33,11 @@ blog.sort((a, b) => b.data.pubDate!.valueOf() - a.data.pubDate!.valueOf());
     <link rel="preload" href={outerBBS.src} as="image" />
     <link rel="preload" href={innerBBS.src} as="image" />
     <link rel="preload" href={sideBBS.src} as="image" />
-    <link rel="preload" href="/fonts/pixearg.woff2" as="font" />
-    <link rel="preload" href="/fonts/pixeab.woff2" as="font" />
+    <Font cssVariable="--arial" preload />
+    <Font cssVariable="--dotumche-11" preload />
+    <Font cssVariable="--dotumche-12" preload />
+    <Font cssVariable="--dotum-11" preload />
+    <Font cssVariable="--dotum-12" preload />
     <slot name="head" />
   </Fragment>
   <Navbar />
@@ -157,7 +160,7 @@ blog.sort((a, b) => b.data.pubDate!.valueOf() - a.data.pubDate!.valueOf());
   }
   h1 { font: bold 1rem var(--arial-font); }
   h2 {
-    font: normal 1rem var(--dotum-font);
+    font: normal 1.5rem var(--dotum-12-font);
     text-transform: uppercase;
   }
   main {
@@ -222,7 +225,7 @@ blog.sort((a, b) => b.data.pubDate!.valueOf() - a.data.pubDate!.valueOf());
 
         .item {
           position: relative;
-          font: bold 1em var(--dotum-font);
+          font: normal 1.375rem var(--dotum-11-font);
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -308,7 +311,7 @@ blog.sort((a, b) => b.data.pubDate!.valueOf() - a.data.pubDate!.valueOf());
     .title {
       display: grid;
       place-content: center;
-      font: normal 1.25em var(--dotum-font);
+      font: normal 1.5em var(--dotum-12-font);
       background-color: var(--bg-2);
       padding: 2px 6px;
     }

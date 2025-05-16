@@ -1,5 +1,6 @@
 ---
 import "$/styles/base.css";
+import { Font } from "astro:assets";
 
 interface Props { title?: string; }
 
@@ -13,7 +14,10 @@ const { title = "haetae" }: Props = Astro.props;
 		<meta name="generator" content={Astro.generator} />
 		<meta name="pinterest" content="nopin nohover" />
 		<meta name="robots" content="noai, noimageai" />
-		<slot name="head" />
+		<slot name="head">
+			<Font cssVariable="--sq" preload />
+			<Font cssVariable="--kiwi" preload />
+		</slot>
 		<title>{title}</title>
 		<script is:inline>
 			localStorage.getItem("theme")

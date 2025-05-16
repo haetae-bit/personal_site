@@ -1,4 +1,5 @@
 ---
+import { Font } from "astro:assets";
 import Layout from "./Layout.astro";
 import formatDate from "@/utils/formatDate";
 
@@ -15,6 +16,7 @@ const { title, ficTitle, date, notes, lastModified }: Props = Astro.props;
 <Layout title={`${ficTitle}, ${title}`}>
   <Fragment slot="head">
     <meta name="description" content={notes} />
+    <Font cssVariable="--serif" preload />
   </Fragment>
   <slot name="breadcrumbs" />
 
