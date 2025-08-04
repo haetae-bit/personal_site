@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import { modifiedTime } from './src/utils/lastModified.mjs';
 import alpinejs from '@astrojs/alpinejs';
+import svelte from "@astrojs/svelte";
 
 // https://astro.build/config
 export default defineConfig({
@@ -10,7 +11,7 @@ export default defineConfig({
     remarkPlugins: [modifiedTime],
     smartypants: false,
   },
-  integrations: [alpinejs()],
+  integrations: [alpinejs(), svelte()],
   experimental: {
     fonts: [
       {
@@ -28,7 +29,8 @@ export default defineConfig({
             style: "normal",
             src: ['./src/assets/fonts/pixeab.woff2']
           },
-        ]
+        ],
+        fallbacks: ["Arial", "Helvetica", "sans-serif"],
       },
       {
         provider: "local",
@@ -38,7 +40,8 @@ export default defineConfig({
           weight: 400,
           style: "normal",
           src: ['./src/assets/fonts/DepartureMono-Regular.woff2']
-        }]
+        }],
+        fallbacks: ["ui-monospace", 'Cascadia Code', 'Source Code Pro', "Menlo", "Consolas", 'DejaVu Sans Mono', "monospace"],
       },
       {
         provider: "local",
@@ -48,7 +51,7 @@ export default defineConfig({
           weight: 400,
           style: "normal",
           src: ["./src/assets/fonts/dotum-11.woff2"]
-        }]
+        }],
       },
       {
         provider: "local",
@@ -89,6 +92,7 @@ export default defineConfig({
           style: "normal",
           src: ["./src/assets/fonts/KiwiSoda.woff2"]
         }],
+        fallbacks: ["Impact", "Haettenschweiler", 'Arial Narrow Bold', "sans-serif"],
       },
       {
         provider: "local",
@@ -98,7 +102,8 @@ export default defineConfig({
           weight: 400,
           style: "normal",
           src: ["./src/assets/fonts/mario-luigi-rpg-speech-text.woff2"]
-        }]
+        }],
+        fallbacks: ['Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', "Geneva", "Verdana", "sans-serif"],
       },
       {
         provider: "local",
@@ -120,7 +125,8 @@ export default defineConfig({
             style: "normal",
             src: ["./src/assets/fonts/Redaction_35-Bold.woff2"]
           },
-        ]
+        ],
+        fallbacks: ['Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', "P052", "serif"],
       },
       {
         provider: "local",
@@ -138,6 +144,7 @@ export default defineConfig({
             src: ["./src/assets/fonts/sqb.woff2"]
           }
         ],
+        fallbacks: ["system-ui", "-apple-system", "BlinkMacSystemFont", 'Segoe UI', "Roboto", "Oxygen", "Ubuntu", "Cantarell", 'Open Sans', 'Helvetica Neue', "sans-serif"],
       },
       {
         provider: "local",
@@ -147,7 +154,8 @@ export default defineConfig({
           weight: 400,
           style: "normal",
           src: ["./src/assets/fonts/wondermail.woff2"]
-        }]
+        }],
+        fallbacks: ["Inter", "Roboto", 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', "Arial", 'sans-serif'],
       },
     ],
   },

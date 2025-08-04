@@ -2,6 +2,7 @@
 import { Font } from "astro:assets";
 import Layout from "./Layout.astro";
 import formatDate from "@/utils/formatDate";
+import ChapterContent from "~/ChapterContent.astro";
 
 interface Props {
   title: string;
@@ -21,26 +22,16 @@ const { title, ficTitle, date, notes, lastModified }: Props = Astro.props;
   <slot name="breadcrumbs" />
 
   <main>
-    <header>
-      <h1>{title}</h1>
-      <time datetime={formatDate(date, true)}>
-        Published on {formatDate(date)}
-      </time>
-      {lastModified && (
-        <time datetime={formatDate(lastModified, true)}>
-          Last edited on {formatDate(lastModified)}
+    <ChapterContent lastModified={lastModified} notes={notes}>
+      <Fragment slot="title">
+        <h1>{title}</h1>
+        <time datetime={formatDate(date, true)}>
+          Published on {formatDate(date)}
         </time>
-      )}
-      {notes && (
-        <blockquote>
-          <Fragment set:html={notes} />
-        </blockquote>
-      )}
-    </header>
-
-    <article>
+      </Fragment>
+      
       <slot />
-    </article>
+    </ChapterContent>
 
     <slot name="pagination" />
   </main>

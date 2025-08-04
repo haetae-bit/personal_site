@@ -51,6 +51,7 @@ const links = [
 
   <Content />
 
+  {chapters.length > 1 && (
   <nav id="chapter-pagination" slot="pagination">
     <div id="chapter-index">
       <label for="chapter-select">Chapters:</label>
@@ -72,6 +73,7 @@ const links = [
       <a id="next" href={`/fics/${next.id}`}>{next.data.title}</a>
     )}
   </nav>
+  )}
 </Chapter>
 
 <style>

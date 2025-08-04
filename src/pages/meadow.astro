@@ -1,4 +1,5 @@
 ---
+import { Font } from "astro:assets";
 import Layout from "@/layouts/Layout.astro";
 import formatDate from "@/utils/formatDate";
 import ThemeSwitch from "~/ThemeSwitch.astro";
@@ -22,6 +23,11 @@ const data: GuestBookEntry[] = await response.json();
 data.sort((a, b) => new Date(b.CreatedAt).valueOf() - new Date(a.CreatedAt).valueOf());
 ---
 <Layout title="haetae, guestbook">
+  <Fragment slot="head">
+    <Font cssVariable="--mono" preload />
+    <Font cssVariable="--mlss" preload />
+  </Fragment>
+
   <ThemeSwitch />
 
   <main>

@@ -1,8 +1,10 @@
 ---
 import type { GetStaticPaths } from "astro";
-import { getCollection } from "astro:content";
+import { Font } from "astro:assets";
+import { getCollection, getEntry, render } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
 import formatDate from "@/utils/formatDate";
+import ChapterContent from "~/ChapterContent.astro";
 
 export const getStaticPaths = (async () => {
   const fics = await getCollection("fics");
@@ -18,42 +20,69 @@ const chapters = await getCollection("chapters", ({ id }) => {
 });
 chapters.length = Math.min(chapters.length, 5);
 chapters.sort((a, b) => a.data.sortOrder - b.data.sortOrder);
+const oneshot = chapters.length === 1 && await getEntry(chapters[0]);
+const { Content } = oneshot && await render(oneshot);
 ---
 <Layout title={fic.data.title}>
   <Fragment slot="head">
     <link rel="alternate" type="application/rss+xml" title={fic.data.title} href={new URL(`/fics/${Astro.params.ficId}/rss.xml`, Astro.site)} />
+    <meta name="description" content={fic.data.summary?.substring(0, 150) + "…"} />
+    {oneshot && (
+      <Font cssVariable="--serif" preload />
+    )}
   </Fragment>
+
   <main>
     <section>
       <h1>{fic.data.title}</h1>
       <header class="info">
-        <p>
-          <span class="title">Fandom</span> 
-          <span class="data">{fic.data.series.join(", ")}</span>
-        </p>
-        <time datetime={formatDate(fic.data.publishedAt, true)}>
-          <span class="title">Date</span> 
-          <span class="data">{formatDate(fic.data.publishedAt)}</span>
-        </time>
-        <div>
-          <span class="title">Summary</span>
-          <blockquote class="data">
-            <Fragment set:html={fic.data.summary} />
-          </blockquote>
-        </div>
+        <dl>
+          <dt>Fandom</dt> 
+          {typeof fic.data.series === "object" 
+            ? (<ul>
+              {fic.data.series.map(fandom => (<li>{fandom}</li>))}
+            </ul>)
+            : (<dd>{fic.data.series}</dd>)
+          }
+          <dt>Date</dt>
+          <dd>
+            <time datetime={formatDate(fic.data.publishedAt, true)}>
+              <span class="data">{formatDate(fic.data.publishedAt)}</span>
+            </time>
+          </dd>
+          <dt>Summary</dt>
+          <dd>
+            <blockquote>
+              <Fragment set:html={fic.data.summary} />
+            </blockquote>
+          </dd>
+        </dl>
+        
         <div class="links">
-          <a class="button" href={`/fics/${chapters[0].id}`}>start reading</a>
+          {!oneshot && (
+            <a class="button" href={`/fics/${chapters[0].id}`}>start reading</a>
+          )}
           <a class="button" href={`/fics/${Astro.params.ficId}/rss.xml`}>rss feed</a>
         </div>
       </header>
 
-      <h2>chapters</h2>
-      <ul>
-        {chapters.map(chapter => (
-          <li><a href={chapter.id}>{chapter.data.title}</a></li>
-        ))}
-      </ul>
+      {!oneshot && (
+        <h2>chapters</h2>
+        <ul>
+          {chapters.map(chapter => (
+            <li><a href={chapter.id}>{chapter.data.title}</a></li>
+          ))}
+        </ul>
+      )}
     </section>
+
+    {oneshot && (
+      <section id="oneshot">
+        <ChapterContent lastModified={oneshot.data.lastModified} notes={oneshot.data.notes}>
+          <Content />
+        </ChapterContent>
+      </section>
+    )}
   </main>
 </Layout>
 
@@ -66,18 +95,8 @@ chapters.sort((a, b) => a.data.sortOrder - b.data.sortOrder);
       max-width: 80ch;
 
       .info {
-        > * {
-          display: flex;
-          flex-flow: row wrap;
-        }
-
-        .title {
-          flex: 1;
-          font-weight: bold;
-        }
-        
-        .data {
-          flex: 2;
+        dl {
+          dt { font-weight: bold; }
         }
         
         blockquote {
@@ -85,10 +104,15 @@ chapters.sort((a, b) => a.data.sortOrder - b.data.sortOrder);
         }
 
         .links {
+          display: flex;
           align-content: center;
           justify-content: space-around;
         }
       }
+    }
+
+    #oneshot {
+      margin-top: 2rem;
     }
   }
 </style>

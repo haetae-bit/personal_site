@@ -1,0 +1,70 @@
+---
+import formatDate from "@/utils/formatDate";
+
+interface Props {
+  notes?: string;
+  lastModified?: Date;
+}
+
+const { notes, lastModified }: Props = Astro.props;
+---
+<header>
+  <slot name="title" />
+  {lastModified && (
+    <time datetime={formatDate(lastModified, true)}>
+      Last edited on {formatDate(lastModified)}
+    </time>
+  )}
+  {notes && (
+    <blockquote>
+      <Fragment set:html={notes} />
+    </blockquote>
+  )}
+</header>
+
+<hr />
+
+<article>
+  <slot />
+</article>
+
+<style>
+  article, blockquote {
+    max-width: 80ch;
+    font-family: var(--serif-font);
+  }
+
+  header {
+    blockquote {
+      margin: 1rem;
+      font-size: calc(35px / 2);
+
+      &::before {
+        display: block;
+        content: "Author’s Notes:";
+        font-weight: bold;
+        line-height: 1;
+        alt: "Author's Notes:";
+      }
+    }
+
+    @media screen and (max-width: 800px) {
+      time { font-size: calc(1rem - 1px); }
+    }
+  }
+
+  article {
+    margin: 1rem 0;
+    font-size: 1.25rem;
+    letter-spacing: 0.025em;
+    word-spacing: 0.075em;
+    line-height: 1.75;
+    margin-trim: block;
+
+    p { margin-block: 1lh; }
+    @supports not (margin-trim: block) {
+      :first-child { margin-block-start: 0; }
+      :last-child { margin-block-end: 0; }
+    }
+  }
+</style>

@@ -1,0 +1,212 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { Font } from "astro:assets";
+import speech from "$/speech.png";
+import formatDate from "@/utils/formatDate";
+import Entries from "~/Entries.svelte";
+import svelteRenderer from "@astrojs/svelte/server.js";
+
+type Entry = {
+  id: string;
+  name: string;
+  website: string | null;
+  message: string;
+  reply: string | null;
+  created_at: string;
+  updated_at: string | null;
+  approved: "0" | "1";
+}
+
+// replace this with the guestbook
+const response = await fetch("http://localhost:8000/");
+const entries: Entry[] = await response.json();
+---
+<Layout title="haetae, guestbook">
+  <Fragment slot="head">
+    <Font cssVariable="--mono" preload />
+    <Font cssVariable="--mlss" preload />
+  </Fragment>
+
+  <main>
+    <section id="add-comment">
+      <form action="http://localhost:8000/sign.php" method="post" aria-describedby="errors">
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" />
+
+        <label for="website">Website</label>
+        <input type="url" name="website" id="website" />
+
+        <label for="message">Message</label>
+        <textarea name="message" id="message"></textarea>
+
+        <button type="submit" name="submit">Add Comment</button>
+      </form>
+
+      <div id="errors" role="alert"></div>
+    </section>
+
+    <section id="entries">
+      <Entries client:only="svelte" />
+      <noscript>
+        {entries.map(entry => (
+          <section>
+            <article class="entry" id={entry.id}>
+              <header>
+                <h1>{entry.website
+                  ? <a href={entry.website} target="_blank" referrerpolicy="no-referrer">{entry.name}</a>
+                  : <span>{entry.name}</span>}
+                </h1>
+                <time datetime={formatDate(entry.created_at, true)}>
+                  {formatDate(entry.created_at, false, 'MMMM D, YYYY on dddd, hh:mm a')}
+                </time>
+              </header>
+
+              {entry.message}
+            </article>
+
+            {entry.reply && (
+              <article class="entry reply" id={`${entry.id} + "-reply"`}>
+                <header>
+                  {entry.updated_at && (
+                    <time datetime={formatDate(entry.updated_at, true)}>
+                      {formatDate(entry.updated_at, false, 'MMMM D, YYYY on dddd, hh:mm a')}
+                    </time>
+                  )}
+                </header>
+
+                {entry.reply}
+              </article>
+            )}
+          </section>
+        ))}
+      </noscript>
+    </section>
+  </main>
+</Layout>
+
+<style define:vars={{ border: `url(${speech.src})` }}>
+  :root {
+    --speech-bg-color: #f8f8f8;
+    --speech-fg-color: #404040;
+  }
+  
+  main {
+    max-width: clamp(75ch, 80ch, 100%);
+    margin: 1rem auto;
+
+    article {
+      max-width: calc(80ch + 2rem);
+      padding: 1rem;
+    }
+
+    @media screen and (width < 1000px) {
+      max-width: 100%;
+      margin: 1rem;
+
+      article {
+        max-width: 100%;
+        padding: 0.5rem;
+      }
+    }
+  }
+
+  #add-comment {
+    form {
+      display: flex;
+      flex-flow: column wrap;
+      
+      input, textarea {
+        margin-bottom: 1rem;
+        padding: 2px 6px;
+      }
+    }
+
+    aside {
+      color: color-mix(in oklab, var(--fg-color) 80%, var(--bg-color));
+    }
+  }
+
+  .entry {
+    image-rendering: pixelated;
+    font-family: var(--sans-font);
+    font-size: calc(1rem * 2);
+    letter-spacing: 1px;
+    color: var(--speech-fg-color);
+    background-color: var(--speech-bg-color);
+    border-image: var(--border) 7 / 7px / 7px repeat;
+    margin: 2rem 0;
+
+    h1 { font-size: 2rem; }
+    
+    &.error {
+      max-width: max-content;
+      padding: 1rem;
+      margin: 0 auto;
+      text-align: center;
+    }
+  }
+
+  #notification {
+    margin: auto;
+    max-width: 35ch;
+    color: var(--fg-color);
+    background: var(--bg-color);
+    transition:
+      display 1s allow-discrete,
+      overlay 1s allow-discrete;
+    animation: fadeOut 1s forwards;
+    
+    menu {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: calc(100% - 4px);
+      display: flex;
+      justify-content: end;
+      padding: 2px;
+      margin: 2px 2px 0;
+      background-color: color-mix(in oklab, var(--bg-color) 95%, var(--fg-color));
+      border: 2px solid var(--fg-color);
+      line-height: 1;
+
+      button {
+        padding: 0;
+        box-shadow: none;
+        line-height: 1;
+        transform: none;
+        display: grid;
+        place-content: center;
+        width: 44px;
+        height: 44px;
+
+        span { transform: translateY(-2px); }
+
+        &:focus {
+          border: 4px inset var(--secondary-color);
+          outline: 2px solid var(--fg-color);
+          box-shadow: none;
+
+          span { transform: translateY(0); }
+        }
+      }
+    }
+
+    form {
+      margin-top: calc(44px + 2px);
+    }
+
+    &[open] {
+      animation: fadeIn 1.0s forwards;
+    }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+</style>
