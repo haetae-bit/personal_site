@@ -21,7 +21,7 @@ const current = blog.findIndex(entry => entry.id === Astro.params.id);
 const previous = current + 1 === blog.length ? undefined : blog[current + 1];
 const next = current === 0 ? undefined : blog[current - 1];
 ---
-<Blog title={entry.data.title!} date={entry.data.pubDate!} currently={entry.data.currently}>
+<Blog id={entry.id} title={entry.data.title!} date={entry.data.pubDate!} currently={entry.data.currently}>
   <Fragment slot="head">
     <meta name="description" content={entry.body?.substring(0, 150) + "…"} />
     <link rel="preload" href={buttons.src} as="image" />

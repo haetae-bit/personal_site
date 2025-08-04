@@ -3,6 +3,7 @@ import { glob } from "astro/loaders";
 import { rssSchema } from "@astrojs/rss";
 import MarkdownIt from "markdown-it";
 import moods from "@/utils/moods";
+import { ficsLoader } from "@/utils/loader";
 
 function slugify(input: string) {
   return input
@@ -24,7 +25,7 @@ const parser = new MarkdownIt({
 });
 
 const blog = defineCollection({
-  loader: glob({ pattern: "*.md", base: "./src/content/blog" }),
+  loader: glob({ pattern: "*.{md,mdx}", base: "./src/content/blog" }),
   schema: rssSchema.extend({ 
     currently: z.object({
       mood: z.enum(moods).optional(),
@@ -72,5 +73,9 @@ const fics = defineCollection({
     lastModified: z.coerce.date().optional(),
   }),
 });
+
+// const fics = defineCollection({
+//   loader: ficsLoader(glob({ pattern: "**/*.{yml,yaml}", base: source })),
+// });
 
 export const collections = { blog, fics, chapters };

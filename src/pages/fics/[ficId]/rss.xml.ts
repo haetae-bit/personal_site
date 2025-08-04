@@ -30,7 +30,7 @@ export const GET: APIRoute = async (context) => {
       content: sanitize(html.toString(), {
         allowedTags: sanitize.defaults.allowedTags.concat(["img"]),
       }),
-      categories: fic?.data.series.concat(fic.data.title),
+      categories: typeof fic?.data.series == "string" ? [fic?.data.series] : [...fic?.data.series!],
     });
   }
 

@@ -4,6 +4,8 @@ import { modifiedTime } from './src/utils/lastModified.mjs';
 import alpinejs from '@astrojs/alpinejs';
 import svelte from "@astrojs/svelte";
 
+import mdx from "@astrojs/mdx";
+
 // https://astro.build/config
 export default defineConfig({
   site: "https://haetae.32-b.it",
@@ -11,7 +13,7 @@ export default defineConfig({
     remarkPlugins: [modifiedTime],
     smartypants: false,
   },
-  integrations: [alpinejs(), svelte()],
+  integrations: [alpinejs(), svelte(), mdx()],
   experimental: {
     fonts: [
       {

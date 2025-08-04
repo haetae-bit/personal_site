@@ -10,9 +10,10 @@ interface Props {
 
 const { imagePath, alt, caption, class: className }: Props = Astro.props;
 const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/**/*.{jpeg,jpg,png,webp,gif}");
-if (!images[imagePath]) throw new Error(`"${imagePath}" does not exist in glob: "src/assets/**/*.{jpeg,jpg,png,webp,gif}"`);
+const path = imagePath.startsWith("$") ? imagePath.replace("$", "/src/assets") : imagePath;
+if (!images[path]) throw new Error(`"${path}" does not exist in glob: "src/assets/**/*.{jpeg,jpg,png,webp,gif}"`);
 ---
 <figure class:list={[className]}>
-  <Image src={images[imagePath]()} {alt} />
+  <Image src={images[path]()} {alt} />
   {caption && <figcaption>{caption}</figcaption>}
 </figure>

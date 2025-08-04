@@ -11,6 +11,7 @@ import sideBBS from "$/guild-bbs-list.png";
 import formatDate from "@/utils/formatDate";
 
 interface Props {
+  id?: string;
   title: string;
   date: Date;
   currently?: {
@@ -22,7 +23,7 @@ interface Props {
   }
 }
 
-const { title, date, currently } = Astro.props;
+const { id, title, date, currently } = Astro.props;
 
 const blog = await getCollection("blog");
 blog.length = Math.min(blog.length, 12);
@@ -73,7 +74,7 @@ blog.sort((a, b) => b.data.pubDate!.valueOf() - a.data.pubDate!.valueOf());
       </div>
     </nav>
 
-    <article>
+    <article id={id}>
       <div class="inner">
         <header>
           <h1>{title}</h1>
@@ -360,8 +361,8 @@ blog.sort((a, b) => b.data.pubDate!.valueOf() - a.data.pubDate!.valueOf());
       flex: 1;
       background-attachment: local;
       background-image: linear-gradient(to right, var(--bg-0) 5px, transparent 2px), linear-gradient(var(--bg-4) 2px, transparent 2px); 
-      background-size: 10px 1lh;
-      background-position-y: calc(2lh - 2px);
+      background-size: 10px 2em;
+      background-position-y: calc(2em - 2px);
       margin: 2rem 1rem;
       padding: 0 1rem;
       line-height: 2;
@@ -369,7 +370,13 @@ blog.sort((a, b) => b.data.pubDate!.valueOf() - a.data.pubDate!.valueOf());
       overflow-y: auto;
       margin-trim: block;
 
-      p { margin-block: 1lh; }
+      p {
+        margin-block: 2em;
+
+        &:has(> img) {
+          margin-block: 0;
+        }
+      }
       a, del, s { text-decoration-thickness: 2px; }
       a {
         color: var(--normal-color);
@@ -384,10 +391,34 @@ blog.sort((a, b) => b.data.pubDate!.valueOf() - a.data.pubDate!.valueOf());
           color: var(--normal-color);
         }
       }
+
+      figure {
+        border: 2px solid var(--border-5);
+        border-image: var(--innerBorder) 3 2 2 fill / 6px 4px 4px;
+        padding: 4px 2px 2px;
+        background-color: var(--bg-0);
+        width: max-content;
+        margin: 0 auto;
+
+        img {
+          min-height: 2em;
+          border-bottom: 2px solid var(--border-3);
+        }
+
+        figcaption {
+          font-family: var(--dotum-11-font);
+          font-size: calc(1em + 2px);
+          color: var(--border-1);
+          background-color: var(--bg-3);
+          margin: 4px;
+          padding: 0 6px;
+          text-align: center;
+        }
+      }
       
       @supports not (margin-trim: block) {
-        :first-child { margin-block-start: 0; }
-        :last-child { margin-block-end: 0; }
+        p:first-child { margin-block-start: 0; }
+        p:last-child { margin-block-end: 0; }
       }
 
       @media screen and (max-width: 950px) {
