@@ -74,8 +74,17 @@ const fics = defineCollection({
   }),
 });
 
-// const fics = defineCollection({
-//   loader: ficsLoader(glob({ pattern: "**/*.{yml,yaml}", base: source })),
-// });
+const test = defineCollection({
+  loader: ficsLoader(
+    glob({
+      pattern: "**/*.{yml,yaml}",
+      base: source,
+      generateId: ({ entry, data }) => {
+        if (data.slug) return data.slug as string;
+        return slugify(entry.split("/")[0]);
+      }
+    })
+  ),
+});
 
-export const collections = { blog, fics, chapters };
+export const collections = { blog, fics, chapters, test };
