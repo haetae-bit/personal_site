@@ -49,6 +49,7 @@ const chapters = defineCollection({
     notes: z.ostring().transform(notes => parser.renderInline(notes ?? "", {})),
     lastModified: z.coerce.date().optional(),
     sortOrder: z.number().default(1),
+    // fic: reference("fics"),
   }),
 });
 
@@ -85,6 +86,18 @@ const test = defineCollection({
       }
     })
   ),
+  schema: z.object({
+    title: z.string(),
+    series: z.union([z.string(), z.array(z.string())]),
+    publishedAt: z.coerce.date(),
+    summary: z.string().transform(summary => parser.renderInline(summary, {})),
+    characters: z.array(z.string()).optional(),
+    ships: z.ostring(),
+    tags: z.array(z.string()).optional(),
+    notes: z.ostring().transform(notes => parser.renderInline(notes ?? "", {})),
+    lastModified: z.coerce.date().optional(),
+    chapters: z.array(reference("chapters")).optional(),
+  }),
 });
 
 export const collections = { blog, fics, chapters, test };

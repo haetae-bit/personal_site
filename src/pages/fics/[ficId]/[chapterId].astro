@@ -43,6 +43,7 @@ const links = [
   {lastModified} 
   notes={chapter.data.notes}
 >
+  {chapter.id}
   <Fragment slot="breadcrumbs">
     <Breadcrumbs id="breadcrumbs" customizeLinks={links} linkTextFormat="capitalized">
       <Fragment slot="separator" set:text="/" />
@@ -50,7 +51,6 @@ const links = [
   </Fragment>
 
   <Content />
-
   {chapters.length > 1 && (
   <nav id="chapter-pagination" slot="pagination">
     <div id="chapter-index">

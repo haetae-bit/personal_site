@@ -2,16 +2,14 @@ import type { MarkdownInstance } from "astro";
 import { glob as astroGlob, type Loader, type LoaderContext } from "astro/loaders";
 import path from "path";
 import { glob } from "fs/promises";
+import { reference } from "astro:content";
 
 async function getAllChapters(metaPath: string) {
   const entryPath = path.parse(metaPath);
   const fic = entryPath.dir;
   const entries = await Array.fromAsync(glob(fic + '/*.md'));
   const chapters = entries.map(chapter => path.relative(fic, chapter));
-  return chapters.map(chapter => ({
-    relativePath: chapter,
-    chapter: path.resolve(fic, chapter),
-  }));
+  return chapters.map(chapter => `${fic.split("/").at(-1)}/${path.parse(chapter).name}`);
 }
 
 export function ficsLoader(loader: Loader) {
@@ -39,7 +37,7 @@ export function ficsLoader(loader: Loader) {
               const search = import.meta.glob(`../content/fics/**/*.md`, { eager: true });
               let body;
               for (const path in search) {
-                if (path.includes(chapters[0].relativePath)) {
+                if (path.includes(chapters[0])) {
                   body = search[path] as MarkdownInstance<any>;
                   context.store.set({
                     ...valueWithoutDigest,
