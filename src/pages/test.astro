@@ -1,26 +1,14 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import { getEntries } from "astro:content";
-import { render } from "astro:content";
-import { getEntry } from "astro:content";
 import { getCollection } from "astro:content";
 
 const fics = await getCollection("test");
-// console.log(fics);
-const entry = await getEntry("test", "test");
-// const chapter = await getEntry("chapters", "test/two");
-if (!entry) throw new Error("not found!");
-const chapters = await getEntries(entry.data.chapters!);
-// const { Content } = await render(entry);
 ---
 <Layout>
   {fics.map(fic => (
     <article>
       <h2>{fic.data.title}</h2>
-      {chapters.map(chapter => (
-        <p>{JSON.stringify(chapter)}</p>
-      ))}
-      {JSON.stringify(fic.data.chapters?.map(chapter => chapter))}
     </article>
   ))}
+
 </Layout>

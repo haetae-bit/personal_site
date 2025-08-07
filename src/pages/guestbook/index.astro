@@ -1,24 +1,13 @@
 ---
-import Layout from "@/layouts/Layout.astro";
+import { actions, isInputError } from "astro:actions";
 import { Font } from "astro:assets";
+
+import Layout from "@/layouts/Layout.astro";
 import speech from "$/speech.png";
-import formatDate from "@/utils/formatDate";
-import Entries from "~/Entries.svelte";
+import Entries from "~/Entries.astro";
 
-type Entry = {
-  id: string;
-  name: string;
-  website: string | null;
-  message: string;
-  reply: string | null;
-  created_at: string;
-  updated_at: string | null;
-  approved: "0" | "1";
-}
-
-// replace this with the guestbook
-const response = await fetch("http://localhost:8000/");
-const entries: Entry[] = await response.json();
+const result = Astro.getActionResult(actions.guestbook.addEntry);
+const inputErrors = isInputError(result?.error) ? result.error.fields : {};
 ---
 <Layout title="haetae, guestbook">
   <Fragment slot="head">
@@ -27,59 +16,47 @@ const entries: Entry[] = await response.json();
   </Fragment>
 
   <main>
+    <h1>Guestbook</h1>
+
     <section id="add-comment">
-      <form action="http://localhost:8000/sign.php" method="post" aria-describedby="errors">
-        <label for="name">Name</label>
-        <input type="text" name="name" id="name" />
+      <form action={actions.guestbook.addEntry} method="post">
+        <label for="username">Nickname</label>
+        <input type="text" id="username" name="username" required aria-describedby="username-error" />
+        {inputErrors.username && <p id="username-error" class="error">{inputErrors.username}</p>}
 
-        <label for="website">Website</label>
-        <input type="url" name="website" id="website" />
+        <label for="website">Website (optional)</label>
+        <input type="url" id="website" name="website" aria-describedby="website-error" />
+        {inputErrors.website && <p id="website-error" class="error">{inputErrors.website}</p>}
 
+        <!-- <label for="challengeQuestionAnswer">What's my name?</label>
+        <input placeholder="read my about page!" type="text" id="challengeQuestionAnswer" name="challengeQuestionAnswer" required /> -->
+        
         <label for="message">Message</label>
-        <textarea name="message" id="message"></textarea>
-
-        <button type="submit" name="submit">Add Comment</button>
+        <textarea placeholder="Message (plain text only)..." id="message" name="message" required aria-describedby="message-error"></textarea>
+        {inputErrors.message && <p id="message-error" class="error">{inputErrors.message}</p>}
+        
+        <button type="submit">Submit</button>
       </form>
-
-      <div id="errors" role="alert"></div>
     </section>
 
-    <section id="entries">
-      <Entries client:only="svelte" />
-      <noscript>
-        {entries.map(entry => (
-          <section>
-            <article class="entry" id={entry.id}>
-              <header>
-                <h1>{entry.website
-                  ? <a href={entry.website} target="_blank" referrerpolicy="no-referrer">{entry.name}</a>
-                  : <span>{entry.name}</span>}
-                </h1>
-                <time datetime={formatDate(entry.created_at, true)}>
-                  {formatDate(entry.created_at, false, 'MMMM D, YYYY on dddd, hh:mm a')}
-                </time>
-              </header>
+    <Entries server:defer>
+      <p slot="fallback">Loading...</p>
+    </Entries>
+    
+    <dialog id="notification">
+      <form method="dialog">
+        <menu>
+          <button type="submit" aria-label="Close">
+            <span>x</span>
+          </button>
+        </menu>
+        Successfully posted! Refreshing in <span id="seconds">5</span> seconds.
+      </form>
+    </dialog>
 
-              {entry.message}
-            </article>
-
-            {entry.reply && (
-              <article class="entry reply" id={`${entry.id} + "-reply"`}>
-                <header>
-                  {entry.updated_at && (
-                    <time datetime={formatDate(entry.updated_at, true)}>
-                      {formatDate(entry.updated_at, false, 'MMMM D, YYYY on dddd, hh:mm a')}
-                    </time>
-                  )}
-                </header>
-
-                {entry.reply}
-              </article>
-            )}
-          </section>
-        ))}
-      </noscript>
-    </section>
+    <footer>
+      hi
+    </footer>
   </main>
 </Layout>
 
@@ -93,19 +70,9 @@ const entries: Entry[] = await response.json();
     max-width: clamp(75ch, 80ch, 100%);
     margin: 1rem auto;
 
-    article {
-      max-width: calc(80ch + 2rem);
-      padding: 1rem;
-    }
-
     @media screen and (width < 1000px) {
       max-width: 100%;
       margin: 1rem;
-
-      article {
-        max-width: 100%;
-        padding: 0.5rem;
-      }
     }
   }
 
@@ -120,28 +87,8 @@ const entries: Entry[] = await response.json();
       }
     }
 
-    aside {
+    .error {
       color: color-mix(in oklab, var(--fg-color) 80%, var(--bg-color));
-    }
-  }
-
-  .entry {
-    image-rendering: pixelated;
-    font-family: var(--sans-font);
-    font-size: calc(1rem * 2);
-    letter-spacing: 1px;
-    color: var(--speech-fg-color);
-    background-color: var(--speech-bg-color);
-    border-image: var(--border) 7 / 7px / 7px repeat;
-    margin: 2rem 0;
-
-    h1 { font-size: 2rem; }
-    
-    &.error {
-      max-width: max-content;
-      padding: 1rem;
-      margin: 0 auto;
-      text-align: center;
     }
   }
 
@@ -209,3 +156,33 @@ const entries: Entry[] = await response.json();
     to { opacity: 0; }
   }
 </style>
+
+<script>
+  import { actions } from "astro:actions";
+  import { navigate } from "astro:transitions/client";
+  
+  const form = document.forms[0];
+  const notification = document.getElementById("notification")! as HTMLDialogElement;
+  const seconds = document.getElementById("seconds") as HTMLElement;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const { error } = await actions.guestbook.addEntry(data);
+    let time = 5;
+
+    if (!error) {
+      notification.showModal();
+      const timer = setInterval(() => {
+        if (time <= 0) {
+          clearInterval(timer);
+          notification.close();
+          navigate("#entries");
+        } else {
+          seconds.innerText = time.toString();
+          time--;
+        }
+      }, 1000);
+    }
+  });
+</script>

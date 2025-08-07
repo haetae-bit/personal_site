@@ -1,0 +1,97 @@
+---
+import { db, desc, Guestbook } from "astro:db";
+import formatDate from "@/utils/formatDate";
+
+const entries = await db.select().from(Guestbook).orderBy(desc(Guestbook.published));
+---
+<section id="entries">
+  {entries.map(entry => (
+    <>
+      <article id={`${entry.username}-${entry.id}`}>
+        <img src="https://placehold.co/100" width="100" alt="avart" />
+        <div class="entry">
+          <header>
+            <h1>{entry.website
+              ? <a href={entry.website} target="_blank" referrerpolicy="no-referrer">{entry.username}</a>
+              : <span>{entry.username}</span>}
+            </h1>
+            <time datetime={entry.published.toISOString()}>
+              {formatDate(entry.published, false, 'MMMM D, YYYY')}
+            </time>
+          </header>
+
+          {entry.message}
+        </div>
+      </article>
+
+      {entry.reply && <img src="" alt="help" />
+      <article class="reply" id={`reply-${entry.username}-${entry.id}`}>
+        <img src="" alt="" />
+        <div class="entry">
+          <header>
+            <h1>Reply to {entry.username}</h1>
+            <time datetime={entry.updated?.toISOString()}>
+              {formatDate(entry.updated!, false, 'MMMM D, YYYY')}
+            </time>
+          </header>
+
+          {entry.reply}
+        </div>
+      </article>}
+    </>
+  ))}
+</section>
+
+<style>
+  #entries {
+    margin: 2rem 0 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  article {
+    image-rendering: pixelated;
+    display: flex;
+    align-items: start;
+    gap: 1rem;
+    max-width: 50ch;
+    font-family: var(--sans-font);
+    font-size: calc(1rem * 2);
+    letter-spacing: 1px;
+    color: var(--speech-fg-color);
+  }
+
+  .entry {
+    flex-grow: 1;
+    background-color: var(--speech-bg-color);
+    border-image: var(--border) 7 / 14px / 7px repeat;
+    padding: 1.5rem;
+
+    h1 { font-size: 2rem; }
+    time { line-height: 0.75; }
+
+    header {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    
+    &.error {
+      max-width: max-content;
+      padding: 1rem;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    @media screen and (width < 1000px) {
+      max-width: 100%;
+      padding: 1rem 1.5rem;
+    }
+  }
+
+  .reply {
+
+  }
+</style>

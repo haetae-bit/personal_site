@@ -1,10 +1,10 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import { modifiedTime } from './src/utils/lastModified.mjs';
-import alpinejs from '@astrojs/alpinejs';
-import svelte from "@astrojs/svelte";
-
 import mdx from "@astrojs/mdx";
+import db from "@astrojs/db";
+
+import node from "@astrojs/node";
 
 // https://astro.build/config
 export default defineConfig({
@@ -13,7 +13,16 @@ export default defineConfig({
     remarkPlugins: [modifiedTime],
     smartypants: false,
   },
-  integrations: [alpinejs(), svelte(), mdx()],
+  integrations: [mdx(), db()],
+  adapter: node({
+    mode: "standalone",
+  }),
+  session: {
+    driver: "localstorage",
+    options: {
+      base: "app:",
+    },
+  },
   experimental: {
     fonts: [
       {
