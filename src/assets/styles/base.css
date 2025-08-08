@@ -12,34 +12,6 @@
   --ko-font: GulimChe, DotumChe, Gulim, Dotum, system-ui-ko, system-ui-ja, system-ui-zh-cn, system-ui-zh-tw, system-ui-zh-hk, monospace, sans-serif;
   --dotum-11-font: var(--dotumche-11), var(--dotum-11), var(--ko-font);
   --dotum-12-font: var(--dotumche-12), var(--dotum-12), var(--ko-font);
-
-  @media screen and (prefers-color-scheme: light) {
-    --bg-color: #e6f2ef;
-    --fg-color: #151640;
-    --accent-color: #f783b0;
-    --secondary-color: #3f6d9e;
-  }
-
-  @media screen and (prefers-color-scheme: dark) {
-    --bg-color: #555568;
-    --fg-color: #f3eded;
-    --accent-color: #eeb9c7;
-    --secondary-color: #b9eedc;
-  }
-}
-
-.light {
-  --bg-color: #e6f2ef;
-  --fg-color: #151640;
-  --accent-color: #f783b0;
-  --secondary-color: #3f6d9e;
-}
-
-.dark {
-  --bg-color: #555568;
-  --fg-color: #f3eded;
-  --accent-color: #eeb9c7;
-  --secondary-color: #b9eedc;
 }
 
 body {
@@ -123,23 +95,5 @@ button, .button {
     color: var(--bg-color);
     border-color: var(--bg-color);
     box-shadow: 0 0 0 var(--fg-color);
-  }
-}
-
-.dark {
-  button, .button {
-    background-color: var(--accent-color);
-    color: var(--bg-color);
-
-    &:hover {
-      background-color: hsl(from var(--accent-color) h s calc(l - 10));
-      color: var(--bg-color);
-    }
-
-    &:active, &:focus {
-      color: var(--bg-color);
-      background-color: var(--secondary-color);
-      border-color: var(--bg-color);
-    }
   }
 }

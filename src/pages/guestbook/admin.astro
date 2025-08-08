@@ -3,62 +3,71 @@ export const prerender = false;
 
 import { actions } from "astro:actions";
 import { db, desc, Guestbook } from "astro:db";
+import Layout from "@/layouts/Layout.astro";
+import formatDate from "@/utils/formatDate";
 
-const pwd = await Astro.session?.get("pwd");
-
-if (!pwd) {
-  const fromUrl = Astro.url.pathname + Astro.url.search;
-  return Astro.redirect(`/guestbook/login?redirect=${fromUrl}`);
+if (!import.meta.env.DEV) {
+  console.error("you shouldn't be here...");
+  return Astro.redirect("/guestbook");
 }
 
 const entries = await db.select().from(Guestbook).orderBy(desc(Guestbook.published));
 ---
-<h1>entries</h1>
+<Layout title="guestbook admin">
+  <h1>entries</h1>
 
-<section>
-  <table>
-    <thead>
-      <tr>
-        <th>username</th>
-        <th>website</th>
-        <th>message</th>
-        <th>published</th>
-        <th>reply</th>
-        <th>edit</th>
-      </tr>
-    </thead>
-    <tbody>
-      {entries.map(entry => (
-        <tr id={`${entry.id}`}>
-          <td>{entry.username}</td>
-          <td>{entry.website}</td>
-          <td>{entry.message}</td>
-          <td>{entry.published}</td>
-          <td>{entry.reply}</td>
-          <td><button class="edit">edit</button></td>
+  <section>
+    <table>
+      <thead>
+        <tr>
+          <th>username</th>
+          <th>website</th>
+          <th>message</th>
+          <th>published</th>
+          <th>reply</th>
+          <th>edit</th>
         </tr>
-      ))}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {entries.map(entry => (
+          <tr id={`${entry.id}`}>
+            <td>{entry.username}</td>
+            <td>{entry.website}</td>
+            <td>{entry.message}</td>
+            <td>{formatDate(entry.published, false, 'MMMM D, YYYY')}</td>
+            <td>{entry.reply}</td>
+            <td><button class="edit">edit</button></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
 
-  <dialog id="edit-entry">
-    <form id="edit-entry-form" action={actions.guestbook.reply} method="post">
-      <input type="hidden" name="id" value="" />
-      <p id="entry-username"></p>
-      <p id="entry-website"></p>
-      <div id="entry-message"></div>
-      <p id="entry-published"></p>
-      <label for="reply">Reply</label>
-      <textarea name="reply" id="reply"></textarea>
+    <dialog id="edit-entry">
+      <form id="edit-entry-form" action={actions.guestbook.reply} method="post">
+        <input type="hidden" name="id" id="entryId" value="" />
+        <p id="entry-username"></p>
+        <p id="entry-website"></p>
+        <div id="entry-message"></div>
+        <p id="entry-published"></p>
+        <label for="reply">Reply</label>
+        <textarea name="reply" id="reply"></textarea>
 
-      <button type="submit">Reply</button>
-    </form>
-  </dialog>
-</section>
+        <button type="submit">Reply</button>
+      </form>
+    </dialog>
+  </section>
+</Layout>
 
-<form action={actions.guestbook.logout} method="post">
-  <button type="submit">logout</button>
-</form>
+<style>
+  table {
+    border-collapse: collapse;
+
+    td {
+      max-width: 30ch;
+      text-overflow: ellipsis;
+    }
+  }
+</style>
 
 <script>
   const modal = document.getElementById("edit-entry") as HTMLDialogElement;
@@ -70,7 +79,7 @@ const entries = await db.select().from(Guestbook).orderBy(desc(Guestbook.publish
       const data = row.cells;
       const fields = document.querySelectorAll("[id^='entry-']");
 
-      (document.getElementById("id") as HTMLInputElement).value = id;
+      (document.getElementById("entryId") as HTMLInputElement).value = id;
       fields.forEach((field, i) => {
         field.innerHTML = data.item(i)!.innerText;
       });

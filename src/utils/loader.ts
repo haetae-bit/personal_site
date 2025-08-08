@@ -30,7 +30,7 @@ export function ficsLoader(loader: Loader) {
                 ...valueWithoutDigest.data,
                 ...chapters.length > 1 && { chapters: chapters },
               },
-            });
+            });          
             if (chapters.length === 1) {
               // i've committed unspeakable atrocities here
               const search = import.meta.glob<MarkdownInstance<any>>(`../content/fics/**/*.md`, { eager: true });

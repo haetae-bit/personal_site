@@ -1,5 +1,6 @@
 ---
 import "$/styles/base.css";
+import "$/styles/themes.css";
 import { Font } from "astro:assets";
 
 interface Props { title?: string; }
@@ -11,7 +12,6 @@ const { title = "haetae" }: Props = Astro.props;
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
 		<meta name="pinterest" content="nopin nohover" />
 		<meta name="robots" content="noai, noimageai" />
 		<Font cssVariable="--sq" preload />
