@@ -5,8 +5,8 @@ import Layout from "./Layout.astro";
 import Navbar from "~/Navbar.astro";
 import Figure from "~/Figure.astro";
 
-import border from "$/border.png";
-import frame from "$/frame.png";
+import border from "$/pmd-border.png";
+import frame from "$/pmd-frame.png";
 
 type Props = MarkdownLayoutProps<{
   avatar?: string;
@@ -30,6 +30,10 @@ const { frontmatter } = Astro.props;
       <slot />
     </article>
   </main>
+
+  <footer>
+    hi
+  </footer>
 </Layout>
 
 <style define:vars={{ borderImage: `url(${border.src})`, frameImage: `url(${frame.src})` }}>
@@ -67,6 +71,8 @@ const { frontmatter } = Astro.props;
         text-shadow: none;
       }
     }
+
+    li::marker { content: " "; }
   }
 
   :global(.avatar) {

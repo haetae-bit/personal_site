@@ -5,6 +5,7 @@ import { Font } from "astro:assets";
 import Layout from "@/layouts/Layout.astro";
 import speech from "$/speech.png";
 import Entries from "~/Entries.astro";
+import Dialog from "~/Dialog.astro";
 
 const result = Astro.getActionResult(actions.guestbook.addEntry);
 const inputErrors = isInputError(result?.error) ? result.error.fields : {};
@@ -19,6 +20,7 @@ const inputErrors = isInputError(result?.error) ? result.error.fields : {};
     <h1>Guestbook</h1>
 
     <section id="add-comment">
+      {import.meta.env.DEV && <p><a href="/guestbook/admin">for your eyes only...</a></p>}
       <form action={actions.guestbook.addEntry} method="post">
         <label for="username">Nickname</label>
         <input type="text" id="username" name="username" required aria-describedby="username-error" />
@@ -43,20 +45,9 @@ const inputErrors = isInputError(result?.error) ? result.error.fields : {};
       <p slot="fallback">Loading...</p>
     </Entries>
     
-    <dialog id="notification">
-      <form method="dialog">
-        <menu>
-          <button type="submit" aria-label="Close">
-            <span>x</span>
-          </button>
-        </menu>
-        Successfully posted! Refreshing in <span id="seconds">5</span> seconds.
-      </form>
-    </dialog>
-
-    <footer>
-      hi
-    </footer>
+    <Dialog id="notification">
+      Successfully posted! Refreshing in <span id="seconds">5</span> seconds.
+    </Dialog>
   </main>
 </Layout>
 
@@ -91,70 +82,6 @@ const inputErrors = isInputError(result?.error) ? result.error.fields : {};
       color: color-mix(in oklab, var(--fg-color) 80%, var(--bg-color));
     }
   }
-
-  #notification {
-    margin: auto;
-    max-width: 35ch;
-    color: var(--fg-color);
-    background: var(--bg-color);
-    transition:
-      display 1s allow-discrete,
-      overlay 1s allow-discrete;
-    animation: fadeOut 1s forwards;
-    
-    menu {
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: calc(100% - 4px);
-      display: flex;
-      justify-content: end;
-      padding: 2px;
-      margin: 2px 2px 0;
-      background-color: color-mix(in oklab, var(--bg-color) 95%, var(--fg-color));
-      border: 2px solid var(--fg-color);
-      line-height: 1;
-
-      button {
-        padding: 0;
-        box-shadow: none;
-        line-height: 1;
-        transform: none;
-        display: grid;
-        place-content: center;
-        width: 44px;
-        height: 44px;
-
-        span { transform: translateY(-2px); }
-
-        &:focus {
-          border: 4px inset var(--secondary-color);
-          outline: 2px solid var(--fg-color);
-          box-shadow: none;
-
-          span { transform: translateY(0); }
-        }
-      }
-    }
-
-    form {
-      margin-top: calc(44px + 2px);
-    }
-
-    &[open] {
-      animation: fadeIn 1.0s forwards;
-    }
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  @keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-  }
 </style>
 
 <script>
@@ -177,6 +104,7 @@ const inputErrors = isInputError(result?.error) ? result.error.fields : {};
         if (time <= 0) {
           clearInterval(timer);
           notification.close();
+          location.reload();
           navigate("#entries");
         } else {
           seconds.innerText = time.toString();

@@ -17,6 +17,7 @@ i used a bunch of assets that require attribution but i also wanted to link peop
 - [this about page's frame images](https://www.spriters-resource.com/ds_dsi/pokemonmysterydungeonexplorersoftimedarkness/sheet/5986/) by redblueyellow
 - the blog's frame images and additional assets (such as the mood emoticons) were graciously provided by AymShade on the MapleLegends forums! i can't directly link because i'm scared of a Certain Company™ being evil
 - [the guestbook's speech bubble images](https://www.spriters-resource.com/game_boy_advance/mlss/sheet/7573/) by MajinPiccolo
+- [bullet point images](https://foollovers.com) by foollovers
 
 ## fonts
 - [Departure Mono](https://departuremono.com/) by [Helena Zhang](https://www.helenazhang.com/) is licensed under [OFL 1.1](https://www.tldrlegal.com/license/open-font-license-ofl-explained)

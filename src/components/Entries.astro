@@ -1,6 +1,7 @@
 ---
 import { db, desc, Guestbook } from "astro:db";
 import formatDate from "@/utils/formatDate";
+import pikachu from "$/images/portrait-0025.png";
 
 const entries = await db.select().from(Guestbook).orderBy(desc(Guestbook.published));
 ---
@@ -20,13 +21,14 @@ const entries = await db.select().from(Guestbook).orderBy(desc(Guestbook.publish
             </time>
           </header>
 
-          {entry.message}
+          <div class="content">
+            <Fragment set:html={entry.message} />
+          </div>
         </div>
       </article>
 
-      {entry.reply && <img src="" alt="help" />
-      <article class="reply" id={`reply-${entry.username}-${entry.id}`}>
-        <img src="" alt="" />
+      {entry.reply && <article class="reply" id={`reply-${entry.username}-${entry.id}`}>
+        <img src={pikachu.src} width="80" height="80" alt="a portrait of pikachu" />
         <div class="entry">
           <header>
             <h1>Reply to {entry.username}</h1>
@@ -35,16 +37,24 @@ const entries = await db.select().from(Guestbook).orderBy(desc(Guestbook.publish
             </time>
           </header>
 
-          {entry.reply}
+          <div class="content">
+            <Fragment set:html={entry.reply} />
+          </div>
         </div>
       </article>}
     </>
   ))}
+  {entries.length === 0 && (
+    <article>
+      <h1>Huh...</h1>
+      <p>There's nothing here! Want to be the first to comment?</p>
+    </article>
+  )}
 </section>
 
 <style>
   #entries {
-    margin: 2rem 0 4rem;
+    margin: 2rem 0 3rem;
     display: flex;
     flex-direction: column;
     gap: 2rem;
@@ -73,7 +83,7 @@ const entries = await db.select().from(Guestbook).orderBy(desc(Guestbook.publish
 
     header {
       display: flex;
-      align-items: start;
+      align-items: center;
       justify-content: space-between;
       margin-bottom: 1rem;
     }
@@ -85,6 +95,8 @@ const entries = await db.select().from(Guestbook).orderBy(desc(Guestbook.publish
       text-align: center;
     }
 
+    .content { line-height: 1; }
+
     @media screen and (width < 1000px) {
       max-width: 100%;
       padding: 1rem 1.5rem;
@@ -92,6 +104,8 @@ const entries = await db.select().from(Guestbook).orderBy(desc(Guestbook.publish
   }
 
   .reply {
-
+    flex-direction: row-reverse;
+    align-self: end;
+    min-width: min(100%, 45ch);
   }
 </style>

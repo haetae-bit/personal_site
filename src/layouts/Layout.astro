@@ -1,7 +1,7 @@
 ---
+import { Font } from "astro:assets";
 import "$/styles/base.css";
 import "$/styles/themes.css";
-import { Font } from "astro:assets";
 
 interface Props { title?: string; }
 
@@ -9,22 +9,22 @@ const { title = "haetae" }: Props = Astro.props;
 ---
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="pinterest" content="nopin nohover" />
-		<meta name="robots" content="noai, noimageai" />
-		<Font cssVariable="--sq" preload />
-		<Font cssVariable="--kiwi" preload />
-		<slot name="head" />
-		<title>{title}</title>
-		<script is:inline>
-			localStorage.getItem("theme")
-				? document.documentElement.className = localStorage.getItem("theme")
-				: document.documentElement.removeAttribute("class");
-		</script>
-	</head>
-	<body>
-		<slot />
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="pinterest" content="nopin nohover" />
+    <meta name="robots" content="noai, noimageai" />
+    <Font cssVariable="--sq" preload />
+    <Font cssVariable="--kiwi" preload />
+    <slot name="head" />
+    <title>{title}</title>
+    <script is:inline>
+      localStorage.getItem("theme")
+        ? document.documentElement.className = localStorage.getItem("theme")
+        : document.documentElement.removeAttribute("class");
+    </script>
+  </head>
+  <body>
+    <slot />
+  </body>
 </html>

@@ -1,0 +1,90 @@
+---
+interface Props {
+  id?: string;
+  title?: string;
+  class?: string;
+}
+
+const { id, title, class: className, ...rest } = Astro.props;
+---
+
+<dialog {id} class:list={className} {...rest}>
+  <form method="dialog">
+    <menu>
+      {title && <div class="title">{title}</div>}
+      <button type="submit" aria-label="Close">
+        <span>x</span>
+      </button>
+    </menu>
+  </form>
+
+  <div class="content">
+    <slot />
+  </div>
+</dialog>
+
+<style>
+  dialog {
+    margin: auto;
+    color: var(--fg-color);
+    background: var(--bg-color);
+    transition:
+      display 1s allow-discrete,
+      overlay 1s allow-discrete;
+    animation: fadeOut 1s forwards;
+
+    menu {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: calc(100% - 4px);
+      display: flex;
+      justify-content: end;
+      align-items: center;
+      padding: 2px;
+      margin: 2px 2px 0;
+      background-color: color-mix(in oklab, var(--bg-color) 95%, var(--fg-color));
+      border: 2px solid var(--fg-color);
+      line-height: 1;
+
+      .title {
+        flex: 1;
+        font-size: inherit;
+      }
+
+      button {
+        padding: 0;
+        box-shadow: none;
+        line-height: 1;
+        transform: none;
+        display: grid;
+        place-content: center;
+        width: 44px;
+        height: 44px;
+
+        span { transform: translateY(-2px); }
+
+        &:focus {
+          border: 4px inset var(--secondary-color);
+          outline: 2px solid var(--fg-color);
+          box-shadow: none;
+
+          span { transform: translateY(0); }
+        }
+      }
+    }
+
+    .content { margin-top: calc(44px + 2px); }
+    &[open] { animation: fadeIn 1.0s forwards; }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+</style>

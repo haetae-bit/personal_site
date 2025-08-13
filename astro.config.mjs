@@ -3,8 +3,8 @@ import { defineConfig } from 'astro/config';
 import { modifiedTime } from './src/utils/lastModified.mjs';
 import mdx from "@astrojs/mdx";
 import db from "@astrojs/db";
-
 import node from "@astrojs/node";
+import devOnlyRoutes from '@fujocoded/astro-dev-only';
 
 // https://astro.build/config
 export default defineConfig({
@@ -13,7 +13,14 @@ export default defineConfig({
     remarkPlugins: [modifiedTime],
     smartypants: false,
   },
-  integrations: [mdx(), db()],
+  integrations: [
+    mdx(),
+    db(),
+    devOnlyRoutes({
+      // dryRun: true,
+      routePatterns: ["/guestbook/admin"]
+    }),
+  ],
   adapter: node({
     mode: "standalone",
   }),

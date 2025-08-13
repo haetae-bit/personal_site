@@ -1,53 +1,111 @@
 ---
-import Navbar from '~/Navbar.astro';
 import Layout from '@/layouts/Layout.astro';
+import Navbar from '~/Navbar.astro';
+
+import bulletin from "$/acnl-bulletin.png";
 ---
 <Layout>
-	<Navbar />
-	<main>
-		<section id="welcome">
-			<h1>welcome!</h1>
-			<article>
-				this is 
-			</article>
-		</section>
+  <Navbar />
+  <main>
+    <section id="welcome" class="board">
+      <div class="card">
+        <h1>welcome!</h1>
+        <article>
+          this is 
+        </article>
+      </div>
+    </section>
 
-		<section id="updates">
-			<article class="update-card">
-				<h1>update title</h1>
-				<time datetime="">timestamp</time>
-				<p>some stuff happened</p>
-			</article>
-		</section>
+    <section id="updates" class="board">
+      <article class="update card">
+        <h1>update title</h1>
+        <time datetime="">05/01/25</time>
+        <div class="content">
+          <p>some stuff happened</p>
+        </div>
+      </article>
+    </section>
 
-		<section id="wall">
-			<h1>stuff!</h1>
-			<p>i keep a bunch of links here, including the webrings i've joined and some badges i like</p>
-			<div class="web">
-				
-			</div>
-		</section>
-	</main>
+    <section id="wall">
+      <h1>stuff!</h1>
+      <p>i keep a bunch of links here, including the webrings i've joined and some badges i like</p>
+      <div class="web">
+        
+      </div>
+    </section>
+  </main>
 </Layout>
 
-<style>
-	main {
-		max-width: 50em;
-		margin: 0 auto;
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-		grid-template-rows: 1.5fr 0.5fr;
-		gap: 1rem;
-		grid-template-areas:
-			"welcome updates"
-			"wall wall";
+<style define:vars={{ bulletin: `url(${bulletin.src})` }}>
+  body {
+    --acnl-border: #ac6835;
+    --acnl-bg: #8c5321;
+    --card-border-1: #ffd53c;
+    --card-border-2: #5acbbd;
+    --card-bg: white;
+  }
 
-		section {
-			border: 2px solid #ccc;
-		}
-	}
+  main {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-content: center;
+    gap: 1rem;
+    max-width: 50em;
+    margin: 0 auto;
 
-	#wall {
-		grid-area: wall;
-	}
+    @media screen and (max-width: 1360px) {
+      margin: 0 1rem;
+    }
+
+    @media screen and (max-width: 76em) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  h1 { font-size: 2rem; }
+
+  .board {
+    image-rendering: pixelated;
+    border: 2px solid var(--acnl-border);
+    background-color: transparent;
+    border-image: var(--bulletin) 42 30 30 fill / 42px 30px 30px;
+    padding: 42px 30px 30px;
+  }
+
+  .card {
+    border: 6px solid black;
+    background-color: var(--card-bg);
+    box-shadow: inset 0 0 0 4px var(--card-bg), inset 0 0 0 6px black;
+    padding: calc(1rem + 4px);
+
+    h1 {
+      padding-bottom: 2px;
+      border-bottom: 2px solid black;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+  }
+
+  #welcome {
+    .card {
+      border-color: var(--card-border-1);
+      box-shadow: inset 0 0 0 4px var(--card-bg), inset 0 0 0 6px var(--card-border-1);
+      height: 100%;
+
+      h1 { border-bottom-color: var(--card-border-1); }
+    }
+  }
+
+  #updates {
+    .card {
+      border-color: var(--card-border-2);
+      box-shadow: inset 0 0 0 4px var(--card-bg), inset 0 0 0 6px var(--card-border-2);
+
+      h1 { border-bottom-color: var(--card-border-2); }
+    }
+  }
+
+  #wall {
+    grid-column: 1 / -1;
+  }
 </style>

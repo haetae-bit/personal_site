@@ -3,12 +3,12 @@ import { Font, Image } from "astro:assets";
 import { getCollection } from "astro:content";
 import Layout from "./Layout.astro";
 import Navbar from "~/Navbar.astro";
+import formatDate from "@/utils/formatDate";
 import moods from "@/utils/moods";
 
 import outerBBS from "$/guild-bbs.png";
 import innerBBS from "$/guild-bbs-content.png";
 import sideBBS from "$/guild-bbs-list.png";
-import formatDate from "@/utils/formatDate";
 
 interface Props {
   id?: string;
@@ -159,6 +159,7 @@ blog.sort((a, b) => b.data.pubDate!.valueOf() - a.data.pubDate!.valueOf());
     --active-border: #442266;
     color: #000;
   }
+  
   h1 { font: bold 1rem var(--arial-font); }
   h2 {
     font: normal 1.5rem var(--dotum-12-font);
@@ -193,8 +194,8 @@ blog.sort((a, b) => b.data.pubDate!.valueOf() - a.data.pubDate!.valueOf());
       height: calc(100% - 34px);
       flex-flow: column wrap;
       background-color: var(--bg-3);
-      padding: 2px;
-      margin: 18px 6px;
+      padding: 16px 6px;
+      margin: 18px 20px 16px;
       border: 2px solid var(--border-6);
     }
 
@@ -203,14 +204,13 @@ blog.sort((a, b) => b.data.pubDate!.valueOf() - a.data.pubDate!.valueOf());
       border-block: 2px solid var(--border-3);
 
       .title {
-        display: inline-block;
+        display: block;
         background-color: var(--bg-8);
         color: var(--bg-0);
         font-weight: normal;
         text-transform: uppercase;
         padding: 5px 2px;
         text-align: center;
-        width: 100%;
       }
     }
 
@@ -223,6 +223,7 @@ blog.sort((a, b) => b.data.pubDate!.valueOf() - a.data.pubDate!.valueOf());
       li {
         padding: 4px 2px;
         border-bottom: 2px solid var(--bg-4);
+        max-width: 100%;
 
         .item {
           position: relative;
@@ -244,7 +245,7 @@ blog.sort((a, b) => b.data.pubDate!.valueOf() - a.data.pubDate!.valueOf());
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                /* max-width: 19ch; */
+                max-width: 19ch;
 
                 @media screen and (max-width: 76em) {
                   max-width: unset;
@@ -276,18 +277,15 @@ blog.sort((a, b) => b.data.pubDate!.valueOf() - a.data.pubDate!.valueOf());
     }
 
     .nav-section {
-      margin: 0 4px;
       background-color: var(--bg-0);
+      max-width: 100%;
 
-      &:first-child { margin-top: 4px; }
       &:last-child { 
         border-bottom: 2px solid var(--border-2);
-        margin-bottom: 4px;
       }
     }
 
     @media screen and (max-width: 76em) {
-      margin-right: 0;
       margin-bottom: -2px;
     }
   }

@@ -2,7 +2,7 @@
 import Blog from '@/layouts/Blog.astro';
 import type { GetStaticPaths } from 'astro';
 import { getCollection, render } from 'astro:content';
-import buttons from "$/buttons.png";
+import buttons from "$/guild-bbs-buttons.png";
 
 export const getStaticPaths = (async () => {
   const blog = await getCollection("blog");

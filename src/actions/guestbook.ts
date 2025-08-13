@@ -1,6 +1,6 @@
 import { ActionError, defineAction } from "astro:actions";
 import { z } from "astro:content";
-import { db, eq, Guestbook } from "astro:db";
+import { db, eq, Guestbook, isDbError } from "astro:db";
 import sanitize from "sanitize-html";
 
 export const guestbook = {
@@ -12,42 +12,92 @@ export const guestbook = {
       message: z.string().min(1, "Can't be that short..."),
     }),
     handler: async ({ username, website, message }) => {
-      // figure out how to add line breaks and THEN sanitize message
-      const addLine = message.replaceAll("/n", "<br/>");
-      sanitize(addLine);
+      const addLine = message.replaceAll(/\r?\n/g, "<br />");
+      const sanitized = sanitize(addLine, { allowedTags: ["br"] });
 
-      const entry = await db.insert(Guestbook).values({
-        username,
-        website,
-        message,
-      }).returning();
-
-      return entry[0];
+      try {
+        const entry = await db.insert(Guestbook).values({
+          username,
+          website,
+          message: sanitized,
+        }).returning();
+        
+        return entry[0];
+      } catch (e) {
+        if (isDbError(e)) {
+          return new Response(`Cannot insert entry\n\n${e.message}`, { status: 400 });
+        }
+        return new Response('An unexpected error occurred', { status: 500 });
+      }
     },
   }),
-  reply: defineAction({
-    accept: "form",
-    input: z.object({
-      id: z.number(),
-      reply: z.string(),
+  ...import.meta.env.DEV && {
+    reply: defineAction({
+      accept: "form",
+      input: z.object({
+        id: z.coerce.number(),
+        reply: z.string(),
+      }),
+      handler: async ({ id, reply }) => {
+        if (!import.meta.env.DEV) {
+          throw new ActionError({ code: "UNAUTHORIZED" });
+        }
+        
+        const entry = await db.select().from(Guestbook).where(eq(Guestbook.id, id));
+        if (!entry) {
+          throw new ActionError({
+            code: "NOT_FOUND",
+            message: "That entry doesn't exist!"
+          });
+        }
+        
+        const addLine = reply.replaceAll(/\r?\n/g, "<br />");
+        const sanitized = sanitize(addLine, { allowedTags: ["br"] });
+        
+        try {
+          const update = await db.update(Guestbook).set({
+            reply: sanitized,
+            updated: new Date(),
+          }).where(eq(Guestbook.id, id)).returning();
+
+          return update[0];
+        } catch (e) {
+          if (isDbError(e)) {
+            return new Response(`Cannot update entry\n\n${e.message}`, { status: 400 });
+          }
+          return new Response('An unexpected error occurred', { status: 500 });
+        }
+      },
     }),
-    handler: async ({ id, reply }, context) => {
-      if (context.url.hostname !== "127.0.0.1" || "localhost") {
-        throw new ActionError({ code: "UNAUTHORIZED" });
-      }
+    deleteEntry: defineAction({
+      accept: "form",
+      input: z.object({
+        id: z.coerce.number()
+      }),
+      handler: async ({ id }) => {
+        if (!import.meta.env.DEV) {
+          throw new ActionError({ code: "UNAUTHORIZED" });
+        }
+        
+        const entry = await db.select().from(Guestbook).where(eq(Guestbook.id, id));
+        if (!entry) {
+          throw new ActionError({
+            code: "NOT_FOUND",
+            message: "That entry doesn't exist!"
+          });
+        }
 
-      const entry = await db.select().from(Guestbook).where(eq(Guestbook.id, id));
-      if (!entry) {
-        throw new ActionError({
-          code: "NOT_FOUND",
-          message: "That entry doesn't exist!"
-        });
-      }
-      
-      // sanitize reply here
-      
-      const update = await db.update(Guestbook).set({ reply }).where(eq(Guestbook.id, id)).returning();
-      return update[0];
-    },
-  }),
+        try {
+          const entry = await db.delete(Guestbook).where(eq(Guestbook.id, id)).returning();
+          
+          return entry[0];
+        } catch (e) {
+          if (isDbError(e)) {
+            return new Response(`Cannot update entry\n\n${e.message}`, { status: 400 });
+          }
+          return new Response('An unexpected error occurred', { status: 500 });
+        }
+      },
+    }),
+  },
 };

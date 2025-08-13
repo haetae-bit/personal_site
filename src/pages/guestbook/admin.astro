@@ -1,10 +1,13 @@
 ---
 export const prerender = false;
 
+import { Font } from "astro:assets";
 import { actions } from "astro:actions";
 import { db, desc, Guestbook } from "astro:db";
+
 import Layout from "@/layouts/Layout.astro";
 import formatDate from "@/utils/formatDate";
+import Dialog from "~/Dialog.astro";
 
 if (!import.meta.env.DEV) {
   console.error("you shouldn't be here...");
@@ -14,7 +17,14 @@ if (!import.meta.env.DEV) {
 const entries = await db.select().from(Guestbook).orderBy(desc(Guestbook.published));
 ---
 <Layout title="guestbook admin">
-  <h1>entries</h1>
+  <Fragment slot="head">
+    <Font cssVariable="--mono" preload />
+  </Fragment>
+  
+  <header>
+    <h1>entries</h1>
+    <a href="/guestbook">*spooky voice* tuuuurn baaack</a>
+  </header>
 
   <section>
     <table>
@@ -36,42 +46,107 @@ const entries = await db.select().from(Guestbook).orderBy(desc(Guestbook.publish
             <td>{entry.message}</td>
             <td>{formatDate(entry.published, false, 'MMMM D, YYYY')}</td>
             <td>{entry.reply}</td>
-            <td><button class="edit">edit</button></td>
+            <td><button class="edit">edit entry #{entry.id}</button></td>
           </tr>
         ))}
       </tbody>
     </table>
 
-    <dialog id="edit-entry">
+    <Dialog id="edit-entry" title="entry">
       <form id="edit-entry-form" action={actions.guestbook.reply} method="post">
         <input type="hidden" name="id" id="entryId" value="" />
-        <p id="entry-username"></p>
-        <p id="entry-website"></p>
+        <p><strong>Name:</strong> <span id="entry-username"></span></p>
+        <p><strong>Website:</strong> <span id="entry-website"></span></p>
+        <p><strong>Message:</strong></p>
         <div id="entry-message"></div>
-        <p id="entry-published"></p>
+        <p><strong>Published:</strong> <span id="entry-published"></span></p>
         <label for="reply">Reply</label>
         <textarea name="reply" id="reply"></textarea>
 
-        <button type="submit">Reply</button>
+        <div class="actions" style="justify-content: space-between;">
+          <button type="button" id="try-delete" class="cancel">Delete</button>
+          <button type="submit">Reply</button>
+        </div>
       </form>
-    </dialog>
+    </Dialog>
+
+    <Dialog id="confirm-delete" title="Are you sure?">
+      Do you want to delete this entry?
+
+      <div class="actions">
+        <form id="delete-entry" action={actions.guestbook.deleteEntry} method="post">
+          <input type="hidden" name="id" id="delete-id" value="" />
+          <button type="submit">Delete</button>
+        </form>
+        <form method="dialog">
+          <button class="cancel" type="submit">Cancel</button>
+        </form>
+      </div>
+    </Dialog>
   </section>
 </Layout>
 
 <style>
+  header { text-align: center; }
+
   table {
     border-collapse: collapse;
+    margin: 1rem auto;
 
     td {
-      max-width: 30ch;
+      white-space: nowrap;
+      overflow: hidden;
       text-overflow: ellipsis;
+      max-width: 20ch;
+
+      &:not(:has(button)) {
+        border: 2px solid var(--fg-color);
+        padding-inline: 0.5em;
+      }
+
+      &:nth-of-type(6n + 1) { font-weight: bold; }
+
+      &:has(button) {
+        padding-left: 0.15em;
+
+        button {
+          padding: 0.15em 0.25em;
+          line-height: 1;
+        }
+      }
+    }
+  }
+
+  #edit-entry { width: clamp(35ch, 60ch, 100%); }
+  
+  #edit-entry-form {
+    display: flex;
+    flex-flow: column wrap;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+
+    .cancel {
+      background-color: color-mix(in oklab, var(--fg-color) 70%, var(--bg-color));
+
+      &:hover {
+        background-color: color-mix(in oklab, var(--fg-color) 60%, var(--bg-color));
+        color: var(--bg-color);
+      }
     }
   }
 </style>
 
 <script>
   const modal = document.getElementById("edit-entry") as HTMLDialogElement;
+  const confirm = document.getElementById("confirm-delete") as HTMLDialogElement;
   const buttons = document.querySelectorAll("button.edit");
+  const trigger = document.getElementById("try-delete") as HTMLButtonElement;
+
   buttons.forEach(button => {
     button.addEventListener("click", e => {
       const row = (e.target as HTMLElement).parentElement?.parentElement as HTMLTableRowElement;
@@ -86,5 +161,13 @@ const entries = await db.select().from(Guestbook).orderBy(desc(Guestbook.publish
 
       modal.showModal();
     });
+  });
+
+  trigger.addEventListener("click", e => {
+    const form = (e.target as HTMLElement).parentElement?.parentElement as HTMLFormElement;
+    const id = (form.elements.namedItem("entryId") as HTMLInputElement).value;
+    (document.getElementById("delete-id") as HTMLInputElement).value = id;
+
+    confirm.showModal();
   });
 </script>
