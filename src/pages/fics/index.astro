@@ -1,14 +1,13 @@
 ---
-import Layout from "@/layouts/Layout.astro";
 import { getCollection } from "astro:content";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
+import Layout from "@/layouts/Layout.astro";
+import formatDate from "@/utils/formatDate";
 
 const fics = await getCollection("fics");
 const chapters = await getCollection("chapters");
+fics.sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
 chapters.length = Math.min(chapters.length, 5);
-chapters.sort((a, b) => a.data.publishedAt.valueOf() - b.data.publishedAt.valueOf());
-dayjs.extend(utc);
+chapters.sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
 ---
 <Layout>
   <h1>fanfics</h1>
@@ -17,15 +16,20 @@ dayjs.extend(utc);
   <ul>
     {chapters.map(post => (
       <li>
-        <time datetime={dayjs(post.data.publishedAt).utc(true).toISOString()}>
-          {dayjs(post.data.publishedAt).utc(true).format("MMMM DD, YYYY")}
+        <time datetime={formatDate(post.data.publishedAt, true)}>
+          {formatDate(post.data.publishedAt, false, "MMMM DD, YYYY")}
         </time>
-        {post.id}
-        {JSON.stringify(fics.filter(fic => fic.id.includes(post.id)))}
-        <a href={`/fics/${post.id}`}>{post.data.title}</a> in 
-        <a href={`/fics/${post.id.split("/")[0]}`}>
-          {fics.find(({ id }) => post.id.startsWith(id))?.data.title}
-        </a>
+        {fics.some(({ data }) => data.chapters?.some(({ id }) => id === post.id)) 
+          ? <>
+              <a href={`/fics/${post.id}`}>{post.data.title}</a>
+              in 
+              <a href={`/fics/${post.id.split("/")[0]}`}>
+                {fics.filter(({ id }) => id === post.id.split("/")[0])[0].data.title}
+              </a>
+            </>
+          : <a href={`/fics/${post.id.split("/")[0]}`}>
+              {fics.filter(({ id }) => id === post.id.split("/")[0])[0].data.title}
+            </a>}
       </li>
     ))}
   </ul>

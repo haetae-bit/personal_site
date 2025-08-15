@@ -1,7 +1,9 @@
 ---
 import type { GetStaticPaths } from "astro";
 import { Font } from "astro:assets";
-import { getCollection, getEntry, render } from "astro:content";
+import { getCollection, getEntries, render } from "astro:content";
+import { marked } from "marked";
+
 import Layout from "@/layouts/Layout.astro";
 import formatDate from "@/utils/formatDate";
 import ChapterContent from "~/ChapterContent.astro";
@@ -15,21 +17,17 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { fic } = Astro.props;
-const chapters = await getCollection("chapters", ({ id }) => {
-  return id.startsWith(fic.id);
-});
+const chapters = await getEntries(fic.data.chapters ?? []);
 chapters.length = Math.min(chapters.length, 5);
 chapters.sort((a, b) => a.data.sortOrder - b.data.sortOrder);
-const oneshot = chapters.length === 1 && await getEntry(chapters[0]);
-const { Content } = oneshot && await render(oneshot);
+const { Content } = await render(fic);
+const notes = fic.rendered && await marked.use({ async: true, gfm: true, breaks: true }).parseInline((fic.rendered.metadata!.frontmatter as any)["notes"]);
 ---
 <Layout title={fic.data.title}>
   <Fragment slot="head">
     <link rel="alternate" type="application/rss+xml" title={fic.data.title} href={new URL(`/fics/${Astro.params.ficId}/rss.xml`, Astro.site)} />
     <meta name="description" content={fic.data.summary?.substring(0, 150) + "…"} />
-    {oneshot && (
-      <Font cssVariable="--serif" preload />
-    )}
+    {fic.body && <Font cssVariable="--serif" preload />}
   </Fragment>
 
   <main>
@@ -39,10 +37,8 @@ const { Content } = oneshot && await render(oneshot);
         <dl>
           <dt>Fandom</dt> 
           {typeof fic.data.series === "object" 
-            ? (<ul>
-              {fic.data.series.map(fandom => (<li>{fandom}</li>))}
-            </ul>)
-            : (<dd>{fic.data.series}</dd>)
+            ? <ul>{fic.data.series.map(fandom => (<li>{fandom}</li>))}</ul>
+            : <dd>{fic.data.series}</dd>
           }
           <dt>Date</dt>
           <dd>
@@ -59,14 +55,12 @@ const { Content } = oneshot && await render(oneshot);
         </dl>
         
         <div class="links">
-          {!oneshot && (
-            <a class="button" href={`/fics/${chapters[0].id}`}>start reading</a>
-          )}
+          {fic.data.chapters && <a class="button" href={`/fics/${chapters[0].id}`}>start reading</a>}
           <a class="button" href={`/fics/${Astro.params.ficId}/rss.xml`}>rss feed</a>
         </div>
       </header>
-
-      {!oneshot && (
+      
+      {fic.data.chapters && (
         <h2>chapters</h2>
         <ul>
           {chapters.map(chapter => (
@@ -76,9 +70,9 @@ const { Content } = oneshot && await render(oneshot);
       )}
     </section>
 
-    {oneshot && (
+    {fic.body && (
       <section id="oneshot">
-        <ChapterContent lastModified={oneshot.data.lastModified} notes={oneshot.data.notes}>
+        <ChapterContent lastModified={(fic.rendered?.metadata!.frontmatter as any)['lastModified']} notes={notes}>
           <Content />
         </ChapterContent>
       </section>

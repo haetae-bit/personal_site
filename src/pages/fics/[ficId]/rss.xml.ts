@@ -1,23 +1,25 @@
 import type { APIRoute } from "astro";
-import { getCollection } from "astro:content";
+import { experimental_AstroContainer as AstroContainer } from "astro/container";
+import { getCollection, render } from "astro:content";
 import rss, { type RSSFeedItem } from "@astrojs/rss";
-import MarkdownIt from "markdown-it";
+
+import { marked } from "marked";
 import { parse as htmlParser } from "node-html-parser";
 import sanitize from "sanitize-html";
 import fixRssImages from "@/utils/fixRssImages";
 
-const parser = new MarkdownIt();
+const parser = marked.use({ gfm: true, breaks: true });
 const fics = await getCollection("fics");
 
 export const GET: APIRoute = async (context) => {
-  const chapters = await getCollection("chapters", ({ id }) => {
-    return id.split("/")[0] === context.params.ficId;
-  });
+  const chapters = await getCollection("chapters", ({ id }) => id.split("/")[0] === context.params.ficId);
   const fic = fics.find(({ id }) => id === context.params.ficId);
+  const container = await AstroContainer.create();
   const feed: RSSFeedItem[] = [];
 
   for (const entry of chapters) {
-    const content = parser.render(entry.body!);
+    const { Content } = await render(entry);
+    const content = await container.renderToString(Content);
     const html = htmlParser.parse(content);
     const images = html.querySelectorAll("img");
 
@@ -33,12 +35,11 @@ export const GET: APIRoute = async (context) => {
       categories: typeof fic?.data.series == "string" ? [fic?.data.series] : [...fic?.data.series!],
     });
   }
+  const summary = await parser.parseInline(fic?.data.summary ?? "");
 
   return rss({
     title: `${fic?.data.title}`,
-    description: sanitize(parser.render(fic?.data.summary!), {
-      allowedTags: sanitize.defaults.allowedTags.concat(["br"]),
-    }),
+    description: sanitize(summary),
     site: context.site!,
     items: feed,
   });

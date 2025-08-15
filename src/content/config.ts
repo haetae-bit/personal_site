@@ -1,7 +1,8 @@
 import { defineCollection, reference, z } from "astro:content";
 import { glob } from "astro/loaders";
 import { rssSchema } from "@astrojs/rss";
-import MarkdownIt from "markdown-it";
+// import MarkdownIt from "markdown-it";
+import { marked } from "marked";
 import moods from "@/utils/moods";
 import { ficsLoader } from "@/utils/loader";
 
@@ -19,10 +20,7 @@ function slugify(input: string) {
     .replace(/-+$/, "");
 }
 
-const parser = new MarkdownIt({
-  html: true,
-  breaks: true,
-});
+const parser = marked.use({ gfm: true, breaks: true, });
 
 const blog = defineCollection({
   loader: glob({ pattern: "*.{md,mdx}", base: "./src/content/blog" }),
@@ -46,14 +44,13 @@ const chapters = defineCollection({
   schema: z.object({
     title: z.string(),
     publishedAt: z.coerce.date(),
-    notes: z.ostring().transform(notes => parser.renderInline(notes ?? "", {})),
+    notes: z.ostring().transform(async (notes) => await parser.parseInline(notes ?? "")),
     lastModified: z.coerce.date().optional(),
     sortOrder: z.number().default(1),
-    // fic: reference("fics"),
   }),
 });
 
-const fics = defineCollection({
+const test = defineCollection({
   loader: glob({ 
     pattern: "**/*.{yml,yaml}", 
     base: source, 
@@ -66,19 +63,19 @@ const fics = defineCollection({
     title: z.string(),
     series: z.union([z.string(), z.array(z.string())]),
     publishedAt: z.coerce.date(),
-    summary: z.string().transform(summary => parser.renderInline(summary, {})),
+    summary: z.string().transform(async (summary) => await parser.parseInline(summary ?? "")),
     characters: z.array(z.string()).optional(),
     ships: z.ostring(),
     tags: z.array(z.string()).optional(),
-    notes: z.ostring().transform(notes => parser.renderInline(notes ?? "", {})),
+    notes: z.ostring().transform(async (notes) => await parser.parseInline(notes ?? "")),
     lastModified: z.coerce.date().optional(),
   }),
 });
 
-const test = defineCollection({
+const fics = defineCollection({
   loader: ficsLoader(
     glob({
-      pattern: "**/*.{yml,yaml}",
+      pattern: "**/*.{yml,yaml|toml}",
       base: source,
       generateId: ({ entry, data }) => {
         if (data.slug) return data.slug as string;
@@ -90,14 +87,14 @@ const test = defineCollection({
     title: z.string(),
     series: z.union([z.string(), z.array(z.string())]),
     publishedAt: z.coerce.date(),
-    summary: z.string().transform(summary => parser.renderInline(summary, {})),
+    summary: z.string().transform(async (summary) => await parser.parseInline(summary ?? "")),
     characters: z.array(z.string()).optional(),
     ships: z.ostring(),
     tags: z.array(z.string()).optional(),
-    notes: z.ostring().transform(notes => parser.renderInline(notes ?? "", {})),
+    notes: z.ostring().transform(async (notes) => await parser.parseInline(notes ?? "")),
     lastModified: z.coerce.date().optional(),
     chapters: z.array(reference("chapters")).optional(),
   }),
 });
 
-export const collections = { blog, fics, chapters, test };
+export const collections = { blog, fics, chapters };

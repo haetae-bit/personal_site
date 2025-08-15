@@ -24,7 +24,8 @@ const { title, ficTitle, date, notes, lastModified }: Props = Astro.props;
   <main>
     <ChapterContent lastModified={lastModified} notes={notes}>
       <Fragment slot="title">
-        <h1>{title}</h1>
+        <h1>{ficTitle}</h1>
+        <h2>{title}</h2>
         <time datetime={formatDate(date, true)}>
           Published on {formatDate(date)}
         </time>

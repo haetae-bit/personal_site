@@ -75,7 +75,7 @@ const { frontmatter } = Astro.props;
     li::marker { content: " "; }
   }
 
-  :global(.avatar) {
+  .avatar {
     width: fit-content;
     margin: 0 auto 2rem;
     border-image: var(--borderImage) 5 4 / 10px 8px / 8px repeat;
@@ -86,7 +86,6 @@ const { frontmatter } = Astro.props;
       place-content: center;
       width: 80px;
       height: auto;
-      image-rendering: pixelated;
     }
   }
 </style>
