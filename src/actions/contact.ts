@@ -1,6 +1,6 @@
 import { defineAction } from "astro:actions";
 import { z } from "astro:content";
-import sanitize from "sanitize-html";
+import DOMPurify from "isomorphic-dompurify";
 
 export const contact = {
   sendForm: defineAction({
@@ -18,7 +18,7 @@ export const contact = {
     handler: async (input) => {
       // grab nodemailer
       // sanitize stuff
-      sanitize(input.message);
+      DOMPurify.sanitize(input.message);
       // send straight to email
     }
   }),

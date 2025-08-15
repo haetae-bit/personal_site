@@ -5,7 +5,7 @@ import { getCollection, render } from "astro:content";
 import { Breadcrumbs } from "astro-breadcrumbs";
 
 export const getStaticPaths = (async () => {
-  const fics = await getCollection("fics");
+  const fics = await getCollection("fics", ({ data }) => data.oneshot !== true);
   const chapters = await getCollection("chapters", ({ id }) => {
     return fics.find(({ data }) => data.chapters?.some(chapter => chapter.id === id));
   });
@@ -42,7 +42,6 @@ const links = [
   {lastModified} 
   notes={chapter.data.notes}
 >
-  {chapter.id}
   <Fragment slot="breadcrumbs">
     <Breadcrumbs id="breadcrumbs" customizeLinks={links} linkTextFormat="capitalized">
       <Fragment slot="separator" set:text="/" />
@@ -50,6 +49,7 @@ const links = [
   </Fragment>
 
   <Content />
+
   {chapters.length > 1 && (
   <nav id="chapter-pagination" slot="pagination">
     <div id="chapter-index">

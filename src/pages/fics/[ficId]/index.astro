@@ -21,11 +21,15 @@ const chapters = await getEntries(fic.data.chapters ?? []);
 chapters.length = Math.min(chapters.length, 5);
 chapters.sort((a, b) => a.data.sortOrder - b.data.sortOrder);
 const { Content } = await render(fic);
-const notes = fic.rendered && await marked.use({ async: true, gfm: true, breaks: true }).parseInline((fic.rendered.metadata!.frontmatter as any)["notes"]);
+
+const parser = marked.use({ gfm: true, breaks: true });
+const summary = await parser.parse(fic.data.summary);
+const lastMod = fic.rendered && (fic.rendered.metadata!.frontmatter as any)['lastModified'];
+const notes = fic.rendered && await parser.parse((fic.rendered.metadata!.frontmatter as any)["notes"]);
 ---
 <Layout title={fic.data.title}>
   <Fragment slot="head">
-    <link rel="alternate" type="application/rss+xml" title={fic.data.title} href={new URL(`/fics/${Astro.params.ficId}/rss.xml`, Astro.site)} />
+    {fic.data.chapters && <link rel="alternate" type="application/rss+xml" title={fic.data.title} href={new URL(`/fics/${Astro.params.ficId}/rss.xml`, Astro.site)} />}
     <meta name="description" content={fic.data.summary?.substring(0, 150) + "…"} />
     {fic.body && <Font cssVariable="--serif" preload />}
   </Fragment>
@@ -49,14 +53,16 @@ const notes = fic.rendered && await marked.use({ async: true, gfm: true, breaks:
           <dt>Summary</dt>
           <dd>
             <blockquote>
-              <Fragment set:html={fic.data.summary} />
+              <Fragment set:html={summary} />
             </blockquote>
           </dd>
         </dl>
         
         <div class="links">
-          {fic.data.chapters && <a class="button" href={`/fics/${chapters[0].id}`}>start reading</a>}
-          <a class="button" href={`/fics/${Astro.params.ficId}/rss.xml`}>rss feed</a>
+          {fic.data.chapters && <>
+            <a class="button" href={`/fics/${chapters[0].id}`}>start reading</a>
+            <a class="button" href={`/fics/${Astro.params.ficId}/rss.xml`}>rss feed</a>
+          </>}
         </div>
       </header>
       
@@ -72,7 +78,7 @@ const notes = fic.rendered && await marked.use({ async: true, gfm: true, breaks:
 
     {fic.body && (
       <section id="oneshot">
-        <ChapterContent lastModified={(fic.rendered?.metadata!.frontmatter as any)['lastModified']} notes={notes}>
+        <ChapterContent lastModified={lastMod} notes={notes}>
           <Content />
         </ChapterContent>
       </section>

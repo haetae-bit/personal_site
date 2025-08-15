@@ -1,7 +1,7 @@
 import { defineCollection, reference, z } from "astro:content";
 import { glob } from "astro/loaders";
 import { rssSchema } from "@astrojs/rss";
-// import MarkdownIt from "markdown-it";
+
 import { marked } from "marked";
 import moods from "@/utils/moods";
 import { ficsLoader } from "@/utils/loader";
@@ -44,33 +44,33 @@ const chapters = defineCollection({
   schema: z.object({
     title: z.string(),
     publishedAt: z.coerce.date(),
-    notes: z.ostring().transform(async (notes) => await parser.parseInline(notes ?? "")),
+    notes: z.ostring().transform(async (notes) => await parser.parse(notes ?? "")),
     lastModified: z.coerce.date().optional(),
     sortOrder: z.number().default(1),
   }),
 });
 
-const test = defineCollection({
-  loader: glob({ 
-    pattern: "**/*.{yml,yaml}", 
-    base: source, 
-    generateId: ({ entry, data }) => {
-      if (data.slug) return data.slug as string;
-      return slugify(entry.split("/")[0]);
-    } 
-  }),
-  schema: z.object({
-    title: z.string(),
-    series: z.union([z.string(), z.array(z.string())]),
-    publishedAt: z.coerce.date(),
-    summary: z.string().transform(async (summary) => await parser.parseInline(summary ?? "")),
-    characters: z.array(z.string()).optional(),
-    ships: z.ostring(),
-    tags: z.array(z.string()).optional(),
-    notes: z.ostring().transform(async (notes) => await parser.parseInline(notes ?? "")),
-    lastModified: z.coerce.date().optional(),
-  }),
-});
+// const test = defineCollection({
+//   loader: glob({ 
+//     pattern: "**/*.{yml,yaml}", 
+//     base: source, 
+//     generateId: ({ entry, data }) => {
+//       if (data.slug) return data.slug as string;
+//       return slugify(entry.split("/")[0]);
+//     } 
+//   }),
+//   schema: z.object({
+//     title: z.string(),
+//     series: z.union([z.string(), z.array(z.string())]),
+//     publishedAt: z.coerce.date(),
+//     summary: z.string().transform(async (summary) => await parser.parseInline(summary ?? "")),
+//     characters: z.array(z.string()).optional(),
+//     ships: z.ostring(),
+//     tags: z.array(z.string()).optional(),
+//     notes: z.ostring().transform(async (notes) => await parser.parseInline(notes ?? "")),
+//     lastModified: z.coerce.date().optional(),
+//   }),
+// });
 
 const fics = defineCollection({
   loader: ficsLoader(
@@ -87,12 +87,13 @@ const fics = defineCollection({
     title: z.string(),
     series: z.union([z.string(), z.array(z.string())]),
     publishedAt: z.coerce.date(),
-    summary: z.string().transform(async (summary) => await parser.parseInline(summary ?? "")),
+    summary: z.string(),
     characters: z.array(z.string()).optional(),
     ships: z.ostring(),
     tags: z.array(z.string()).optional(),
-    notes: z.ostring().transform(async (notes) => await parser.parseInline(notes ?? "")),
+    notes: z.ostring(),
     lastModified: z.coerce.date().optional(),
+    oneshot: z.boolean().default(false),
     chapters: z.array(reference("chapters")).optional(),
   }),
 });

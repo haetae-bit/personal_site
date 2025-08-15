@@ -1,7 +1,7 @@
 import { ActionError, defineAction } from "astro:actions";
 import { z } from "astro:content";
 import { db, eq, Guestbook, isDbError } from "astro:db";
-import sanitize from "sanitize-html";
+import DOMPurify from "isomorphic-dompurify";
 
 export const guestbook = {
   addEntry: defineAction({
@@ -13,7 +13,7 @@ export const guestbook = {
     }),
     handler: async ({ username, website, message }) => {
       const addLine = message.replaceAll(/\r?\n/g, "<br />");
-      const sanitized = sanitize(addLine, { allowedTags: ["br"] });
+      const sanitized = DOMPurify.sanitize(addLine);
 
       try {
         const entry = await db.insert(Guestbook).values({
@@ -52,7 +52,7 @@ export const guestbook = {
         }
         
         const addLine = reply.replaceAll(/\r?\n/g, "<br />");
-        const sanitized = sanitize(addLine, { allowedTags: ["br"] });
+        const sanitized = DOMPurify.sanitize(addLine);
         
         try {
           const update = await db.update(Guestbook).set({

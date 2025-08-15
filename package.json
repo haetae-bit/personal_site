@@ -17,15 +17,10 @@
     "astro": "5.13.0",
     "astro-breadcrumbs": "^3.3.1",
     "dayjs": "^1.11.13",
-    "dompurify": "^3.2.6",
-    "markdown-it": "^14.1.0",
-    "marked": "^16.1.2",
-    "node-html-parser": "^7.0.1",
-    "sanitize-html": "^2.17.0"
+    "isomorphic-dompurify": "^2.26.0",
+    "marked": "^16.1.2"
   },
   "devDependencies": {
-    "@types/markdown-it": "^14.1.2",
-    "@types/node": "^22.17.1",
-    "@types/sanitize-html": "^2.16.0"
+    "@types/node": "^22.17.1"
   }
 }

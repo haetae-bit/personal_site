@@ -5,9 +5,7 @@ import { loadRenderers } from "astro:container";
 import { getCollection, render } from "astro:content";
 import rss, { type RSSFeedItem } from "@astrojs/rss";
 
-import { parse as htmlParser } from "node-html-parser";
-import sanitize from "sanitize-html";
-import fixRssImages from "@/utils/fixRssImages";
+import DOMPurify from "isomorphic-dompurify";
 
 export const GET: APIRoute = async (context) => {
   const renderers = await loadRenderers([getMDXRenderer()]);
@@ -19,15 +17,11 @@ export const GET: APIRoute = async (context) => {
   for (const entry of blog) {
     const { Content } = await render(entry);
     const content = await container.renderToString(Content);
-    const html = htmlParser.parse(content);
-    const images = html.querySelectorAll("img");
-
-    await fixRssImages(images, context);
 
     feed.push({
       link: `/blog/${entry.id}`,
-      content: sanitize(html.toString(), {
-        allowedTags: sanitize.defaults.allowedTags.concat(["img"]),
+      content: DOMPurify.sanitize(content, {
+        ALLOW_DATA_ATTR: false,
       }),
       ...entry.data,
     });

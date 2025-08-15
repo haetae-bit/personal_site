@@ -41,32 +41,27 @@ async function resolveFics(loader: (oldContext: LoaderContext) => Promise<void>,
             id: value.id,
             data: {
               ...valueWithoutDigest.data,
-              ...chapters.length > 1 && { chapters: chapters },
+              ...valueWithoutDigest.data['oneshot'] !== true && { chapters: chapters },
             },
           });
-          if (chapters.length === 1) {
+          if (valueWithoutDigest.data['oneshot'] === true) {
             // i've committed unspeakable atrocities here
-            const search = import.meta.glob<MarkdownInstance<any>>(`../content/fics/**/*.md`);
-            // const body = Object.values(search).filter(path => path.file?.includes(chapters[0]))[0];
-            for (const path in search) {
-              if (path.includes(chapters[0])) {
-                const body = await search[path]();
-                const html = await body.compiledContent();
-                context.store.set({
-                  ...valueWithoutDigest,
-                  data: newData,
-                  body: body.rawContent(),
-                  rendered: {
-                    html,
-                    metadata: {
-                      headings: body.getHeadings(),
-                      frontmatter: body.frontmatter,
-                    },
-                  },
-                  digest: context.generateDigest(newData),
-                });
-              }
-            }
+            const search = import.meta.glob<MarkdownInstance<any>>(`../content/fics/**/*.md`, { eager: true });
+            const body = Object.values(search).filter(path => path.file?.includes(chapters[0]))[0];
+            const html = await body.compiledContent();
+            context.store.set({
+              ...valueWithoutDigest,
+              data: newData,
+              body: body.rawContent(),
+              rendered: {
+                html,
+                metadata: {
+                  headings: body.getHeadings(),
+                  frontmatter: body.frontmatter,
+                },
+              },
+              digest: context.generateDigest(newData),
+            });
           } else {
             context.store.set({
               ...valueWithoutDigest,
