@@ -1,15 +1,8 @@
 import type { MarkdownInstance } from "astro";
 import type { Loader, LoaderContext } from "astro/loaders";
+import { parseFrontmatter } from '@astrojs/markdown-remark';
 import path from "path";
-import { glob } from "fs/promises";
-
-async function getAllChapters(metaPath: string) {
-  const entryPath = path.parse(metaPath);
-  const fic = entryPath.dir;
-  const entries = await Array.fromAsync(glob(fic + '/*.md'));
-  const chapters = entries.map(chapter => path.relative(fic, chapter));
-  return chapters.map(chapter => `${fic.split("/").at(-1)}/${path.parse(chapter).name}`);
-}
+import { glob, readFile } from "fs/promises";
 
 export function ficsLoader(loader: Loader) {
   const oldLoad = loader.load;
@@ -47,8 +40,13 @@ async function resolveFics(loader: (oldContext: LoaderContext) => Promise<void>,
           if (valueWithoutDigest.data['oneshot'] === true) {
             // i've committed unspeakable atrocities here
             const search = import.meta.glob<MarkdownInstance<any>>(`../content/fics/**/*.md`, { eager: true });
-            const body = Object.values(search).filter(path => path.file?.includes(chapters[0]))[0];
+            const onlyChapter = chapters[0];
+            const includedChapter = (path: MarkdownInstance<any>) => path.file?.includes(onlyChapter);
+            const [body] = Object.values(search).filter(includedChapter);
             const html = await body.compiledContent();
+            // following could be good for being way more forgiving of paths
+            // const { content, frontmatter } = await readChapterFile(value.filePath as string, chapters);
+            // const test = await context.renderMarkdown(content);
             context.store.set({
               ...valueWithoutDigest,
               data: newData,
@@ -75,4 +73,27 @@ async function resolveFics(loader: (oldContext: LoaderContext) => Promise<void>,
       return loadedPromise.promise;
     })
   );
+}
+
+async function getAllChapters(metaPath: string) {
+  const entryPath = path.parse(metaPath);
+  const fic = entryPath.dir;
+  const ficFolder = fic.split("/").at(-1);
+  const entries = await Array.fromAsync(glob(fic + '/*.md'));
+  const chapters = entries.map(chapter => path.relative(fic, chapter));
+  return chapters.map(chapter => `${ficFolder}/${chapter}`);
+}
+
+// unused for now
+async function readChapterFile(folderPath: string, chapters: string[]) {
+  const folder = (folderPath)
+    .split("/")
+    .slice(0, -2) // we only want the stuff before fic folder
+    .join("/"); // reconnect as string
+  const onlyChapter = chapters[0];
+  const filePath = path.resolve(folder, onlyChapter);
+  const [search] = await Array.fromAsync(glob(`${filePath}`));
+  const fileContent = await readFile(search, "utf8");
+  const result = parseFrontmatter(fileContent);
+  return result;
 }
