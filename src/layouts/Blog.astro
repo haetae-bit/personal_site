@@ -6,10 +6,6 @@ import Navbar from "~/Navbar.astro";
 import formatDate from "@/utils/formatDate";
 import moods from "@/utils/moods";
 
-import outerBBS from "$/guild-bbs.png";
-import innerBBS from "$/guild-bbs-content.png";
-import sideBBS from "$/guild-bbs-list.png";
-
 interface Props {
   id?: string;
   title: string;
@@ -31,435 +27,96 @@ blog.sort((a, b) => b.data.pubDate!.valueOf() - a.data.pubDate!.valueOf());
 ---
 <Layout {title}>
   <Fragment slot="head">
-    <link rel="preload" href={outerBBS.src} as="image" />
-    <link rel="preload" href={innerBBS.src} as="image" />
-    <link rel="preload" href={sideBBS.src} as="image" />
-    <Font cssVariable="--arial" preload />
-    <Font cssVariable="--dotumche-11" preload />
-    <Font cssVariable="--dotumche-12" preload />
-    <Font cssVariable="--dotum-11" preload />
-    <Font cssVariable="--dotum-12" preload />
     <slot name="head" />
   </Fragment>
   <Navbar />
 
   <main>
+    <article id={id}>
+      <header>
+        <h1>{title}</h1>
+        <div class="info">
+          <time datetime={formatDate(date, true)}>
+            <span class="title">Date</span>
+            <span class="desc">{formatDate(date)}</span>
+          </time>
+        </div>
+      </header>
+
+      <div class="content">
+        <slot />
+      </div>
+
+      {currently && (
+        <aside>
+          <h2>Current</h2>
+          {currently?.mood && (
+            <dl>
+              <dt class="title">Mood</dt>
+              <dd class="desc">
+                <Image src={`/src/assets/moods/${moods.find(mood => mood === currently?.mood)}.png`} width={36} height={36} alt="" />
+                {currently.mood}
+                </dd>
+            </dl>
+          )}
+          {currently.playing && (
+            <dl>
+              <dt class="title">Game</dt>
+              <dd class="desc">{currently.playing}</dd>
+            </dl>
+          )}
+          {currently.watching && (
+            <dl>
+              <dt class="title">Show</dt>
+              <dd class="desc">{currently.watching}</dd>
+            </dl>
+          )}
+          {currently.reading && (
+            <dl>
+              <dt class="title">Book</dt>
+              <dd class="desc">{currently.reading}</dd>
+            </dl>
+          )}
+          {currently.listening && (
+            <dl>
+              <dt>Currently listening</dt>
+              <dd>{currently.listening}</dd>
+            </dl>
+          )}
+        </aside>
+      )}
+    </article>
+
+    <slot name="pagination" />
+
     <nav id="blog-links">
       <div class="inner">
         <div class="nav-section">
-          <h1><span class="title">recent posts</span></h1>
+          <h2>recent posts</h2>
           <ul>
             {blog.map(entry => (
               <li>
-                <span class="item">
-                  <a href={`/blog/${entry.id}`} class="entry-title" aria-labelledby={entry.id}>
-                    <span style="display: none">{entry.data.title}</span>
-                  </a>
-                  <span id={entry.id} class="link" aria-hidden="true">{entry.data.title}</span>
-                  <time datetime={formatDate(entry.data.pubDate!, true)}>
-                    {formatDate(entry.data.pubDate!, false, "MM/DD/YY")}
-                  </time>
-                </span>
+                <a href={`/blog/${entry.id}`} class="entry-title" aria-labelledby={entry.id}>
+                  {entry.data.title}
+                </a>
+                <time datetime={formatDate(entry.data.pubDate!, true)}>
+                  {formatDate(entry.data.pubDate!, false, "MM/DD/YY")}
+                </time>
               </li>
             ))}
           </ul>
         </div>
         <div class="nav-section">
-          <h1><span class="title">other links</span></h1>
+          <h2>other links</h2>
           <ul>
-            <li><span class="item"><a href="/blog" class="link">archive</a></span></li>
-            <li><span class="item"><a href="/blog/rss.xml" class="link">rss feed</a></span></li>
+            <li><a href="/blog" class="link">archive</a></li>
+            <li><a href="/blog/rss.xml" class="link">rss feed</a></li>
           </ul>
         </div>
       </div>
     </nav>
-
-    <article id={id}>
-      <div class="inner">
-        <header>
-          <h1>{title}</h1>
-          <hr />
-          <div class="info">
-            <time datetime={formatDate(date, true)}>
-              <span class="title">Date</span>
-              <span class="desc">{formatDate(date)}</span>
-            </time>
-          </div>
-        </header>
-
-        <div class="content">
-          <slot />
-        </div>
-
-        {currently && (
-          <aside>
-            <h2>Current</h2>
-            {currently?.mood && (
-              <dl>
-                <dt class="title">Mood</dt>
-                <dd class="desc">
-                  <Image src={`/src/assets/moods/${moods.find(mood => mood === currently?.mood)}.png`} width={36} height={36} alt="" />
-                  {currently.mood}
-                  </dd>
-              </dl>
-            )}
-            {currently.playing && (
-              <dl>
-                <dt class="title">Game</dt>
-                <dd class="desc">{currently.playing}</dd>
-              </dl>
-            )}
-            {currently.watching && (
-              <dl>
-                <dt class="title">Show</dt>
-                <dd class="desc">{currently.watching}</dd>
-              </dl>
-            )}
-            {currently.reading && (
-              <dl>
-                <dt class="title">Book</dt>
-                <dd class="desc">{currently.reading}</dd>
-              </dl>
-            )}
-            {currently.listening && (
-              <dl>
-                <dt>Currently listening</dt>
-                <dd>{currently.listening}</dd>
-              </dl>
-            )}
-          </aside>
-        )}
-      </div>
-    </article>
-    <slot name="pagination" />
   </main>
 </Layout>
 
-<style define:vars={{ outerBorder: `url(${outerBBS.src})`, innerBorder: `url(${innerBBS.src})`, sideBorder: `url(${sideBBS.src})` }}>
-  body {
-    image-rendering: pixelated;
-    --bg-0: #fff;
-    --bg-1: #eeffff;
-    --bg-2: #eeeeff;
-    --bg-3: #eee;
-    --bg-4: #ddddee;
-    --bg-5: #ddeeee;
-    --bg-6: #ccccdd;
-    --bg-7: #ccddee;
-    --bg-8: #8888bb;
-    --border-0: #000;
-    --border-1: #334466;
-    --border-2: #6699aa;
-    --border-3: #7799bb;
-    --border-4: #88aabb;
-    --border-5: #99bbcc;
-    --border-6: #bbccdd;
-    --normal-color: #335577;
-    --active-color: #aa0033;
-    --active-border: #442266;
-    color: #000;
-  }
-  
-  h1 { font: bold 1rem var(--arial-font); }
-  h2 {
-    font: normal 1.5rem var(--dotum-12-font);
-    text-transform: uppercase;
-  }
-  main {
-    font: 1rem var(--arial-font);
-    letter-spacing: 1px;
-    display: grid;
-    grid-template-columns: auto minmax(auto, 75ch);
-    justify-content: center;
-
-    @media screen and (max-width: 1360px) {
-      margin: 0 1rem;
-    }
-
-    @media screen and (max-width: 76em) {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  #blog-links {
-    min-width: 28ch;
-    border: 2px solid var(--border-0);
-    border-image: var(--sideBorder) 22 8 40 7 fill / 44px 16px 80px 14px;
-    background-color: var(--bg-0);
-    padding: 42px 10px 78px;
-    margin-right: -2px;
-
-    .inner {
-      display: flex;
-      height: calc(100% - 34px);
-      flex-flow: column wrap;
-      background-color: var(--bg-3);
-      padding: 16px 6px;
-      margin: 18px 20px 16px;
-      border: 2px solid var(--border-6);
-    }
-
-    h1 {
-      padding: 6px 2px;
-      border-block: 2px solid var(--border-3);
-
-      .title {
-        display: block;
-        background-color: var(--bg-8);
-        color: var(--bg-0);
-        font-weight: normal;
-        text-transform: uppercase;
-        padding: 5px 2px;
-        text-align: center;
-      }
-    }
-
-    ul {
-      display: flex;
-      flex-flow: column wrap;
-      list-style: none;
-      padding: 0;
-
-      li {
-        padding: 4px 2px;
-        border-bottom: 2px solid var(--bg-4);
-        max-width: 100%;
-
-        .item {
-          position: relative;
-          font: normal 1.375rem var(--dotum-11-font);
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          
-          a {
-            &.entry-title {
-              position: absolute;
-              display: block;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%;
-
-              ~ .link {
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                max-width: 19ch;
-
-                @media screen and (max-width: 76em) {
-                  max-width: unset;
-                }
-              }
-            }
-          }
-
-          .link {
-            flex: 1;
-            background-color: var(--bg-1);
-            padding: 6px;
-            color: var(--border-0);
-            text-decoration: none;
-          }
-
-          time { 
-            background-color: var(--bg-5);
-            padding: 6px;
-          }
-
-          &:hover {
-            .link { background-color: var(--bg-7); }
-            time { background-color: var(--border-6); }
-          }
-        }
-        &:last-child { border: none; }
-      }
-    }
-
-    .nav-section {
-      background-color: var(--bg-0);
-      max-width: 100%;
-
-      &:last-child { 
-        border-bottom: 2px solid var(--border-2);
-      }
-    }
-
-    @media screen and (max-width: 76em) {
-      margin-bottom: -2px;
-    }
-  }
-  
-  article {
-    display: flex;
-    border: 2px solid var(--border-0);
-    border-image: var(--outerBorder) 19 9 38 11 fill / 38px 18px 76px 22px;
-    background-color: var(--bg-3);
-    padding: 36px 16px 74px 20px;
-
-    .inner {
-      display: flex;
-      flex-direction: column;
-      border: 2px solid var(--border-2);
-      border-image: var(--innerBorder) 3 2 2 fill / 6px 4px 4px;
-      margin: 14px 4px 8px;
-      padding: 4px 2px 2px;
-      background-color: var(--bg-0);
-    }
-
-    .title {
-      display: grid;
-      place-content: center;
-      font: normal 1.5em var(--dotum-12-font);
-      background-color: var(--bg-2);
-      padding: 2px 6px;
-    }
-
-    .desc {
-      background-color: var(--bg-4);
-      padding: 4px 6px;
-      flex: 1;
-    }
-
-    header {
-      border-bottom: 2px solid var(--bg-6);
-
-      h1 {
-        text-align: center;
-        margin: 6px 2px;
-        padding: 2px 0;
-        background-color: var(--border-6);
-      }
-
-      .info {
-        display: flex;
-        align-items: baseline;
-        gap: 2px;
-        border-style: solid;
-        border-width: 2px;
-        border-color: var(--bg-2) var(--bg-2) var(--bg-1) var(--bg-1);
-        padding: 2px 4px;
-
-        time {
-          display: flex;
-          width: 100%;
-          align-items: stretch;
-        }
-      }
-
-      hr {
-        background-color: var(--border-5);
-        border: none;
-        height: 2px;
-      }
-    }
-
-    .content {
-      /* position: relative; */
-      flex: 1;
-      background-attachment: local;
-      background-image: linear-gradient(to right, var(--bg-0) 5px, transparent 2px), linear-gradient(var(--bg-4) 2px, transparent 2px); 
-      background-size: 10px 2em;
-      background-position-y: calc(2em - 2px);
-      margin: 2rem 1rem;
-      padding: 0 1rem;
-      line-height: 2;
-      max-height: 38em;
-      overflow-y: auto;
-      margin-trim: block;
-
-      p {
-        margin-block: 2em;
-
-        &:has(> img) {
-          margin-block: 0;
-        }
-      }
-      a, del, s { text-decoration-thickness: 2px; }
-      a {
-        color: var(--normal-color);
-
-        &:visited {
-          color: var(--active-border);
-        }
-        &:hover {
-          color: var(--active-color);
-        }
-        &:active, &:focus {
-          color: var(--normal-color);
-        }
-      }
-
-      figure {
-        border: 2px solid var(--border-5);
-        border-image: var(--innerBorder) 3 2 2 fill / 6px 4px 4px;
-        padding: 4px 2px 2px;
-        background-color: var(--bg-0);
-        width: max-content;
-        margin: 0 auto;
-
-        img {
-          min-height: 2em;
-          border-bottom: 2px solid var(--border-3);
-        }
-
-        figcaption {
-          font-family: var(--dotum-11-font);
-          font-size: calc(1em + 2px);
-          color: var(--border-1);
-          background-color: var(--bg-3);
-          margin: 4px;
-          padding: 0 6px;
-          text-align: center;
-        }
-      }
-      
-      @supports not (margin-trim: block) {
-        p:first-child { margin-block-start: 0; }
-        p:last-child { margin-block-end: 0; }
-      }
-
-      @media screen and (max-width: 950px) {
-        background-position-y: 0.8rem;
-        padding: 1rem;
-        margin: 0.25rem 0;
-      }
-    }
-
-    aside {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      grid-template-rows: repeat(4, auto);
-      border-top: 2px solid var(--border-4);
-
-      h2 {
-        display: grid;
-        place-content: center;
-        grid-area: 1 / 1 / -1;
-        padding: 0 4px 0 8px;
-        height: 100%;
-        border-top: 2px solid var(--border-1);
-        border-right: 2px solid var(--border-4);
-        background-color: var(--bg-7);
-      }
-
-      dl {
-        display: flex;
-        align-items: center;
-        padding: 2px 6px;
-        border-bottom: 2px solid var(--border-4);
-        border-top: 2px solid var(--border-1);
-        border-left: 2px solid var(--border-1);
-
-        &:first-of-type > dd {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          margin: -2px;
-          padding: 0 6px;
-        }
-        &:last-child { border-bottom: none; }
-      }
-    }
-  }
+<style>
 </style>

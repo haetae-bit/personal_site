@@ -1,21 +1,24 @@
 ---
+import { Font } from 'astro:assets';
 import Layout from '@/layouts/Layout.astro';
 import Navbar from '~/Navbar.astro';
 
-import bulletin from "$/acnl-bulletin.png";
+import outerBBS from "$/guild-bbs.png";
+import innerBBS from "$/guild-bbs-content.png";
+import sideBBS from "$/guild-bbs-list.png";
+import buttons from "$/guild-bbs-buttons.png";
 ---
 <Layout>
+  <Fragment slot="head">
+    <link rel="preload" href={outerBBS.src} as="image" />
+    <link rel="preload" href={innerBBS.src} as="image" />
+    <link rel="preload" href={sideBBS.src} as="image" />
+    <link rel="preload" href={buttons.src} as="image" />
+    <Font cssVariable="--arial" preload />
+  </Fragment>
+
   <Navbar />
   <main>
-    <section id="welcome">
-      <div class="card">
-        <h1>welcome!</h1>
-        <article>
-          this is 
-        </article>
-      </div>
-    </section>
-
     <section id="updates">
       <article class="update card">
         <h1>update title</h1>
@@ -24,6 +27,26 @@ import bulletin from "$/acnl-bulletin.png";
           <p>some stuff happened</p>
         </div>
       </article>
+
+      <footer id="updates-pagination">
+        <a id="previous" aria-label="go to previous post" href="javascript:void(0)">
+          <div class="arrow" />
+          <div class="title">prev</div>
+        </a>
+        <a id="next" aria-label="go to next post" href="javascript:void(0)">
+          <div class="title">next</div>
+          <div class="arrow" />
+        </a>
+      </footer>
+    </section>
+
+    <section id="welcome">
+      <div class="card">
+        <h1>welcome!</h1>
+        <article>
+          this is 
+        </article>
+      </div>
     </section>
 
     <section id="wall">
@@ -36,76 +59,146 @@ import bulletin from "$/acnl-bulletin.png";
   </main>
 </Layout>
 
-<style define:vars={{ bulletin: `url(${bulletin.src})` }}>
-  body {
-    --acnl-border: #ac6835;
-    --acnl-bg: #8c5321;
-    --card-border-1: #ffd53c;
-    --card-border-2: #5acbbd;
-    --card-bg: white;
+<style define:vars={{ outerBorder: `url(${outerBBS.src})`, innerBorder: `url(${innerBBS.src})`, sideBorder: `url(${sideBBS.src})`, buttons: `url(${buttons.src})` }}>
+  main {
+    image-rendering: pixelated;
+    --bg-0: #fff;
+    --bg-1: #eeffff;
+    --bg-2: #eeeeff;
+    --bg-3: #eee;
+    --bg-4: #ddddee;
+    --bg-5: #ddeeee;
+    --bg-6: #ccccdd;
+    --bg-7: #ccddee;
+    --bg-8: #8888bb;
+    --border-0: #000;
+    --border-1: #334466;
+    --border-2: #6699aa;
+    --border-3: #7799bb;
+    --border-4: #88aabb;
+    --border-5: #99bbcc;
+    --border-6: #bbccdd;
+    --normal-color: #335577;
+    --active-color: #aa0033;
+    --active-border: #442266;
+    color: #000;
+
+    font: 1rem var(--arial-font);
+    letter-spacing: 1px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin: 1em;
   }
 
-  main {
+  h1 { font: bold 1rem var(--arial-font); }
+
+  /* UPDATES */
+  #updates {
+    border-image: var(--sideBorder) 22 9 40 8 fill / 44px 18px 80px 16px;
+    padding: 44px 18px 80px 16px;
+    margin-right: -2px;
+  }
+
+  #updates-pagination {
+    margin: 1rem 0;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    justify-content: center;
-    gap: 1rem;
-    max-width: 50em;
-    margin: 0 auto;
 
-    @media screen and (max-width: 1360px) {
-      margin: 0 1rem;
+    .arrow {
+      width: 36px;
+      height: 50px;
+      background: var(--buttons) no-repeat top left;
     }
 
-    @media screen and (max-width: 76em) {
-      grid-template-columns: 1fr;
+    #previous {
+      grid-column: 1 / 2;
+      justify-self: left;
+      
+      .arrow { background-position: 0 0; }
+      &:hover .arrow { background-position: -36px 0; }
+      &:active .arrow, &:focus .arrow { background-position: -72px 0; }
+
+      .title {
+        border-left: none;
+        margin-left: -2px;
+        padding-left: calc(0.5em + 2px);
+      }
+    }
+    
+    #next {
+      grid-column: 2 / -1;
+      justify-self: right;
+
+      .arrow { background-position: -108px 0; }
+      &:hover .arrow { background-position: -144px 0; }
+      &:active .arrow, &:focus .arrow { background-position: -180px 0; }
+
+      .title {
+        position: relative;
+        z-index: 1;
+        border-right: none;
+        margin-right: -2px;
+        padding-right: calc(0.5em + 2px);
+      }
+    }
+
+    a {
+      display: flex;
+      flex-flow: row wrap;
+      align-items: stretch;
+      color: var(--normal-color);
+      text-decoration: none;
+
+      .title {
+        display: grid;
+        place-content: center;
+        padding: 0 0.5em;
+        background-color: var(--bg-7);
+        border: 2px solid var(--border-1);
+        box-shadow: 
+          inset 2px 2px 0 0 var(--bg-0),
+          inset 4px 4px 0 0 var(--bg-5),
+          inset -2px -2px 0 0 var(--border-5),
+          inset -4px -4px 0 0 var(--border-6);
+        
+        @media screen and (468px > width) {
+          > span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: calc(12ch + 1em);
+          }
+        }
+      }
+
+      &:hover {
+        color: var(--active-color);
+        .title { border-color: var(--active-border); }
+      }
+
+      &:active, &:focus {
+        color: var(--normal-color);
+        .title {
+          border-color: var(--border-1);
+          box-shadow: 
+            inset -2px -2px 0 0 var(--bg-0),
+            inset -4px -4px 0 0 var(--bg-5),
+            inset 2px 2px 0 0 var(--border-5),
+            inset 4px 4px 0 0 var(--border-6);
+        }
+      }
     }
   }
 
-  h1 { font-size: 2rem; }
-
-  .board {
-    image-rendering: pixelated;
-    border: 2px solid var(--acnl-border);
-    background-color: transparent;
-    border-image: var(--bulletin) 42 30 30 fill / 42px 30px 30px;
-    padding: 42px 30px 30px;
-  }
-
-  .card {
-    border: 6px solid black;
-    background-color: var(--card-bg);
-    box-shadow: inset 0 0 0 4px var(--card-bg), inset 0 0 0 6px black;
-    padding: calc(1rem + 4px);
-
-    h1 {
-      padding-bottom: 2px;
-      border-bottom: 2px solid black;
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-  }
-
+  /* WELCOME */
   #welcome {
-    .card {
-      border-color: var(--card-border-1);
-      box-shadow: inset 0 0 0 4px var(--card-bg), inset 0 0 0 6px var(--card-border-1);
-      height: 100%;
-
-      h1 { border-bottom-color: var(--card-border-1); }
-    }
+    border-image: var(--outerBorder) 20 9 39 11 fill / 40px 18px 78px 22px;
+    padding: 40px 18px 78px 22px;
   }
 
-  #updates {
-    .card {
-      border-color: var(--card-border-2);
-      box-shadow: inset 0 0 0 4px var(--card-bg), inset 0 0 0 6px var(--card-border-2);
-
-      h1 { border-bottom-color: var(--card-border-2); }
-    }
-  }
-
-  #wall {
-    grid-column: 1 / -1;
+  /* INNER BORDERS */
+  .inner {
+    border-image: var(--innerBorder) 3 2 2 2 fill / 6px 4px 4px;
+    padding: 6px 4px 4px;
   }
 </style>

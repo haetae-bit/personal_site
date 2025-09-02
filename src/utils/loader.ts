@@ -81,7 +81,10 @@ async function getAllChapters(metaPath: string) {
   const ficFolder = fic.split("/").at(-1);
   const entries = await Array.fromAsync(glob(fic + '/*.md'));
   const chapters = entries.map(chapter => path.relative(fic, chapter));
-  return chapters.map(chapter => `${ficFolder}/${chapter}`);
+  return chapters.map(chapter => {
+    const chapterWithoutExt = path.parse(chapter).name; // needed for loader to properly grab ids
+    return `${ficFolder}/${chapterWithoutExt}`;
+  });
 }
 
 // unused for now
