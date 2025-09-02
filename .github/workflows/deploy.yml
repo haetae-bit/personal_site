@@ -19,7 +19,7 @@ jobs:
       - name: build site
         run: |
           nix-shell -p "nodejs_22" --run "npm install"
-          nix-shell -p "nodejs_22" --run "npm run build"
+          nix-shell -p "nodejs_22" --run "{{ vars.ASTRO_DB_REMOTE_URL }} npm run build"
           ls -la
 
       - name: upload site
