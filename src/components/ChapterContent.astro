@@ -17,6 +17,7 @@ const { notes, lastModified }: Props = Astro.props;
   )}
   {notes && (
     <blockquote>
+      <p class="author-note">Author's Notes:</p>
       <Fragment set:html={notes} />
     </blockquote>
   )}
@@ -39,12 +40,9 @@ const { notes, lastModified }: Props = Astro.props;
       margin: 1rem;
       font-size: calc(35px / 2);
 
-      &::before {
-        display: block;
-        content: "Author’s Notes:";
-        font-weight: bold;
+      .author-note {
         line-height: 1;
-        alt: "Author's Notes:";
+        font-weight: bold;
       }
     }
 

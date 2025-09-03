@@ -44,6 +44,7 @@ const entries = await db.select().from(Guestbook).orderBy(desc(Guestbook.publish
       </article>}
     </>
   ))}
+  
   {entries.length === 0 && (
     <article>
       <h1>Huh...</h1>

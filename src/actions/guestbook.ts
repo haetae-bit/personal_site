@@ -7,11 +7,19 @@ export const guestbook = {
   addEntry: defineAction({
     accept: "form",
     input: z.object({
-      username: z.string().min(1, "You should have a name!"),
+      username: z.string().nonempty("You should have a name!"),
       website: z.string().url().optional(),
-      message: z.string().min(1, "Can't be that short..."),
+      message: z.string().nonempty("Can't be that short..."),
+      challenge: z.string().nonempty("Can't be empty!"),
     }),
-    handler: async ({ username, website, message }) => {
+    handler: async ({ username, website, message, challenge }) => {
+      if (challenge !== "haetae") {
+        throw new ActionError({
+          code: "UNAUTHORIZED",
+          message: "Check the challenge question again!",
+        });
+      }
+      
       const addLine = message.replaceAll(/\r?\n/g, "<br />");
       const sanitized = DOMPurify.sanitize(addLine);
 

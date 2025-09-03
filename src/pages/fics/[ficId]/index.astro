@@ -59,14 +59,14 @@ const notes = fic.rendered && await parser.parse((fic.rendered.metadata!.frontma
         </dl>
         
         <div class="links">
-          {chapters && <>
-            {/* <a class="button" href={`/fics/${chapters[0].id}`}>start reading</a> */}
+          {chapters.length > 0 && <>
+            <a class="button" href={`/fics/${chapters[0].id}`}>start reading</a>
             <a class="button" href={`/fics/${Astro.params.ficId}/rss.xml`}>rss feed</a>
           </>}
         </div>
       </header>
       
-      {chapters && (
+      {chapters.length > 0 && (
         <h2>chapters</h2>
         <ul>
           {chapters.map(chapter => (
@@ -75,6 +75,7 @@ const notes = fic.rendered && await parser.parse((fic.rendered.metadata!.frontma
         </ul>
       )}
     </section>
+
     {fic.body && (
       <section id="oneshot">
         <ChapterContent lastModified={lastMod} notes={notes}>

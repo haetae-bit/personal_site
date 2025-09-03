@@ -1,0 +1,244 @@
+<section id="updates">
+  <header>
+    <h1>Updates</h1>
+  </header>
+
+  <div class="content">
+    <div class="inner">
+      <h2>
+        <div class="title">
+          <span class="segment">Subject</span>
+          <hr>
+          <span class="segment">Date</span>
+        </div>
+      </h2>
+
+      <article class="update card">
+        <header>
+          <h3><span>update title</span></h3>
+          <time datetime="">05/01/25</time>
+        </header>
+
+        <div class="content inner">
+          <p>some stuff happened</p>
+        </div>
+      </article>
+
+      <footer id="updates-pagination">
+        <a id="previous" aria-label="go to previous post" href="javascript:void(0)">
+          <div class="arrow" />
+          <div class="title">prev</div>
+        </a>
+        <a id="next" aria-label="go to next post" href="javascript:void(0)">
+          <div class="title">next</div>
+          <div class="arrow" />
+        </a>
+      </footer>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* UPDATES */
+  #updates {
+    & > header {
+      background-color: var(--border-6);
+      border: 2px solid var(--border-0);
+      border-image: var(--headerBorder) 18 9 15 9 fill / 36px 18px 30px;
+      padding: 36px 18px 30px;
+
+      h1 {
+        font-family: var(--arial-font);
+        font-weight: bold;
+        font-size: 1rem;
+        margin: 0.25rem;
+      }
+    }
+
+    & > .content {
+      background-color: var(--bg-0);
+      border: 2px solid var(--border-0);
+      border-image: var(--bottomBorder) 0 8 40 7 fill / 0px 16px 80px 14px;
+      /* padding: 0px 8px 40px 7px; */
+      padding: 0 10px 78px;
+
+      & > .inner {
+        background-color: var(--bg-2);
+        padding: 16px 6px;
+        margin: 18px 20px;
+        border: 2px solid var(--border-6);
+      }
+    }
+
+    h2 {
+      font-family: var(--arial-font);
+      font-size: 1rem;
+      padding: 6px 2px;
+      border-block: 2px solid var(--border-3);
+      background-color: var(--bg-0);
+
+      .title {
+        display: grid;
+        grid-template-columns: 2fr 2px 1fr;
+        background-color: var(--bg-8);
+        color: var(--bg-0);
+        font-weight: normal;
+        text-transform: uppercase;
+        padding: 5px 2px;
+        text-align: center;
+      }
+
+      hr {
+        background-color: var(--border-7);
+        border: none;
+      }
+    }
+
+    /* UPDATE CARDS */
+    .update {
+      padding: 4px 2px;
+      background-color: var(--bg-0);
+      border-bottom: 2px solid var(--bg-4);
+
+      header {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        text-align: center;
+        
+        & > * {
+          font: normal 1.375rem var(--dotum-11-font);
+          padding: 6px;
+        }
+
+        h3 {
+          max-width: 100%;
+          background-color: var(--bg-1);
+
+          span {
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            @media screen and (max-width: 560px) {  
+              margin: 0 auto;
+              max-width: 15ch;
+            }
+          }
+          
+        }
+        /* 15ch */
+        time { background-color: var(--bg-3); }
+      }
+
+      .inner {
+        border: 2px solid var(--border-2);
+        border-image: var(--innerBorder) 3 2 2 fill / 6px 4px 4px;
+        padding: 4px;
+        background-color: var(--bg-0);
+      }
+
+      .content {
+        margin: 4px 2px 2px;
+        padding: 6px;
+      }
+
+      &:last-of-type {
+        border-bottom: 2px solid var(--border-2);
+      }
+    }
+  }
+
+  /* UPDATES PAGINATION */
+  #updates-pagination {
+    margin-top: 1em;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    .arrow {
+      width: 36px;
+      height: 50px;
+      background: var(--buttons) no-repeat top left;
+    }
+
+    #previous {
+      grid-column: 1 / 2;
+      justify-self: left;
+      
+      .arrow { background-position: 0 0; }
+      &:hover .arrow { background-position: -36px 0; }
+      &:active .arrow, &:focus .arrow { background-position: -72px 0; }
+
+      .title {
+        border-left: none;
+        margin-left: -2px;
+        padding-left: calc(0.5em + 2px);
+      }
+    }
+    
+    #next {
+      grid-column: 2 / -1;
+      justify-self: right;
+
+      .arrow { background-position: -108px 0; }
+      &:hover .arrow { background-position: -144px 0; }
+      &:active .arrow, &:focus .arrow { background-position: -180px 0; }
+
+      .title {
+        position: relative;
+        z-index: 1;
+        border-right: none;
+        margin-right: -2px;
+        padding-right: calc(0.5em + 2px);
+      }
+    }
+
+    /* BASE STYLING FOR ARROW BUTTONS */
+    a {
+      display: flex;
+      flex-flow: row wrap;
+      align-items: stretch;
+      color: var(--normal-color);
+      text-decoration: none;
+
+      .title {
+        display: grid;
+        place-content: center;
+        padding: 0 0.5em;
+        background-color: var(--bg-7);
+        border: 2px solid var(--border-1);
+        box-shadow: 
+          inset 2px 2px 0 0 var(--bg-0),
+          inset 4px 4px 0 0 var(--bg-5),
+          inset -2px -2px 0 0 var(--border-5),
+          inset -4px -4px 0 0 var(--border-6);
+        
+        @media screen and (468px > width) {
+          > span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: calc(12ch + 1em);
+          }
+        }
+      }
+
+      &:hover {
+        color: var(--active-color);
+        .title { border-color: var(--active-border); }
+      }
+
+      &:active, &:focus {
+        color: var(--normal-color);
+        .title {
+          border-color: var(--border-1);
+          box-shadow: 
+            inset -2px -2px 0 0 var(--bg-0),
+            inset -4px -4px 0 0 var(--bg-5),
+            inset 2px 2px 0 0 var(--border-5),
+            inset 4px 4px 0 0 var(--border-6);
+        }
+      }
+    }
+  }
+</style>

@@ -30,8 +30,9 @@ const inputErrors = isInputError(result?.error) ? result.error.fields : {};
         <input type="url" id="website" name="website" aria-describedby="website-error" />
         {inputErrors.website && <p id="website-error" class="error">{inputErrors.website}</p>}
 
-        <!-- <label for="challengeQuestionAnswer">What's my name?</label>
-        <input placeholder="read my about page!" type="text" id="challengeQuestionAnswer" name="challengeQuestionAnswer" required /> -->
+        <label for="challenge">Challenge: What's my name?</label>
+        <input placeholder="read my about page!" type="text" id="challenge" name="challenge" required aria-describedby="challenge-error" />
+        {inputErrors.challenge && <p id="challenge-error" class="error">{inputErrors.challenge}</p>}
         
         <label for="message">Message</label>
         <textarea placeholder="Message (plain text only)..." id="message" name="message" required aria-describedby="message-error"></textarea>

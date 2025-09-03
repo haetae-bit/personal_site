@@ -2,7 +2,6 @@
 import { Font, Image } from "astro:assets";
 import { getCollection } from "astro:content";
 import Layout from "./Layout.astro";
-import Navbar from "~/Navbar.astro";
 import formatDate from "@/utils/formatDate";
 import moods from "@/utils/moods";
 
@@ -29,7 +28,6 @@ blog.sort((a, b) => b.data.pubDate!.valueOf() - a.data.pubDate!.valueOf());
   <Fragment slot="head">
     <slot name="head" />
   </Fragment>
-  <Navbar />
 
   <main>
     <article id={id}>
