@@ -24,6 +24,7 @@ const { Content, remarkPluginFrontmatter } = await render(chapter);
 
 const chapters = await getCollection("chapters", ({ id }) => id.split("/")[0] === ficId);
 const fic = await getCollection("fics", ({ id }) => id === ficId);
+
 chapters.sort((a, b) => a.data.sortOrder - b.data.sortOrder);
 const current = chapters.findIndex(chapter => chapter.id === `${ficId}/${chapterId}`);
 const next = current + 1 === chapters.length ? undefined : chapters[current + 1];

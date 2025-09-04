@@ -14,21 +14,21 @@ chapters.sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueO
   
   <h2>recent updates</h2>
   <ul>
-    {chapters.map(post => (
+    {chapters.map(chapter => (
       <li>
-        <time datetime={formatDate(post.data.publishedAt, true)}>
-          {formatDate(post.data.publishedAt, false, "MMMM DD, YYYY")}
+        <time datetime={formatDate(chapter.data.publishedAt, true)}>
+          {formatDate(chapter.data.publishedAt, false, "MMMM DD, YYYY")}
         </time>
-        {fics.some(({ data }) => data.chapters?.some(({ id }) => id === post.id)) 
+        {fics.some(({ data }) => data.chapters?.some(({ id }) => id === chapter.id)) 
           ? <>
-              <a href={`/fics/${post.id}`}>{post.data.title}</a>
+              <a href={`/fics/${chapter.id}`}>{chapter.data.title}</a>
               in 
-              <a href={`/fics/${post.id.split("/")[0]}`}>
-                {fics.filter(({ id }) => id === post.id.split("/")[0])[0].data.title}
+              <a href={`/fics/${chapter.id.split("/")[0]}`}>
+                {fics.find(({ id }) => id === chapter.id.split("/")[0])?.data.title}
               </a>
             </>
-          : <a href={`/fics/${post.id.split("/")[0]}`}>
-              {fics.filter(({ id }) => id === post.id.split("/")[0])[0].data.title}
+          : <a href={`/fics/${chapter.id.split("/")[0]}`}>
+              {fics.find(({ id }) => id === chapter.id.split("/")[0])?.data.title}
             </a>}
       </li>
     ))}

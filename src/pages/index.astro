@@ -98,6 +98,15 @@ import buttons from "$/guild-bbs-buttons.png";
   }
 
   h1 { font: bold 1rem var(--arial-font); }
+  a {
+    color: var(--normal-color);
+    text-decoration-thickness: 2px;
+
+    &:active, &:focus {
+      color: var(--active-color);
+      text-decoration-color: var(--active-border);
+    }
+  }
   .inner {
     border: 2px solid var(--border-2);
     border-image: var(--innerBorder) 3 2 2 fill / 6px 4px 4px;

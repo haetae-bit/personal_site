@@ -1,0 +1,78 @@
+---
+import formatDate from '@/utils/formatDate';
+
+interface Props {
+  title: string;
+  date: Date | string;
+}
+
+const { title, date } = Astro.props;
+---
+<article class="update card">
+  <header>
+    <h3><span>{title}</span></h3>
+    <time datetime={formatDate(date, true)}>{formatDate(date, false, "MM/DD/YY")}</time>
+  </header>
+
+  <div class="content inner">
+    <slot />
+  </div>
+</article>
+
+<style>
+  /* UPDATE CARDS */
+  .update {
+    padding: 4px 2px;
+    background-color: var(--bg-0);
+    border-bottom: 2px solid var(--bg-4);
+
+    header {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      text-align: center;
+      
+      & > * {
+        font: normal 1.375rem var(--dotum-11-font);
+        padding: 6px;
+      }
+
+      h3 {
+        background-color: var(--bg-1);
+        container: update-title / inline-size;
+
+        span {
+          display: block;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+
+      time { background-color: var(--bg-3); }
+    }
+
+    .inner {
+      border: 2px solid var(--border-2);
+      border-image: var(--innerBorder) 3 2 2 fill / 6px 4px 4px;
+      padding: 4px;
+      background-color: var(--bg-0);
+    }
+
+    .content {
+      margin: 4px 2px 2px;
+      padding: 6px;
+
+      a {
+        color: var(--normal-color);
+        text-decoration-thickness: 2px;
+
+        &:active, &:focus { color: var(--active-color); }
+        &:visited { color: var(--active-border); }
+      }
+    }
+
+    &:last-of-type {
+      border-bottom: 2px solid var(--border-2);
+    }
+  }
+</style>

@@ -23,7 +23,10 @@ function slugify(input: string) {
 const parser = marked.use({ gfm: true, breaks: true, });
 
 const blog = defineCollection({
-  loader: glob({ pattern: "*.{md,mdx}", base: "./src/content/blog" }),
+  loader: glob({
+    pattern: "*.{md,mdx}",
+    base: "./src/content/blog"
+  }),
   schema: rssSchema.extend({ 
     currently: z.object({
       mood: z.enum(moods).optional(),
@@ -98,4 +101,15 @@ const fics = defineCollection({
   }),
 });
 
-export const collections = { blog, fics, chapters };
+const updates = defineCollection({
+  loader: glob({
+    pattern: "*.{md,mdx}",
+    base: "status",
+  }),
+  schema: z.object({
+    title: z.string(),
+    date: z.coerce.date(),
+  }),
+});
+
+export const collections = { blog, fics, chapters, updates };

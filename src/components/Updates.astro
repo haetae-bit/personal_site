@@ -1,3 +1,6 @@
+---
+import UpdateCard from "./UpdateCard.astro";
+---
 <section id="updates">
   <header>
     <h1>Updates</h1>
@@ -13,16 +16,13 @@
         </div>
       </h2>
 
-      <article class="update card">
-        <header>
-          <h3><span>update title</span></h3>
-          <time datetime="">05/01/25</time>
-        </header>
+      <UpdateCard title="redo gallery and guestbook" date="2024-05-10">
+        <p>redid <a href="/gallery">gallery page</a> to make adding images easier and added alpinejs to <a href="/guestbook">guestbook</a> for fetching entries live</p>
+      </UpdateCard>
 
-        <div class="content inner">
-          <p>some stuff happened</p>
-        </div>
-      </article>
+      <UpdateCard title="changed name" date="2024-05-09">
+        <p>changed name from invicta to haetae since invicta doesn't fit anymore</p>
+      </UpdateCard>
 
       <footer id="updates-pagination">
         <a id="previous" aria-label="go to previous post" href="javascript:void(0)">
@@ -93,60 +93,6 @@
         border: none;
       }
     }
-
-    /* UPDATE CARDS */
-    .update {
-      padding: 4px 2px;
-      background-color: var(--bg-0);
-      border-bottom: 2px solid var(--bg-4);
-
-      header {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        text-align: center;
-        
-        & > * {
-          font: normal 1.375rem var(--dotum-11-font);
-          padding: 6px;
-        }
-
-        h3 {
-          max-width: 100%;
-          background-color: var(--bg-1);
-
-          span {
-            display: block;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-
-            @media screen and (max-width: 560px) {  
-              margin: 0 auto;
-              max-width: 15ch;
-            }
-          }
-          
-        }
-        /* 15ch */
-        time { background-color: var(--bg-3); }
-      }
-
-      .inner {
-        border: 2px solid var(--border-2);
-        border-image: var(--innerBorder) 3 2 2 fill / 6px 4px 4px;
-        padding: 4px;
-        background-color: var(--bg-0);
-      }
-
-      .content {
-        margin: 4px 2px 2px;
-        padding: 6px;
-      }
-
-      &:last-of-type {
-        border-bottom: 2px solid var(--border-2);
-      }
-    }
   }
 
   /* UPDATES PAGINATION */
@@ -168,6 +114,7 @@
       .arrow { background-position: 0 0; }
       &:hover .arrow { background-position: -36px 0; }
       &:active .arrow, &:focus .arrow { background-position: -72px 0; }
+      &:disabled .arrow { background-position: -108px 0; }
 
       .title {
         border-left: none;
@@ -180,9 +127,10 @@
       grid-column: 2 / -1;
       justify-self: right;
 
-      .arrow { background-position: -108px 0; }
-      &:hover .arrow { background-position: -144px 0; }
-      &:active .arrow, &:focus .arrow { background-position: -180px 0; }
+      .arrow { background-position: -144px 0; }
+      &:hover .arrow { background-position: -180px 0; }
+      &:active .arrow, &:focus .arrow { background-position: -216px 0; }
+      &:disabled .arrow { background-position: -252px 0; }
 
       .title {
         position: relative;
