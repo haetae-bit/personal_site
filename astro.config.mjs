@@ -22,11 +22,6 @@ export default defineConfig({
   adapter: node({
     mode: "standalone",
   }),
-  env: {
-    schema: {
-      TURSO_DATABASE_URL: envField.string({ context: "server", access: "secret" }),
-    }
-  },
   experimental: {
     fonts: [
       {
