@@ -1,5 +1,8 @@
 ---
+import { getCollection } from "astro:content";
 import UpdateCard from "./UpdateCard.astro";
+
+const updates = await getCollection("updates");
 ---
 <section id="updates">
   <header>
@@ -17,6 +20,7 @@ import UpdateCard from "./UpdateCard.astro";
       </h2>
 
       <UpdateCard title="redo gallery and guestbook" date="2024-05-10">
+        {updates.length}
         <p>redid <a href="/gallery">gallery page</a> to make adding images easier and added alpinejs to <a href="/guestbook">guestbook</a> for fetching entries live</p>
       </UpdateCard>
 

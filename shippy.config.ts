@@ -4,6 +4,7 @@ export default {
     username: "haetae",
     remoteProjectPath: "/var/www/fujohost/haetae/",
     remoteDbPath: "/var/www/fujohost/haetae/guestbook.db",
-    dbDriver: "astro:db"
+    dbDriver: "astro:db",
+    privateKeyPath: "/home/ayowaddup/.ssh/shippy.id_ed25519"
   }
 };

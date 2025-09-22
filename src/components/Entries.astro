@@ -1,9 +1,11 @@
 ---
-import { db, desc, Guestbook } from "astro:db";
+import { desc } from "drizzle-orm";
+import { db } from "db";
+import { guestbookTable } from "db/schema";
 import formatDate from "@/utils/formatDate";
 import pikachu from "$/images/portrait-0025.png";
 
-const entries = await db.select().from(Guestbook).orderBy(desc(Guestbook.published));
+const entries = await db.select().from(guestbookTable).orderBy(desc(guestbookTable.published));
 ---
 <section id="entries">
   {entries.map(entry => (
@@ -16,7 +18,7 @@ const entries = await db.select().from(Guestbook).orderBy(desc(Guestbook.publish
               ? <a href={entry.website} target="_blank" referrerpolicy="no-referrer">{entry.username}</a>
               : <span>{entry.username}</span>}
             </h1>
-            <time datetime={entry.published.toISOString()}>
+            <time datetime={entry.published}>
               {formatDate(entry.published, false, 'MMMM D, YYYY')}
             </time>
           </header>
@@ -32,7 +34,7 @@ const entries = await db.select().from(Guestbook).orderBy(desc(Guestbook.publish
         <div class="entry">
           <header>
             <h1>Reply to {entry.username}</h1>
-            <time datetime={entry.updated?.toISOString()}>
+            <time datetime={entry.updated}>
               {formatDate(entry.updated!, false, 'MMMM D, YYYY')}
             </time>
           </header>
