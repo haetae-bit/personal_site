@@ -22,6 +22,11 @@ export default defineConfig({
   adapter: node({
     mode: "standalone",
   }),
+  env: {
+    schema: {
+      ASTRO_DB_REMOTE_URL: envField.string({ context: "server", access: "secret" }),
+    }
+  },
   experimental: {
     fonts: [
       {
