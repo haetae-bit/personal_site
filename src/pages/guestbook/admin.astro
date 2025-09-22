@@ -3,7 +3,9 @@ export const prerender = false;
 
 import { Font } from "astro:assets";
 import { actions } from "astro:actions";
-import { db, desc, Guestbook } from "astro:db";
+import { desc } from "drizzle-orm";
+import { db } from "db";
+import { guestbookTable } from "db/schema";
 
 import Layout from "@/layouts/Layout.astro";
 import formatDate from "@/utils/formatDate";
@@ -14,7 +16,7 @@ if (!import.meta.env.DEV) {
   return Astro.redirect("/guestbook");
 }
 
-const entries = await db.select().from(Guestbook).orderBy(desc(Guestbook.published));
+const entries = await db.select().from(guestbookTable).orderBy(desc(guestbookTable.published));
 ---
 <Layout title="guestbook admin">
   <Fragment slot="head">
