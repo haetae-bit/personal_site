@@ -3,7 +3,7 @@ import utc from "dayjs/plugin/utc";
 
 dayjs.extend(utc);
 
-export default function (date: Date | string, iso = false, format?: string) {
+export default function (date: string, iso = false, format?: string) {
   if (iso) {
     return dayjs(date).utc(true).toISOString();
   } else {

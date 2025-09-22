@@ -1,8 +1,7 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, envField } from 'astro/config';
 import { modifiedTime } from './src/utils/lastModified.mjs';
 import mdx from "@astrojs/mdx";
-import db from "@astrojs/db";
 import node from "@astrojs/node";
 import devOnlyRoutes from '@fujocoded/astro-dev-only';
 
@@ -15,7 +14,6 @@ export default defineConfig({
   },
   integrations: [
     mdx(),
-    db(),
     devOnlyRoutes({
       // dryRun: true,
       routePatterns: ["/guestbook/admin"]
@@ -24,6 +22,11 @@ export default defineConfig({
   adapter: node({
     mode: "standalone",
   }),
+  env: {
+    schema: {
+      TURSO_DATABASE_URL: envField.string({ context: "server", access: "secret" }),
+    }
+  },
   experimental: {
     fonts: [
       {

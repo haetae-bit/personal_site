@@ -1,6 +1,8 @@
 import { ActionError, defineAction } from "astro:actions";
 import { z } from "astro:content";
-import { db, eq, Guestbook, isDbError } from "astro:db";
+import { db } from "db";
+import { guestbookTable } from "db/schema";
+import { eq } from "drizzle-orm";
 import DOMPurify from "isomorphic-dompurify";
 
 export const guestbook = {
@@ -24,7 +26,7 @@ export const guestbook = {
       const sanitized = DOMPurify.sanitize(addLine);
 
       try {
-        const entry = await db.insert(Guestbook).values({
+        const entry = await db.insert(guestbookTable).values({
           username,
           website,
           message: sanitized,
@@ -32,10 +34,7 @@ export const guestbook = {
         
         return entry[0];
       } catch (e) {
-        if (isDbError(e)) {
-          return new Response(`Cannot insert entry\n\n${e.message}`, { status: 400 });
-        }
-        return new Response('An unexpected error occurred', { status: 500 });
+        return new Response(`An unexpected error occurred\n\n${e}`, { status: 500 });
       }
     },
   }),
@@ -51,7 +50,7 @@ export const guestbook = {
           throw new ActionError({ code: "UNAUTHORIZED" });
         }
         
-        const entry = await db.select().from(Guestbook).where(eq(Guestbook.id, id));
+        const entry = await db.select().from(guestbookTable).where(eq(guestbookTable.id, id));
         if (!entry) {
           throw new ActionError({
             code: "NOT_FOUND",
@@ -63,17 +62,14 @@ export const guestbook = {
         const sanitized = DOMPurify.sanitize(addLine);
         
         try {
-          const update = await db.update(Guestbook).set({
+          const update = await db.update(guestbookTable).set({
             reply: sanitized,
-            updated: new Date(),
-          }).where(eq(Guestbook.id, id)).returning();
+            updated: new Date().toDateString(),
+          }).where(eq(guestbookTable.id, id)).returning();
 
           return update[0];
         } catch (e) {
-          if (isDbError(e)) {
-            return new Response(`Cannot update entry\n\n${e.message}`, { status: 400 });
-          }
-          return new Response('An unexpected error occurred', { status: 500 });
+          return new Response(`An unexpected error occurred\n\n${e}`, { status: 500 });
         }
       },
     }),
@@ -87,7 +83,7 @@ export const guestbook = {
           throw new ActionError({ code: "UNAUTHORIZED" });
         }
         
-        const entry = await db.select().from(Guestbook).where(eq(Guestbook.id, id));
+        const entry = await db.select().from(guestbookTable).where(eq(guestbookTable.id, id));
         if (!entry) {
           throw new ActionError({
             code: "NOT_FOUND",
@@ -96,14 +92,11 @@ export const guestbook = {
         }
 
         try {
-          const entry = await db.delete(Guestbook).where(eq(Guestbook.id, id)).returning();
+          const entry = await db.delete(guestbookTable).where(eq(guestbookTable.id, id)).returning();
           
           return entry[0];
         } catch (e) {
-          if (isDbError(e)) {
-            return new Response(`Cannot update entry\n\n${e.message}`, { status: 400 });
-          }
-          return new Response('An unexpected error occurred', { status: 500 });
+          return new Response(`An unexpected error occurred\n\n${e}`, { status: 500 });
         }
       },
     }),
