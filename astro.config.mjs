@@ -7,10 +7,10 @@ import devOnlyRoutes from '@fujocoded/astro-dev-only';
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://haetae.32-b.it",
+  site: "http://haetae.32-b.it",
   markdown: {
     remarkPlugins: [modifiedTime],
-    smartypants: false,
+    // smartypants: false,
   },
   integrations: [
     mdx(),
@@ -19,9 +19,7 @@ export default defineConfig({
       routePatterns: ["/guestbook/admin"]
     }),
   ],
-  adapter: node({
-    mode: "standalone",
-  }),
+  adapter: node({ mode: "standalone" }),
   env: {
     schema: {
       ASTRO_DB_REMOTE_URL: envField.string({ context: "server", access: "secret" }),

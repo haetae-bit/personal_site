@@ -1,5 +1,5 @@
 import { defineAction } from "astro:actions";
-import { z } from "astro:content";
+import { z } from "astro:schema";
 import DOMPurify from "isomorphic-dompurify";
 
 export const contact = {

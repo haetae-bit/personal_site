@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { sql, type InferSelectModel } from "drizzle-orm";
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const guestbookTable = sqliteTable("guestbook_table", {
@@ -10,3 +10,5 @@ export const guestbookTable = sqliteTable("guestbook_table", {
   updated: text().$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
   reply: text(),
 });
+
+export type GuestbookEntry = typeof guestbookTable.$inferSelect;

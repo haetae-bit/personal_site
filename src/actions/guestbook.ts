@@ -1,5 +1,5 @@
 import { ActionError, defineAction } from "astro:actions";
-import { z } from "astro:content";
+import { z } from "astro:schema";
 import { db } from "db";
 import { guestbookTable } from "db/schema";
 import { eq } from "drizzle-orm";
