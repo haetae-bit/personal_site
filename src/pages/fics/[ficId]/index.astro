@@ -24,7 +24,7 @@ const { Content } = await render(fic);
 
 const parser = marked.use({ gfm: true, breaks: true });
 const summary = await parser.parse(fic.data.summary);
-const lastMod = fic.rendered && (fic.rendered.metadata!.frontmatter as any)['lastModified'];
+const lastModified = fic.rendered && (fic.rendered.metadata!.frontmatter as any)['lastModified'];
 const notes = fic.rendered && await parser.parse((fic.rendered.metadata!.frontmatter as any)["notes"]);
 ---
 <Layout title={fic.data.title}>
@@ -78,7 +78,7 @@ const notes = fic.rendered && await parser.parse((fic.rendered.metadata!.frontma
 
     {fic.body && (
       <section id="oneshot">
-        <ChapterContent lastModified={lastMod} notes={notes}>
+        <ChapterContent lastModified={lastModified} notes={notes}>
           <Content />
         </ChapterContent>
       </section>

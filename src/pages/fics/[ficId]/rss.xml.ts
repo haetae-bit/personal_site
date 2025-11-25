@@ -18,7 +18,7 @@ export const GET: APIRoute = async (context) => {
   for (const entry of chapters) {
     const { Content } = await render(entry);
     const content = await container.renderToString(Content);
-
+    
     feed.push({
       link: `/fics/${entry.id}`,
       title: entry.data.title,

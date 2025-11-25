@@ -40,7 +40,7 @@ const links = [
   title={chapter.data.title} 
   ficTitle={fic[0].data.title}
   date={chapter.data.publishedAt} 
-  {lastModified} 
+  {lastModified}
   notes={chapter.data.notes}
 >
   <Fragment slot="breadcrumbs">
@@ -53,19 +53,20 @@ const links = [
 
   {chapters.length > 1 && (
   <nav id="chapter-pagination" slot="pagination">
-    <div id="chapter-index">
+    <form id="chapter-index">
       <label for="chapter-select">Chapters:</label>
       <select name="chapter-select" id="chapter-select">
         {chapters.map(chapter => (
           <option 
             value={`/fics/${chapter.id}`} 
-            selected={chapter.id.split("/")[1] === chapterId ? "selected" : undefined}
+            selected={chapter.id.split("/")[1] === chapterId ? true : undefined}
           >
             {chapter.data.title}
           </option>
         ))}
       </select>
-    </div>
+      <button>Go to chapter</button>
+    </form>
     {previous && <a id="previous" href={`/fics/${previous.id}`}>{previous.data.title}</a>}
     {next && <a id="next" href={`/fics/${next.id}`}>{next.data.title}</a>}
   </nav>
@@ -104,7 +105,7 @@ const links = [
 
     #chapter-index {
       grid-area: 1 / 1 / 1 / -1;
-      width: min-content;
+      /* width: min-content; */
       justify-self: center;
     }
 
@@ -130,10 +131,10 @@ const links = [
 </style>
 
 <script>
+  const form = document.forms.namedItem("chapter-index");
   const select: HTMLSelectElement | null = document.querySelector("#chapter-select");
-  select?.addEventListener("change", (e) => {
-    if (e.target instanceof HTMLSelectElement) {
-      window.location.href = e.target.value;
-    }
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    window.location.href = select?.value!;
   });
 </script>

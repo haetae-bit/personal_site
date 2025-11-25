@@ -1,15 +1,9 @@
-import { statSync } from "fs";
+import { execSync } from "child_process";
 
 export function modifiedTime() {
-  return function (_tree, file) {
-    const path = file.history[0];
-    const result = statSync(path);
-    file.data.astro.frontmatter.lastModified = result.mtime;
-    // try {
-    //   const result = statSync(path);
-    //   file.data.astro.frontmatter.lastModified = result.mtime;
-    // } catch (error) {
-    //   return;
-    // }
+  return function (_tree, { data, history }) {
+    const path = history[0];
+    const result = execSync(`git log -1 --pretty="format:%cI" "${path}"`);
+    data.astro.frontmatter.lastModified = result.toString();
   }
 }
