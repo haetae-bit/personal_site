@@ -9,20 +9,18 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/db": "^0.18.3",
     "@astrojs/mdx": "^4.3.12",
     "@astrojs/node": "9.5.1",
     "@astrojs/rss": "4.0.14",
     "@fujocoded/astro-dev-only": "0.0.4",
-    "@libsql/client": "^0.15.15",
     "astro": "5.16.0",
     "astro-breadcrumbs": "^3.3.1",
     "dayjs": "^1.11.19",
-    "drizzle-orm": "^0.44.7",
     "isomorphic-dompurify": "^2.33.0",
     "marked": "^16.4.2"
   },
   "devDependencies": {
-    "@types/node": "^22.19.1",
-    "drizzle-kit": "^0.31.7"
+    "@types/node": "^22.19.1"
   }
 }

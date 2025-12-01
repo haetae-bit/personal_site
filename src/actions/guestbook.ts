@@ -1,8 +1,7 @@
 import { ActionError, defineAction } from "astro:actions";
 import { z } from "astro:schema";
-import { db } from "db";
-import { guestbookTable } from "db/schema";
-import { eq } from "drizzle-orm";
+import { db, eq, Guestbook } from "astro:db";
+// import { guestbookTable } from "db/schema";
 import DOMPurify from "isomorphic-dompurify";
 
 export const guestbook = {
@@ -26,7 +25,7 @@ export const guestbook = {
       const sanitized = DOMPurify.sanitize(addLine);
 
       try {
-        const entry = await db.insert(guestbookTable).values({
+        const entry = await db.insert(Guestbook).values({
           username,
           website,
           message: sanitized,
@@ -50,7 +49,7 @@ export const guestbook = {
           throw new ActionError({ code: "UNAUTHORIZED" });
         }
         
-        const entry = await db.select().from(guestbookTable).where(eq(guestbookTable.id, id));
+        const entry = await db.select().from(Guestbook).where(eq(Guestbook.id, id));
         if (!entry) {
           throw new ActionError({
             code: "NOT_FOUND",
@@ -62,10 +61,10 @@ export const guestbook = {
         const sanitized = DOMPurify.sanitize(addLine);
         
         try {
-          const update = await db.update(guestbookTable).set({
+          const update = await db.update(Guestbook).set({
             reply: sanitized,
-            updated: new Date().toDateString(),
-          }).where(eq(guestbookTable.id, id)).returning();
+            updated: new Date(),
+          }).where(eq(Guestbook.id, id)).returning();
 
           return update[0];
         } catch (e) {
@@ -83,7 +82,7 @@ export const guestbook = {
           throw new ActionError({ code: "UNAUTHORIZED" });
         }
         
-        const entry = await db.select().from(guestbookTable).where(eq(guestbookTable.id, id));
+        const entry = await db.select().from(Guestbook).where(eq(Guestbook.id, id));
         if (!entry) {
           throw new ActionError({
             code: "NOT_FOUND",
@@ -92,7 +91,7 @@ export const guestbook = {
         }
 
         try {
-          const entry = await db.delete(guestbookTable).where(eq(guestbookTable.id, id)).returning();
+          const entry = await db.delete(Guestbook).where(eq(Guestbook.id, id)).returning();
           
           return entry[0];
         } catch (e) {

@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig, envField } from 'astro/config';
 import { modifiedTime } from './src/utils/lastModified.mjs';
+import db from "@astrojs/db";
 import mdx from "@astrojs/mdx";
 import node from "@astrojs/node";
 import devOnlyRoutes from '@fujocoded/astro-dev-only';
@@ -14,6 +15,7 @@ export default defineConfig({
   },
   integrations: [
     mdx(),
+    db(),
     devOnlyRoutes({
       // dryRun: true,
       routePatterns: ["/guestbook/admin"]

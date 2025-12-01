@@ -1,0 +1,33 @@
+---
+import type { GetStaticPaths } from "astro";
+import { Font } from "astro:assets";
+import { desc } from "drizzle-orm";
+import { db } from "db";
+import { guestbookTable } from "db/schema";
+
+import Layout from "@/layouts/Layout.astro";
+import Entries from "~/Entries.astro";
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const data = await db.select().from(guestbookTable).orderBy(desc(guestbookTable.published));
+  return paginate(data, { pageSize: 1 });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+---
+
+<Layout>
+  <Fragment slot="head">
+    <Font cssVariable="--mono" preload />
+    <Font cssVariable="--mlss" preload />
+  </Fragment>
+  <Entries entries={page.data} server:defer>
+    <nav slot="pagination">
+      {page.currentPage}
+      {page.url.first ? <a href={page.url.first}>First</a> : null}
+      {page.url.prev ? <a href={page.url.prev}>Previous</a> : null}
+      {page.url.next ? <a href={page.url.next}>Next</a> : null}
+      {page.url.last ? <a href={page.url.last}>Last</a> : null}
+    </nav>
+  </Entries>
+</Layout>

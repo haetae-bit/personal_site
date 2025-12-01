@@ -1,13 +1,17 @@
 ---
 import { actions, isInputError } from "astro:actions";
 import { Font } from "astro:assets";
+import { desc } from "drizzle-orm";
+import { db } from "db";
+import { guestbookTable } from "db/schema";
 
 import Layout from "@/layouts/Layout.astro";
-import speech from "$/speech.png";
 import Entries from "~/Entries.astro";
 import Dialog from "~/Dialog.astro";
 
 const result = Astro.getActionResult(actions.guestbook.addEntry);
+const entries = await db.select().from(guestbookTable).orderBy(desc(guestbookTable.published));
+entries.slice(0, 10);
 const inputErrors = isInputError(result?.error) ? result.error.fields : {};
 ---
 <Layout title="haetae, guestbook">
@@ -42,7 +46,7 @@ const inputErrors = isInputError(result?.error) ? result.error.fields : {};
       </form>
     </section>
 
-    <Entries server:defer>
+    <Entries entries={entries} server:defer>
       <p slot="fallback">Loading...</p>
     </Entries>
     
@@ -52,12 +56,7 @@ const inputErrors = isInputError(result?.error) ? result.error.fields : {};
   </main>
 </Layout>
 
-<style define:vars={{ border: `url(${speech.src})` }}>
-  :root {
-    --speech-bg-color: #f8f8f8;
-    --speech-fg-color: #404040;
-  }
-  
+<style>
   main {
     max-width: clamp(75ch, 80ch, 100%);
     margin: 1rem auto;

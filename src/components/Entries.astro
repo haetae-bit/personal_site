@@ -1,11 +1,14 @@
 ---
-import { desc } from "drizzle-orm";
-import { db } from "db";
-import { guestbookTable } from "db/schema";
+import type { GuestbookEntry } from "db/schema";
 import formatDate from "@/utils/formatDate";
+import speech from "$/speech.png";
 import pikachu from "$/images/portrait-0025.png";
 
-const entries = await db.select().from(guestbookTable).orderBy(desc(guestbookTable.published));
+interface Props {
+  entries: GuestbookEntry[];
+}
+
+const { entries } = Astro.props;
 ---
 <section id="entries">
   {entries.map(entry => (
@@ -29,21 +32,23 @@ const entries = await db.select().from(guestbookTable).orderBy(desc(guestbookTab
         </div>
       </article>
 
-      {entry.reply && <article class="reply" id={`reply-${entry.username}-${entry.id}`}>
-        <img src={pikachu.src} width="80" height="80" alt="a portrait of pikachu" />
-        <div class="entry">
-          <header>
-            <h1>Reply to {entry.username}</h1>
-            <time datetime={entry.updated}>
-              {formatDate(entry.updated!, false, 'MMMM D, YYYY')}
-            </time>
-          </header>
+      {entry.reply && (
+        <article class="reply" id={`reply-${entry.username}-${entry.id}`}>
+          <img src={pikachu.src} width="80" height="80" alt="a portrait of pikachu" />
+          <div class="entry">
+            <header>
+              <h1>Reply to {entry.username}</h1>
+              <time datetime={entry.updated}>
+                {formatDate(entry.updated!, false, 'MMMM D, YYYY')}
+              </time>
+            </header>
 
-          <div class="content">
-            <Fragment set:html={entry.reply} />
+            <div class="content">
+              <Fragment set:html={entry.reply} />
+            </div>
           </div>
-        </div>
-      </article>}
+        </article>
+      )}
     </>
   ))}
   
@@ -53,9 +58,16 @@ const entries = await db.select().from(guestbookTable).orderBy(desc(guestbookTab
       <p>There's nothing here! Want to be the first to comment?</p>
     </article>
   )}
+
+  <slot name="pagination" />
 </section>
 
-<style>
+<style define:vars={{ border: `url(${speech.src})` }}>
+  :root {
+    --speech-bg-color: #f8f8f8;
+    --speech-fg-color: #404040;
+  }
+
   #entries {
     margin: 2rem 0 3rem;
     display: flex;

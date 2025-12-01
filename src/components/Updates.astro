@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import UpdateCard from "./UpdateCard.astro";
 
 const updates = await getCollection("updates");
+const data = updates.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 <section id="updates">
   <header>
@@ -18,9 +19,12 @@ const updates = await getCollection("updates");
           <span class="segment">Date</span>
         </div>
       </h2>
+<!-- 
+      <UpdateCard title={data[0].data.title} date={data[0].data.date}>
+        {data[0].body}
+      </UpdateCard> -->
 
       <UpdateCard title="redo gallery and guestbook" date="2024-05-10">
-        {updates.length}
         <p>redid <a href="/gallery">gallery page</a> to make adding images easier and added alpinejs to <a href="/guestbook">guestbook</a> for fetching entries live</p>
       </UpdateCard>
 
@@ -29,14 +33,14 @@ const updates = await getCollection("updates");
       </UpdateCard>
 
       <footer id="updates-pagination">
-        <a id="previous" aria-label="go to previous post" href="javascript:void(0)">
+        <button id="previous" aria-label="go to previous post">
           <div class="arrow" />
           <div class="title">prev</div>
-        </a>
-        <a id="next" aria-label="go to next post" href="javascript:void(0)">
+        </button>
+        <button id="next" aria-label="go to next post">
           <div class="title">next</div>
           <div class="arrow" />
-        </a>
+        </button>
       </footer>
     </div>
   </div>
@@ -146,12 +150,16 @@ const updates = await getCollection("updates");
     }
 
     /* BASE STYLING FOR ARROW BUTTONS */
-    a {
+    button {
       display: flex;
       flex-flow: row wrap;
       align-items: stretch;
       color: var(--normal-color);
       text-decoration: none;
+      background: unset;
+      box-shadow: none;
+      border: none;
+      font-family: ;
 
       .title {
         display: grid;
@@ -194,3 +202,8 @@ const updates = await getCollection("updates");
     }
   }
 </style>
+
+<!-- <script>
+  const prev = document.getElementById("previous");
+  const next = document.getElementById("next");
+</script> -->
